@@ -98,3 +98,70 @@ func (r *StatRepository) GetServerStats(serverID int64, startAt, endAt int64) ([
 	err := r.db.Where("server_id = ? AND record_at >= ? AND record_at <= ?", serverID, startAt, endAt).Find(&stats).Error
 	return stats, err
 }
+
+
+// CreateOrUpdateStat 创建或更新统计
+func (r *StatRepository) CreateOrUpdateStat(stat *model.Stat) error {
+	var existing model.Stat
+	err := r.db.Where("record_at = ? AND record_type = ?", stat.RecordAt, stat.RecordType).First(&existing).Error
+	if err == gorm.ErrRecordNotFound {
+		return r.db.Create(stat).Error
+	}
+	if err != nil {
+		return err
+	}
+	stat.ID = existing.ID
+	return r.db.Save(stat).Error
+}
+
+// GetOrderStats 获取订单统计
+func (r *StatRepository) GetOrderStats(startAt, endAt int64) ([]model.Stat, error) {
+	var stats []model.Stat
+	err := r.db.Where("record_at >= ? AND record_at <= ? AND record_type = ?", startAt, endAt, "d").
+		Order("record_at ASC").
+		Find(&stats).Error
+	return stats, err
+}
+
+// GetServerTrafficStats 获取服务器流量统计
+func (r *StatRepository) GetServerTrafficStats(startAt, endAt int64) ([]model.StatServer, error) {
+	var stats []model.StatServer
+	err := r.db.Where("record_at >= ? AND record_at <= ?", startAt, endAt).
+		Order("record_at ASC").
+		Find(&stats).Error
+	return stats, err
+}
+
+// GetServerRanking 获取服务器排名
+func (r *StatRepository) GetServerRanking(limit int) ([]model.StatServer, error) {
+	var stats []model.StatServer
+	err := r.db.Model(&model.StatServer{}).
+		Select("server_id, SUM(u) as u, SUM(d) as d").
+		Group("server_id").
+		Order("(SUM(u) + SUM(d)) DESC").
+		Limit(limit).
+		Find(&stats).Error
+	return stats, err
+}
+
+// GetUserRanking 获取用户排名
+func (r *StatRepository) GetUserRanking(limit int) ([]model.StatUser, error) {
+	var stats []model.StatUser
+	err := r.db.Model(&model.StatUser{}).
+		Select("user_id, SUM(u) as u, SUM(d) as d").
+		Group("user_id").
+		Order("(SUM(u) + SUM(d)) DESC").
+		Limit(limit).
+		Find(&stats).Error
+	return stats, err
+}
+
+// GetTotalTraffic 获取总流量
+func (r *StatRepository) GetTotalTraffic(startAt, endAt int64) (int64, error) {
+	var total int64
+	err := r.db.Model(&model.StatServer{}).
+		Where("record_at >= ? AND record_at <= ?", startAt, endAt).
+		Select("COALESCE(SUM(u + d), 0)").
+		Scan(&total).Error
+	return total, err
+}
