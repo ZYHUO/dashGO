@@ -92,7 +92,7 @@ func (s *StatsService) GetOrderStats(startAt, endAt int64) ([]map[string]interfa
 
 // GetUserStats 获取用户统计
 func (s *StatsService) GetUserStats(startAt, endAt int64) ([]map[string]interface{}, error) {
-	stats, err := s.statRepo.GetUserStats(startAt, endAt)
+	stats, err := s.statRepo.GetOrderStats(startAt, endAt) // 使用 Stat 模型
 	if err != nil {
 		return nil, err
 	}
