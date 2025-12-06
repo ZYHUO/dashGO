@@ -5,6 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"strings"
 	"time"
 
 	"xboard/internal/model"
@@ -176,6 +177,22 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 		inbound[k] = v
 	}
 
+	// Shadowsocks 2022 需要服务器密钥
+	if node.Type == model.NodeTypeShadowsocks {
+		cipher := ""
+		if c, ok := node.ProtocolSettings["method"].(string); ok {
+			cipher = c
+		}
+		// 为 SS2022 生成服务器密钥
+		if strings.HasPrefix(cipher, "2022-") {
+			keySize := 16
+			if cipher == "2022-blake3-aes-256-gcm" || cipher == "2022-blake3-chacha20-poly1305" {
+				keySize = 32
+			}
+			inbound["password"] = utils.GetServerKey(node.CreatedAt, keySize)
+		}
+	}
+
 	// TLS 设置
 	if len(node.TLSSettings) > 0 {
 		inbound["tls"] = node.TLSSettings
@@ -190,6 +207,8 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 	switch node.Type {
 	case model.NodeTypeVMess, model.NodeTypeVLESS, model.NodeTypeTrojan, model.NodeTypeHysteria2, model.NodeTypeTUIC:
 		inbound["users"] = []interface{}{}
+	case model.NodeTypeShadowsocks:
+		inbound["users"] = []interface{}{}
 	}
 
 	return inbound
@@ -198,11 +217,17 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 // GetUsersForNode 获取节点可用的用户列表
 func (s *HostService) GetUsersForNode(node *model.ServerNode) ([]map[string]interface{}, error) {
 	groupIDs := node.GetGroupIDsAsInt64()
+	
+	var users []model.User
+	var err error
+	
 	if len(groupIDs) == 0 {
-		return []map[string]interface{}{}, nil
+		// 如果没有设置组，获取所有可用用户
+		users, err = s.userRepo.GetAllAvailableUsers()
+	} else {
+		users, err = s.userRepo.GetAvailableUsers(groupIDs)
 	}
-
-	users, err := s.userRepo.GetAvailableUsers(groupIDs)
+	
 	if err != nil {
 		return nil, err
 	}

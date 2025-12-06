@@ -69,8 +69,21 @@ func (r *UserRepository) GetAvailableUsers(groupIDs []int64) ([]model.User, erro
 	err := r.db.
 		Where("group_id IN ?", groupIDs).
 		Where("u + d < transfer_enable").
-		Where("(expired_at >= ? OR expired_at IS NULL)", getCurrentTimestamp()).
+		Where("(expired_at >= ? OR expired_at IS NULL OR expired_at = 0)", getCurrentTimestamp()).
 		Where("banned = ?", false).
+		Select("id", "uuid", "speed_limit", "device_limit").
+		Find(&users).Error
+	return users, err
+}
+
+// GetAllAvailableUsers 获取所有可用用户（不限制组）
+func (r *UserRepository) GetAllAvailableUsers() ([]model.User, error) {
+	var users []model.User
+	err := r.db.
+		Where("u + d < transfer_enable").
+		Where("(expired_at >= ? OR expired_at IS NULL OR expired_at = 0)", getCurrentTimestamp()).
+		Where("banned = ?", false).
+		Where("plan_id IS NOT NULL").
 		Select("id", "uuid", "speed_limit", "device_limit").
 		Find(&users).Error
 	return users, err
@@ -160,57 +173,6 @@ func (r *UserRepository) FindAll(search string, page, pageSize int) ([]model.Use
 	query.Count(&total)
 	err := query.Order("id DESC").Offset((page - 1) * pageSize).Limit(pageSize).Find(&users).Error
 	return users, total, err
-}
-
-// CountByInviteUserID 统计被邀请用户数
-func (r *UserRepository) CountByInviteUserID(inviteUserID int64) (int64, error) {
-	var count int64
-	err := r.db.Model(&model.User{}).Where("invite_user_id = ?", inviteUserID).Count(&count).Error
-	return count, err
-}
-
-// GetUsersNeedTrafficReset 获取需要重置流量的用户
-func (r *UserRepository) GetUsersNeedTrafficReset() ([]model.User, error) {
-	var users []model.User
-	// 获取有套餐且流量需要重置的用户
-	err := r.db.Where("plan_id IS NOT NULL").
-		Where("plan_id > 0").
-		Where("(u > 0 OR d > 0)").
-		Find(&users).Error
-	return users, err
-}
-
-// GetUsersExpiringSoon 获取即将过期的用户
-func (r *UserRepository) GetUsersExpiringSoon(days int) ([]model.User, error) {
-	var users []model.User
-	now := time.Now().Unix()
-	threshold := now + int64(days*86400)
-	err := r.db.Where("expired_at > ?", now).
-		Where("expired_at <= ?", threshold).
-		Where("banned = ?", false).
-		Find(&users).Error
-	return users, err
-}
-
-// GetUsersWithHighTrafficUsage 获取流量使用率高的用户
-func (r *UserRepository) GetUsersWithHighTrafficUsage(percentage int) ([]model.User, error) {
-	var users []model.User
-	// 获取流量使用超过指定百分比的用户
-	err := r.db.Where("transfer_enable > 0").
-		Where("(u + d) * 100 / transfer_enable >= ?", percentage).
-		Where("banned = ?", false).
-		Find(&users).Error
-	return users, err
-}
-
-// CountByDateRange 统计指定日期范围内的新用户数
-func (r *UserRepository) CountByDateRange(startTime, endTime int64) (int64, error) {
-	var count int64
-	err := r.db.Model(&model.User{}).
-		Where("created_at >= ?", startTime).
-		Where("created_at < ?", endTime).
-		Count(&count).Error
-	return count, err
 }
 
 func getCurrentTimestamp() int64 {
