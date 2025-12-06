@@ -46,7 +46,14 @@ func generateLink(server service.ServerInfo, user *model.User) string {
 // ss://method:password@host:port#name
 func generateSSLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	cipher, _ := ps["cipher"].(string)
+	
+	// 获取加密方式，默认 aes-256-gcm
+	cipher := "aes-256-gcm"
+	if c, ok := ps["cipher"].(string); ok && c != "" {
+		cipher = c
+	} else if m, ok := ps["method"].(string); ok && m != "" {
+		cipher = m
+	}
 	
 	// Base64 encode method:password
 	userInfo := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", cipher, server.Password)))

@@ -86,13 +86,18 @@ const openCreateModal = () => {
     rate: 1,
     show: true,
     group_id: [],
-    protocol_settings: {}
+    protocol_settings: {
+      cipher: 'aes-256-gcm'
+    }
   }
   showModal.value = true
 }
 
 const openEditModal = (server: Server) => {
-  editingServer.value = { ...server }
+  editingServer.value = { 
+    ...server,
+    protocol_settings: server.protocol_settings || { cipher: 'aes-256-gcm' }
+  }
   showModal.value = true
 }
 
@@ -235,6 +240,22 @@ onMounted(fetchServers)
             <div class="flex items-center gap-2">
               <input v-model="editingServer!.show" type="checkbox" id="show" class="rounded" />
               <label for="show" class="text-sm text-gray-700">显示节点</label>
+            </div>
+
+            <!-- Shadowsocks 特定配置 -->
+            <div v-if="editingServer!.type === 'shadowsocks'" class="border-t pt-4 mt-4">
+              <h4 class="text-sm font-medium text-gray-700 mb-3">Shadowsocks 配置</h4>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">加密方式</label>
+                <select v-model="editingServer!.protocol_settings!.cipher" class="w-full px-4 py-2 border border-gray-200 rounded-xl">
+                  <option value="aes-256-gcm">aes-256-gcm</option>
+                  <option value="aes-128-gcm">aes-128-gcm</option>
+                  <option value="chacha20-ietf-poly1305">chacha20-ietf-poly1305</option>
+                  <option value="2022-blake3-aes-128-gcm">2022-blake3-aes-128-gcm</option>
+                  <option value="2022-blake3-aes-256-gcm">2022-blake3-aes-256-gcm</option>
+                  <option value="2022-blake3-chacha20-poly1305">2022-blake3-chacha20-poly1305</option>
+                </select>
+              </div>
             </div>
           </div>
 

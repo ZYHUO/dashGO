@@ -55,7 +55,13 @@ func buildSurgeProxy(server service.ServerInfo, user *model.User) string {
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		cipher, _ := ps["cipher"].(string)
+		// 获取加密方式，默认 aes-256-gcm
+		cipher := "aes-256-gcm"
+		if c, ok := ps["cipher"].(string); ok && c != "" {
+			cipher = c
+		} else if m, ok := ps["method"].(string); ok && m != "" {
+			cipher = m
+		}
 		// Surge 支持的 SS 加密方式
 		line := fmt.Sprintf("%s = ss, %s, %d, encrypt-method=%s, password=%s",
 			server.Name, server.Host, port, cipher, server.Password)

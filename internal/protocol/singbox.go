@@ -248,12 +248,20 @@ func buildShadowsocks(server service.ServerInfo, user *model.User) map[string]in
 	ps := server.ProtocolSettings
 	port := parsePort(server.Port)
 
+	// 获取加密方式，优先使用 cipher，其次 method，默认 aes-256-gcm
+	cipher := "aes-256-gcm"
+	if c, ok := ps["cipher"].(string); ok && c != "" {
+		cipher = c
+	} else if m, ok := ps["method"].(string); ok && m != "" {
+		cipher = m
+	}
+
 	out := map[string]interface{}{
 		"type":        "shadowsocks",
 		"tag":         server.Name,
 		"server":      server.Host,
 		"server_port": port,
-		"method":      ps["cipher"],
+		"method":      cipher,
 		"password":    server.Password,
 	}
 

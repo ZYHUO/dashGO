@@ -75,12 +75,20 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
+		// 获取加密方式，优先使用 method，其次 cipher
+		cipher := "aes-256-gcm"
+		if m, ok := ps["method"].(string); ok && m != "" {
+			cipher = m
+		} else if c, ok := ps["cipher"].(string); ok && c != "" {
+			cipher = c
+		}
+
 		proxy := map[string]interface{}{
 			"name":     server.Name,
 			"type":     "ss",
 			"server":   server.Host,
 			"port":     port,
-			"cipher":   ps["cipher"],
+			"cipher":   cipher,
 			"password": server.Password,
 		}
 		if plugin, ok := ps["plugin"].(string); ok && plugin != "" {
@@ -289,6 +297,18 @@ func parsePluginOpts(opts string) map[string]interface{} {
 		}
 	}
 	return result
+}
+
+// parsePort 解析端口字符串，返回整数端口
+func parsePort(portStr string) int {
+	// 处理端口范围，取第一个端口
+	if strings.Contains(portStr, "-") {
+		parts := strings.Split(portStr, "-")
+		portStr = parts[0]
+	}
+	port := 0
+	fmt.Sscanf(portStr, "%d", &port)
+	return port
 }
 
 func getDefaultClashConfig() *ClashConfig {

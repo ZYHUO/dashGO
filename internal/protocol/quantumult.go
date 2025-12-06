@@ -30,7 +30,13 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		cipher, _ := ps["cipher"].(string)
+		// 获取加密方式，默认 aes-256-gcm
+		cipher := "aes-256-gcm"
+		if c, ok := ps["cipher"].(string); ok && c != "" {
+			cipher = c
+		} else if m, ok := ps["method"].(string); ok && m != "" {
+			cipher = m
+		}
 		// shadowsocks=example.com:443, method=chacha20-ietf-poly1305, password=pwd, obfs=wss, obfs-host=example.com, obfs-uri=/path, fast-open=false, udp-relay=false, tag=节点名
 		line := fmt.Sprintf("shadowsocks=%s:%d, method=%s, password=%s",
 			server.Host, port, cipher, server.Password)
@@ -174,7 +180,13 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		cipher, _ := ps["cipher"].(string)
+		// 获取加密方式，默认 aes-256-gcm
+		cipher := "aes-256-gcm"
+		if c, ok := ps["cipher"].(string); ok && c != "" {
+			cipher = c
+		} else if m, ok := ps["method"].(string); ok && m != "" {
+			cipher = m
+		}
 		// 节点名 = Shadowsocks,服务器地址,端口,加密方式,密码
 		line := fmt.Sprintf("%s = Shadowsocks,%s,%d,%s,\"%s\"",
 			server.Name, server.Host, port, cipher, server.Password)
