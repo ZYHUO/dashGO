@@ -162,6 +162,57 @@ func (r *UserRepository) FindAll(search string, page, pageSize int) ([]model.Use
 	return users, total, err
 }
 
+// CountByInviteUserID 统计被邀请用户数
+func (r *UserRepository) CountByInviteUserID(inviteUserID int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&model.User{}).Where("invite_user_id = ?", inviteUserID).Count(&count).Error
+	return count, err
+}
+
+// GetUsersNeedTrafficReset 获取需要重置流量的用户
+func (r *UserRepository) GetUsersNeedTrafficReset() ([]model.User, error) {
+	var users []model.User
+	// 获取有套餐且流量需要重置的用户
+	err := r.db.Where("plan_id IS NOT NULL").
+		Where("plan_id > 0").
+		Where("(u > 0 OR d > 0)").
+		Find(&users).Error
+	return users, err
+}
+
+// GetUsersExpiringSoon 获取即将过期的用户
+func (r *UserRepository) GetUsersExpiringSoon(days int) ([]model.User, error) {
+	var users []model.User
+	now := time.Now().Unix()
+	threshold := now + int64(days*86400)
+	err := r.db.Where("expired_at > ?", now).
+		Where("expired_at <= ?", threshold).
+		Where("banned = ?", false).
+		Find(&users).Error
+	return users, err
+}
+
+// GetUsersWithHighTrafficUsage 获取流量使用率高的用户
+func (r *UserRepository) GetUsersWithHighTrafficUsage(percentage int) ([]model.User, error) {
+	var users []model.User
+	// 获取流量使用超过指定百分比的用户
+	err := r.db.Where("transfer_enable > 0").
+		Where("(u + d) * 100 / transfer_enable >= ?", percentage).
+		Where("banned = ?", false).
+		Find(&users).Error
+	return users, err
+}
+
+// CountByDateRange 统计指定日期范围内的新用户数
+func (r *UserRepository) CountByDateRange(startTime, endTime int64) (int64, error) {
+	var count int64
+	err := r.db.Model(&model.User{}).
+		Where("created_at >= ?", startTime).
+		Where("created_at < ?", endTime).
+		Count(&count).Error
+	return count, err
+}
+
 func getCurrentTimestamp() int64 {
 	return time.Now().Unix()
 }

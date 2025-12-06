@@ -171,3 +171,34 @@ func (r *PaymentRepository) GetEnabled() ([]model.Payment, error) {
 	err := r.db.Where("enable = ?", true).Order("sort ASC").Find(&payments).Error
 	return payments, err
 }
+
+// CancelExpiredOrders 取消过期订单
+func (r *OrderRepository) CancelExpiredOrders(expireSeconds int64) (int64, error) {
+	threshold := getCurrentTimestamp() - expireSeconds
+	result := r.db.Model(&model.Order{}).
+		Where("status = ?", model.OrderStatusPending).
+		Where("created_at < ?", threshold).
+		Update("status", model.OrderStatusCancelled)
+	return result.RowsAffected, result.Error
+}
+
+// GetDailyStats 获取指定日期的订单统计
+func (r *OrderRepository) GetDailyStats(startTime, endTime int64) (int64, int64, error) {
+	var count int64
+	var total int64
+
+	r.db.Model(&model.Order{}).
+		Where("created_at >= ?", startTime).
+		Where("created_at < ?", endTime).
+		Where("status = ?", model.OrderStatusCompleted).
+		Count(&count)
+
+	r.db.Model(&model.Order{}).
+		Where("created_at >= ?", startTime).
+		Where("created_at < ?", endTime).
+		Where("status = ?", model.OrderStatusCompleted).
+		Select("COALESCE(SUM(total_amount), 0)").
+		Scan(&total)
+
+	return count, total, nil
+}
