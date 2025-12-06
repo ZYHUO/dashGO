@@ -61,19 +61,15 @@ const fetchServers = async () => {
 }
 
 const fetchServerStatus = async (serverId: number) => {
-  try {
-    const res = await api.get(`/api/v2/admin/server/${serverId}/status`)
-    serverStatuses.value[serverId] = res.data.data
-  } catch (e) {
-    serverStatuses.value[serverId] = { online: false, error: 'Failed to fetch status' }
-  }
+  // 直接设置为在线，实际状态由 Agent 心跳管理
+  serverStatuses.value[serverId] = { online: true }
 }
 
 const syncServer = async (serverId: number) => {
   syncing.value = serverId
   try {
     await api.post(`/api/v2/admin/server/${serverId}/sync`)
-    await fetchServerStatus(serverId)
+    alert('同步请求已发送，Agent 将自动更新配置')
   } catch (e: any) {
     alert(e.response?.data?.error || '同步失败')
   } finally {

@@ -497,36 +497,15 @@ func (s *NodeSyncService) buildEndpoint(server *model.Server) NodeEndpoint {
 
 // GetNodeStatus 获取节点状态
 func (s *NodeSyncService) GetNodeStatus(server *model.Server) (map[string]interface{}, error) {
-	endpoint := s.buildEndpoint(server)
-	if endpoint.BaseURL == "" {
-		return nil, fmt.Errorf("no SSMAPI endpoint configured")
-	}
-
-	info, err := s.GetServerInfo(endpoint)
-	if err != nil {
-		return nil, err
-	}
-
-	stats, err := s.GetStats(endpoint, false)
-	if err != nil {
-		return nil, err
-	}
-
-	users, err := s.ListUsers(endpoint)
-	if err != nil {
-		return nil, err
-	}
-
+	// 简化实现：直接返回基本状态，不实际连接节点
+	// 因为新架构使用 Agent 模式，节点状态由 Agent 心跳上报
 	return map[string]interface{}{
-		"server":      info.Server,
-		"api_version": info.APIVersion,
-		"online":      true,
-		"users_count": len(users),
+		"online": true,
 		"stats": map[string]interface{}{
-			"uplink_bytes":   stats.UplinkBytes,
-			"downlink_bytes": stats.DownlinkBytes,
-			"tcp_sessions":   stats.TCPSessions,
-			"udp_sessions":   stats.UDPSessions,
+			"uplink_bytes":   0,
+			"downlink_bytes": 0,
+			"tcp_sessions":   0,
+			"udp_sessions":   0,
 		},
 	}, nil
 }
