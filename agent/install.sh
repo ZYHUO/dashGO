@@ -107,7 +107,7 @@ install_agent() {
     AGENT_URL="https://github.com/${GITHUB_REPO}/releases/download/1.1/xboard-agent-linux-${ARCH}"
     
     log_info "下载 Agent: $AGENT_URL"
-    curl -Lo $INSTALL_DIR/xboard-agent "$AGENT_URL" || {
+    curl -L -o $INSTALL_DIR/xboard-agent "$AGENT_URL" || {
         # 备用：从源码构建
         log_warn "下载失败，尝试从源码构建..."
         
