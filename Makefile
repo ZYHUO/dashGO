@@ -70,6 +70,20 @@ agent-darwin-arm64:
 
 agent-all: agent-linux-amd64 agent-linux-arm64 agent-darwin-amd64 agent-darwin-arm64
 
+# Database migrations
+migrate:
+	$(GOCMD) run ./cmd/migrate -action up
+
+migrate-status:
+	$(GOCMD) run ./cmd/migrate -action status
+
+migrate-auto:
+	$(GOCMD) run ./cmd/migrate -action auto
+
+# Build migrate tool
+build-migrate:
+	$(GOBUILD) $(LDFLAGS) -o migrate ./cmd/migrate
+
 # Release (build all binaries)
-release: build-all agent-all
+release: build-all agent-all build-migrate
 	@echo "Release binaries built successfully"
