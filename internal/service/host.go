@@ -91,11 +91,30 @@ func (s *HostService) ResetToken(hostID int64) (string, error) {
 
 // Delete 删除主机
 func (s *HostService) Delete(hostID int64) error {
-	// 先删除主机下的所有节点
+	// 先解除所有绑定到此主机的节点
+	if err := s.serverRepo.UnbindFromHost(hostID); err != nil {
+		return err
+	}
+	// 删除主机下的所有 ServerNode（如果有的话）
 	if err := s.nodeRepo.DeleteByHostID(hostID); err != nil {
 		return err
 	}
 	return s.hostRepo.Delete(hostID)
+}
+
+// GetServersByHostID 获取绑定到主机的所有节点
+func (s *HostService) GetServersByHostID(hostID int64) ([]model.Server, error) {
+	return s.serverRepo.GetByHostID(hostID)
+}
+
+// BindServerToHost 绑定节点到主机
+func (s *HostService) BindServerToHost(serverID int64, hostID int64) error {
+	return s.serverRepo.UpdateHostID(serverID, &hostID)
+}
+
+// UnbindServerFromHost 解除节点与主机的绑定
+func (s *HostService) UnbindServerFromHost(serverID int64) error {
+	return s.serverRepo.UpdateHostID(serverID, nil)
 }
 
 // CreateNode 创建节点
@@ -128,17 +147,27 @@ func (s *HostService) GetNodeByID(nodeID int64) (*model.ServerNode, error) {
 
 // GenerateSingBoxConfig 生成 sing-box 配置
 func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{}, error) {
-	nodes, err := s.nodeRepo.FindByHostID(hostID)
-	if err != nil {
-		return nil, err
-	}
-
 	inbounds := make([]map[string]interface{}, 0)
 
-	for _, node := range nodes {
-		inbound := s.buildInbound(&node)
-		if inbound != nil {
-			inbounds = append(inbounds, inbound)
+	// 1. 从绑定到主机的 Server 获取配置
+	servers, err := s.serverRepo.GetByHostID(hostID)
+	if err == nil {
+		for _, server := range servers {
+			inbound := s.buildInboundFromServer(&server)
+			if inbound != nil {
+				inbounds = append(inbounds, inbound)
+			}
+		}
+	}
+
+	// 2. 从 ServerNode 获取配置（兼容旧逻辑）
+	nodes, err := s.nodeRepo.FindByHostID(hostID)
+	if err == nil {
+		for _, node := range nodes {
+			inbound := s.buildInbound(&node)
+			if inbound != nil {
+				inbounds = append(inbounds, inbound)
+			}
 		}
 	}
 
@@ -161,6 +190,64 @@ func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{
 	}
 
 	return config, nil
+}
+
+// buildInboundFromServer 从 Server 构建 inbound 配置
+func (s *HostService) buildInboundFromServer(server *model.Server) map[string]interface{} {
+	tag := server.Type + "-in-" + fmt.Sprintf("%d", server.ID)
+
+	inbound := map[string]interface{}{
+		"type":        server.Type,
+		"tag":         tag,
+		"listen":      "::",
+		"listen_port": server.ServerPort,
+	}
+
+	// 合并协议设置
+	for k, v := range server.ProtocolSettings {
+		if k == "tls_settings" || k == "network_settings" || k == "tls" {
+			continue
+		}
+		inbound[k] = v
+	}
+
+	// Shadowsocks 2022 需要服务器密钥
+	if server.Type == model.ServerTypeShadowsocks {
+		cipher := ""
+		if c, ok := server.ProtocolSettings["method"].(string); ok {
+			cipher = c
+		} else if c, ok := server.ProtocolSettings["cipher"].(string); ok {
+			cipher = c
+		}
+		if strings.HasPrefix(cipher, "2022-") {
+			keySize := 16
+			if cipher == "2022-blake3-aes-256-gcm" || cipher == "2022-blake3-chacha20-poly1305" {
+				keySize = 32
+			}
+			inbound["method"] = cipher
+			inbound["password"] = utils.GetServerKey(server.CreatedAt, keySize)
+		}
+	}
+
+	// TLS 设置
+	if tls, ok := server.ProtocolSettings["tls_settings"].(map[string]interface{}); ok {
+		inbound["tls"] = tls
+	}
+
+	// Transport 设置
+	if transport, ok := server.ProtocolSettings["network_settings"].(map[string]interface{}); ok {
+		inbound["transport"] = transport
+	}
+
+	// 用户列表初始化为空
+	switch server.Type {
+	case model.ServerTypeVmess, model.ServerTypeVless, model.ServerTypeTrojan, model.ServerTypeHysteria, model.ServerTypeTuic:
+		inbound["users"] = []interface{}{}
+	case model.ServerTypeShadowsocks:
+		inbound["users"] = []interface{}{}
+	}
+
+	return inbound
 }
 
 // buildInbound 构建 inbound 配置
@@ -569,27 +656,103 @@ func (s *HostService) GetAgentConfig(hostID int64) (*AgentConfig, error) {
 		return nil, err
 	}
 
-	nodes, err := s.nodeRepo.FindByHostID(hostID)
-	if err != nil {
-		return nil, err
+	nodeConfigs := make([]AgentNodeConfig, 0)
+
+	// 1. 从绑定到主机的 Server 获取配置
+	servers, err := s.serverRepo.GetByHostID(hostID)
+	if err == nil {
+		for _, server := range servers {
+			users, _ := s.GetUsersForServer(&server)
+			nodeConfigs = append(nodeConfigs, AgentNodeConfig{
+				ID:    server.ID,
+				Type:  server.Type,
+				Port:  server.ServerPort,
+				Tag:   server.Type + "-in-" + fmt.Sprintf("%d", server.ID),
+				Users: users,
+			})
+		}
 	}
 
-	nodeConfigs := make([]AgentNodeConfig, 0, len(nodes))
-	for _, node := range nodes {
-		users, _ := s.GetUsersForNode(&node)
-		nodeConfigs = append(nodeConfigs, AgentNodeConfig{
-			ID:    node.ID,
-			Type:  node.Type,
-			Port:  node.ListenPort,
-			Tag:   node.Type + "-in-" + fmt.Sprintf("%d", node.ID),
-			Users: users,
-		})
+	// 2. 从 ServerNode 获取配置（兼容旧逻辑）
+	nodes, err := s.nodeRepo.FindByHostID(hostID)
+	if err == nil {
+		for _, node := range nodes {
+			users, _ := s.GetUsersForNode(&node)
+			nodeConfigs = append(nodeConfigs, AgentNodeConfig{
+				ID:    node.ID,
+				Type:  node.Type,
+				Port:  node.ListenPort,
+				Tag:   node.Type + "-in-" + fmt.Sprintf("%d", node.ID),
+				Users: users,
+			})
+		}
 	}
 
 	return &AgentConfig{
 		SingBoxConfig: config,
 		Nodes:         nodeConfigs,
 	}, nil
+}
+
+// GetUsersForServer 获取 Server 可用的用户列表
+func (s *HostService) GetUsersForServer(server *model.Server) ([]map[string]interface{}, error) {
+	groupIDs := server.GetGroupIDsAsInt64()
+
+	var users []model.User
+	var err error
+
+	if len(groupIDs) == 0 {
+		users, err = s.userRepo.GetAllAvailableUsers()
+	} else {
+		users, err = s.userRepo.GetAvailableUsers(groupIDs)
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]map[string]interface{}, 0, len(users))
+	for _, user := range users {
+		userConfig := map[string]interface{}{
+			"username": user.UUID,
+		}
+
+		switch server.Type {
+		case model.ServerTypeShadowsocks:
+			userConfig["password"] = s.generateSS2022PasswordForServer(server, &user)
+		case model.ServerTypeVmess, model.ServerTypeVless:
+			userConfig["uuid"] = user.UUID
+		case model.ServerTypeTrojan, model.ServerTypeHysteria, model.ServerTypeTuic:
+			userConfig["password"] = user.UUID
+		}
+
+		result = append(result, userConfig)
+	}
+
+	return result, nil
+}
+
+// generateSS2022PasswordForServer 为 Server 生成 SS2022 密码
+func (s *HostService) generateSS2022PasswordForServer(server *model.Server, user *model.User) string {
+	cipher := ""
+	if c, ok := server.ProtocolSettings["method"].(string); ok {
+		cipher = c
+	} else if c, ok := server.ProtocolSettings["cipher"].(string); ok {
+		cipher = c
+	}
+
+	switch cipher {
+	case "2022-blake3-aes-128-gcm":
+		serverKey := utils.GetServerKey(server.CreatedAt, 16)
+		userKey := utils.UUIDToBase64(user.UUID, 16)
+		return serverKey + ":" + userKey
+	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
+		serverKey := utils.GetServerKey(server.CreatedAt, 32)
+		userKey := utils.UUIDToBase64(user.UUID, 32)
+		return serverKey + ":" + userKey
+	default:
+		return user.UUID
+	}
 }
 
 // ToJSON 转换为 JSON

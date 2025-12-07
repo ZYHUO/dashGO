@@ -8,11 +8,20 @@ interface Server {
   type: string
   host: string
   port: string
+  server_port: number
   rate: number
   show: boolean
   tags: string[]
   group_id: number[]
+  host_id?: number | null
   protocol_settings?: Record<string, any>
+}
+
+interface Host {
+  id: number
+  name: string
+  ip: string
+  status: number
 }
 
 interface ServerStatus {
@@ -30,6 +39,7 @@ interface ServerStatus {
 }
 
 const servers = ref<Server[]>([])
+const hosts = ref<Host[]>([])
 const serverStatuses = ref<Record<number, ServerStatus>>({})
 const loading = ref(false)
 const showModal = ref(false)
@@ -60,6 +70,21 @@ const fetchServers = async () => {
   }
 }
 
+const fetchHosts = async () => {
+  try {
+    const res = await api.get('/api/v2/admin/hosts')
+    hosts.value = res.data.data || []
+  } catch (e) {
+    console.error(e)
+  }
+}
+
+const getHostName = (hostId: number | null | undefined) => {
+  if (!hostId) return '未绑定'
+  const host = hosts.value.find(h => h.id === hostId)
+  return host ? host.name : '未知主机'
+}
+
 const fetchServerStatus = async (serverId: number) => {
   // 直接设置为在线，实际状态由 Agent 心跳管理
   serverStatuses.value[serverId] = { online: true }
@@ -83,9 +108,11 @@ const openCreateModal = () => {
     type: 'shadowsocks',
     host: '',
     port: '',
+    server_port: 8388,
     rate: 1,
     show: true,
     group_id: [],
+    host_id: null,
     protocol_settings: {
       cipher: 'aes-256-gcm'
     }
@@ -134,7 +161,10 @@ const formatBytes = (bytes: number) => {
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 
-onMounted(fetchServers)
+onMounted(() => {
+  fetchServers()
+  fetchHosts()
+})
 </script>
 
 <template>
@@ -158,6 +188,7 @@ onMounted(fetchServers)
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">名称</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">类型</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">地址</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">绑定主机</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">状态</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">流量</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">操作</th>
@@ -173,6 +204,12 @@ onMounted(fetchServers)
               <span class="px-2 py-1 bg-blue-100 text-blue-600 rounded-full text-xs">{{ server.type }}</span>
             </td>
             <td class="px-6 py-4 text-sm text-gray-500">{{ server.host }}:{{ server.port }}</td>
+            <td class="px-6 py-4">
+              <span v-if="server.host_id" class="px-2 py-1 bg-green-100 text-green-600 rounded-full text-xs">
+                {{ getHostName(server.host_id) }}
+              </span>
+              <span v-else class="text-gray-400 text-xs">未绑定</span>
+            </td>
             <td class="px-6 py-4">
               <div v-if="serverStatuses[server.id]">
                 <span v-if="serverStatuses[server.id].online" class="flex items-center gap-1.5">
@@ -236,6 +273,21 @@ onMounted(fetchServers)
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">倍率</label>
               <input v-model.number="editingServer!.rate" type="number" step="0.1" class="w-full px-4 py-2 border border-gray-200 rounded-xl" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">服务端口</label>
+              <input v-model.number="editingServer!.server_port" type="number" class="w-full px-4 py-2 border border-gray-200 rounded-xl" placeholder="sing-box 监听端口" />
+              <p class="text-xs text-gray-400 mt-1">sing-box 实际监听的端口</p>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">绑定主机</label>
+              <select v-model="editingServer!.host_id" class="w-full px-4 py-2 border border-gray-200 rounded-xl">
+                <option :value="null">不绑定（手动配置）</option>
+                <option v-for="h in hosts" :key="h.id" :value="h.id">
+                  {{ h.name }} ({{ h.ip || '未知IP' }})
+                </option>
+              </select>
+              <p class="text-xs text-gray-400 mt-1">绑定后将自动部署到主机</p>
             </div>
             <div class="flex items-center gap-2">
               <input v-model="editingServer!.show" type="checkbox" id="show" class="rounded" />

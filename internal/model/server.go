@@ -7,25 +7,26 @@ import (
 
 // Server 节点模型
 type Server struct {
-	ID               int64           `gorm:"primaryKey;column:id" json:"id"`
-	Type             string          `gorm:"column:type" json:"type"`
-	Code             *string         `gorm:"column:code" json:"code"`
-	ParentID         *int64          `gorm:"column:parent_id" json:"parent_id"`
-	GroupIDs         JSONArray       `gorm:"column:group_ids;type:json" json:"group_ids"`
-	RouteIDs         JSONArray       `gorm:"column:route_ids;type:json" json:"route_ids"`
-	Name             string          `gorm:"column:name" json:"name"`
-	Rate             float64         `gorm:"column:rate" json:"rate"`
-	Tags             JSONArray       `gorm:"column:tags;type:json" json:"tags"`
-	Host             string          `gorm:"column:host" json:"host"`
-	Port             string          `gorm:"column:port" json:"port"`
-	ServerPort       int             `gorm:"column:server_port" json:"server_port"`
-	ProtocolSettings JSONMap         `gorm:"column:protocol_settings;type:json" json:"protocol_settings"`
-	Show             bool            `gorm:"column:show;default:false" json:"show"`
-	Sort             *int            `gorm:"column:sort" json:"sort"`
-	RateTimeEnable   bool            `gorm:"column:rate_time_enable;default:false" json:"rate_time_enable"`
-	RateTimeRanges   JSONArray       `gorm:"column:rate_time_ranges;type:json" json:"rate_time_ranges"`
-	CreatedAt        int64           `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt        int64           `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	ID               int64     `gorm:"primaryKey;column:id" json:"id"`
+	Type             string    `gorm:"column:type" json:"type"`
+	Code             *string   `gorm:"column:code" json:"code"`
+	ParentID         *int64    `gorm:"column:parent_id" json:"parent_id"`
+	HostID           *int64    `gorm:"column:host_id;index" json:"host_id"` // 绑定的主机ID，用于自动部署
+	GroupIDs         JSONArray `gorm:"column:group_ids;type:json" json:"group_ids"`
+	RouteIDs         JSONArray `gorm:"column:route_ids;type:json" json:"route_ids"`
+	Name             string    `gorm:"column:name" json:"name"`
+	Rate             float64   `gorm:"column:rate" json:"rate"`
+	Tags             JSONArray `gorm:"column:tags;type:json" json:"tags"`
+	Host             string    `gorm:"column:host" json:"host"`
+	Port             string    `gorm:"column:port" json:"port"`
+	ServerPort       int       `gorm:"column:server_port" json:"server_port"`
+	ProtocolSettings JSONMap   `gorm:"column:protocol_settings;type:json" json:"protocol_settings"`
+	Show             bool      `gorm:"column:show;default:false" json:"show"`
+	Sort             *int      `gorm:"column:sort" json:"sort"`
+	RateTimeEnable   bool      `gorm:"column:rate_time_enable;default:false" json:"rate_time_enable"`
+	RateTimeRanges   JSONArray `gorm:"column:rate_time_ranges;type:json" json:"rate_time_ranges"`
+	CreatedAt        int64     `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+	UpdatedAt        int64     `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 }
 
 func (Server) TableName() string {

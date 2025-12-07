@@ -100,6 +100,23 @@ func (r *ServerRepository) Count() (int64, error) {
 	return count, err
 }
 
+// GetByHostID 获取绑定到指定主机的所有节点
+func (r *ServerRepository) GetByHostID(hostID int64) ([]model.Server, error) {
+	var servers []model.Server
+	err := r.db.Where("host_id = ?", hostID).Order("sort ASC").Find(&servers).Error
+	return servers, err
+}
+
+// UpdateHostID 更新节点的主机绑定
+func (r *ServerRepository) UpdateHostID(serverID int64, hostID *int64) error {
+	return r.db.Model(&model.Server{}).Where("id = ?", serverID).Update("host_id", hostID).Error
+}
+
+// UnbindFromHost 解除节点与主机的绑定
+func (r *ServerRepository) UnbindFromHost(hostID int64) error {
+	return r.db.Model(&model.Server{}).Where("host_id = ?", hostID).Update("host_id", nil).Error
+}
+
 // ServerGroup Repository
 type ServerGroupRepository struct {
 	db *gorm.DB
