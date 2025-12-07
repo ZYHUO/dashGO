@@ -41,7 +41,7 @@ func CreatePayment(services *service.Services) gin.HandlerFunc {
 
 		var req struct {
 			TradeNo   string `json:"trade_no" binding:"required"`
-			PaymentID int64  `json:"payment_id" binding:"required"`
+			PaymentID int64  `json:"payment_id"` // 移除 required，0 表示余额支付
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -141,11 +141,21 @@ func CheckCoupon(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		coupon, discount, err := services.Coupon.CheckCoupon(req.Code, req.PlanID, req.Period, user.ID)
+		coupon, _, err := services.Coupon.CheckCoupon(req.Code, req.PlanID, req.Period, user.ID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
+
+		// 获取套餐价格来计算实际折扣
+		plan, err := services.Plan.GetByID(req.PlanID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "plan not found"})
+			return
+		}
+
+		price := plan.GetPriceByPeriod(req.Period)
+		discount := services.Coupon.CalculateDiscount(coupon, price)
 
 		c.JSON(http.StatusOK, gin.H{
 			"data": gin.H{

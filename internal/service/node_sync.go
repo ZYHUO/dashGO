@@ -412,7 +412,16 @@ func (s *NodeSyncService) setAuthHeader(req *http.Request, endpoint NodeEndpoint
 }
 
 // StartSyncLoop 启动同步循环
+// 注意：此功能已禁用，因为新架构使用 Agent 模式
+// Agent 会主动向面板上报流量和用户同步
+// 如果你的节点支持 SSMAPI 并且需要面板主动同步，可以在配置中启用
 func (s *NodeSyncService) StartSyncLoop() {
+	// 检查是否启用节点同步
+	if !s.cfg.Node.EnableSync {
+		log.Println("[NodeSync] Node sync is disabled, using Agent mode instead")
+		return
+	}
+
 	// 用户同步间隔
 	syncTicker := time.NewTicker(time.Duration(s.cfg.Node.PullInterval) * time.Second)
 	// 流量获取间隔

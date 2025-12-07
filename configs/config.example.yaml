@@ -28,6 +28,9 @@ node:
   token: "change-this-to-a-random-string"
   push_interval: 60  # seconds
   pull_interval: 60  # seconds
+  enable_sync: false  # 是否启用主动节点同步（默认 false）
+                      # false = 使用 Agent 模式，由 Agent 主动上报
+                      # true = 面板主动连接节点获取数据（需要节点开放 API 端口）
 
 mail:
   host: "smtp.example.com"

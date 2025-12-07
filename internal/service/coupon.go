@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"strconv"
 	"strings"
 	"time"
 
@@ -57,9 +58,10 @@ func (s *CouponService) CheckCoupon(code string, planID int64, period string, us
 	// 检查套餐限制
 	if coupon.LimitPlanIDs != nil && *coupon.LimitPlanIDs != "" {
 		planIDs := strings.Split(*coupon.LimitPlanIDs, ",")
+		planIDStr := strconv.FormatInt(planID, 10)
 		found := false
 		for _, pid := range planIDs {
-			if pid == string(rune(planID)) {
+			if strings.TrimSpace(pid) == planIDStr {
 				found = true
 				break
 			}
