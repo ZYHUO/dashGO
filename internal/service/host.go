@@ -469,24 +469,39 @@ func (s *HostService) GetUsersForNode(node *model.ServerNode) ([]map[string]inte
 
 	result := make([]map[string]interface{}, 0, len(users))
 	for _, user := range users {
-		userConfig := map[string]interface{}{
-			"username": user.UUID,
-		}
+		userConfig := map[string]interface{}{}
 
-		// 根据协议类型设置密码字段
-		// 注意：服务端用户列表需要的是用户密钥，不是完整的 serverKey:userKey
+		// 根据协议类型设置用户配置
+		// sing-box 不同协议的用户字段不同
 		switch nodeType {
 		case model.NodeTypeShadowsocks:
-			// 服务端需要的是仅用户密钥
+			// SS 用户只需要 name 和 password
+			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = s.getSS2022UserKey(protocolSettings, &user)
 		case model.NodeTypeVMess, model.NodeTypeVLESS:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["uuid"] = user.UUID
-		case model.NodeTypeTrojan, model.NodeTypeHysteria2, model.NodeTypeTUIC, model.NodeTypeAnyTLS:
+		case model.NodeTypeTrojan:
+			userConfig["name"] = user.UUID[:8]
+			userConfig["password"] = user.UUID
+		case model.NodeTypeHysteria2:
+			userConfig["name"] = user.UUID[:8]
+			userConfig["password"] = user.UUID
+		case model.NodeTypeTUIC:
+			userConfig["name"] = user.UUID[:8]
+			userConfig["uuid"] = user.UUID
+			userConfig["password"] = user.UUID
+		case model.NodeTypeAnyTLS:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = user.UUID
 		case model.NodeTypeShadowTLS:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = user.UUID
 		case model.NodeTypeNaive:
 			userConfig["username"] = user.UUID[:8]
+			userConfig["password"] = user.UUID
+		default:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = user.UUID
 		}
 
@@ -739,17 +754,21 @@ func (s *HostService) GetUsersForServer(server *model.Server) ([]map[string]inte
 
 	result := make([]map[string]interface{}, 0, len(users))
 	for _, user := range users {
-		userConfig := map[string]interface{}{
-			"username": user.UUID,
-		}
+		userConfig := map[string]interface{}{}
 
-		// 服务端用户列表需要的是仅用户密钥
+		// sing-box 不同协议的用户字段不同
 		switch server.Type {
 		case model.ServerTypeShadowsocks:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = s.getSS2022UserKeyForServer(server, &user)
 		case model.ServerTypeVmess, model.ServerTypeVless:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["uuid"] = user.UUID
 		case model.ServerTypeTrojan, model.ServerTypeHysteria, model.ServerTypeTuic:
+			userConfig["name"] = user.UUID[:8]
+			userConfig["password"] = user.UUID
+		default:
+			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = user.UUID
 		}
 
