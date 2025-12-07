@@ -103,7 +103,6 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 		}
 
 		var users []map[string]interface{}
-		var err error
 
 		// 根据类型获取用户
 		if nodeType == "server" {
@@ -118,15 +117,16 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 				c.JSON(http.StatusForbidden, gin.H{"error": "server not belong to this host"})
 				return
 			}
-			users, err = services.Host.GetUsersForServer(server)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			var userErr error
+			users, userErr = services.Host.GetUsersForServer(server)
+			if userErr != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": userErr.Error()})
 				return
 			}
 		} else {
 			// 从 ServerNode 获取用户
-			node, err := services.Host.GetNodeByID(nodeID)
-			if err != nil {
+			node, nodeErr := services.Host.GetNodeByID(nodeID)
+			if nodeErr != nil {
 				c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})
 				return
 			}
@@ -135,9 +135,10 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 				c.JSON(http.StatusForbidden, gin.H{"error": "node not belong to this host"})
 				return
 			}
-			users, err = services.Host.GetUsersForNode(node)
-			if err != nil {
-				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			var userErr error
+			users, userErr = services.Host.GetUsersForNode(node)
+			if userErr != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": userErr.Error()})
 				return
 			}
 		}
