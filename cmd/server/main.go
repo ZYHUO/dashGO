@@ -73,6 +73,9 @@ func main() {
 		&model.Order{},
 		&model.Setting{},
 		&model.Stat{},
+		&model.StatUser{},
+		&model.StatServer{},
+		&model.ServerLog{},
 		&model.Ticket{},
 		&model.TicketMessage{},
 		&model.Payment{},
@@ -83,6 +86,7 @@ func main() {
 		&model.Knowledge{},
 		&model.Host{},
 		&model.ServerNode{},
+		&model.ServerGroup{},
 	); err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}
