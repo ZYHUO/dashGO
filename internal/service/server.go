@@ -52,7 +52,7 @@ func (s *ServerService) GetAvailableServers(user *model.User) ([]ServerInfo, err
 
 	result := make([]ServerInfo, 0, len(servers))
 	for _, server := range servers {
-		info := s.buildServerInfo(&server, user)
+		info := s.BuildServerInfo(&server, user)
 		result = append(result, info)
 	}
 	return result, nil
@@ -65,7 +65,7 @@ type ServerInfo struct {
 	Ports    string `json:"ports,omitempty"`
 }
 
-func (s *ServerService) buildServerInfo(server *model.Server, user *model.User) ServerInfo {
+func (s *ServerService) BuildServerInfo(server *model.Server, user *model.User) ServerInfo {
 	info := ServerInfo{
 		Server: *server,
 	}

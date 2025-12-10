@@ -37,6 +37,10 @@ func NewServices(repos *repository.Repositories, cache *cache.Client, cfg *confi
 	telegramService.SetRepositories(repos.User, repos.Setting)
 	serverService := NewServerService(repos.Server, repos.User, cache, cfg)
 	orderService := NewOrderService(repos.Order, repos.User, repos.Plan, repos.Coupon)
+	userGroupService := NewUserGroupService(repos.UserGroup, repos.Server, repos.Plan, repos.User)
+	
+	// 设置 UserGroupService 的 ServerService 依赖
+	userGroupService.SetServerService(serverService)
 
 	return &Services{
 		User:        NewUserService(repos.User, cache),
@@ -58,7 +62,7 @@ func NewServices(repos *repository.Repositories, cache *cache.Client, cfg *confi
 		Scheduler:   NewSchedulerService(repos.User, repos.Order, repos.Stat, mailService, telegramService),
 		Host:        NewHostService(repos.Host, repos.ServerNode, repos.User, repos.Server, cache),
 		ServerGroup: NewServerGroupService(repos.ServerGroup),
-		UserGroup:   NewUserGroupService(repos.UserGroup, repos.Server, repos.Plan, repos.User),
+		UserGroup:   userGroupService,
 		Traffic:     NewTrafficService(repos.User, mailService),
 	}
 }

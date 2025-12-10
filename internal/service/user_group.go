@@ -9,10 +9,11 @@ import (
 )
 
 type UserGroupService struct {
-	groupRepo  *repository.UserGroupRepository
-	serverRepo *repository.ServerRepository
-	planRepo   *repository.PlanRepository
-	userRepo   *repository.UserRepository
+	groupRepo     *repository.UserGroupRepository
+	serverRepo    *repository.ServerRepository
+	planRepo      *repository.PlanRepository
+	userRepo      *repository.UserRepository
+	serverService *ServerService
 }
 
 func NewUserGroupService(
@@ -27,6 +28,11 @@ func NewUserGroupService(
 		planRepo:   planRepo,
 		userRepo:   userRepo,
 	}
+}
+
+// SetServerService 设置 ServerService（用于构建 ServerInfo）
+func (s *UserGroupService) SetServerService(serverService *ServerService) {
+	s.serverService = serverService
 }
 
 // Create 创建用户组
@@ -182,10 +188,10 @@ func (s *UserGroupService) SetPlansForGroup(groupID int64, planIDs []int64) erro
 }
 
 // GetAvailableServersForUser 获取用户可访问的节点列表
-func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]model.Server, error) {
+func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]ServerInfo, error) {
 	if user.GroupID == nil || *user.GroupID == 0 {
 		// 没有用户组，返回空列表
-		return []model.Server{}, nil
+		return []ServerInfo{}, nil
 	}
 
 	group, err := s.groupRepo.FindByID(*user.GroupID)
@@ -195,15 +201,25 @@ func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]model
 
 	serverIDs := group.GetServerIDsAsInt64()
 	if len(serverIDs) == 0 {
-		return []model.Server{}, nil
+		return []ServerInfo{}, nil
 	}
 
-	// 获取节点列表
-	servers := make([]model.Server, 0)
+	// 获取节点列表并构建 ServerInfo
+	servers := make([]ServerInfo, 0)
 	for _, serverID := range serverIDs {
 		server, err := s.serverRepo.FindByID(serverID)
 		if err == nil && server.Show {
-			servers = append(servers, *server)
+			// 使用 ServerService 构建 ServerInfo
+			if s.serverService != nil {
+				serverInfo := s.serverService.BuildServerInfo(server, user)
+				servers = append(servers, serverInfo)
+			} else {
+				// 如果没有 ServerService，创建基本的 ServerInfo
+				servers = append(servers, ServerInfo{
+					Server:   *server,
+					Password: user.UUID,
+				})
+			}
 		}
 	}
 
