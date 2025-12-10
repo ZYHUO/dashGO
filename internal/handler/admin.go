@@ -321,6 +321,7 @@ func AdminCreatePlan(services *service.Services) gin.HandlerFunc {
 			Show           bool              `json:"show"`
 			Sell           bool              `json:"sell"`
 			GroupID        *int64            `json:"group_id"`
+			UpgradeGroupID *int64            `json:"upgrade_group_id"`
 			Sort           int               `json:"sort"`
 			Content        string            `json:"content"`
 		}
@@ -338,6 +339,7 @@ func AdminCreatePlan(services *service.Services) gin.HandlerFunc {
 			Show:           req.Show,
 			Sell:           req.Sell,
 			GroupID:        req.GroupID,
+			UpgradeGroupID: req.UpgradeGroupID,
 			Sort:           req.Sort,
 			Content:        req.Content,
 			CreatedAt:      time.Now().Unix(),
@@ -401,6 +403,7 @@ func AdminUpdatePlan(services *service.Services) gin.HandlerFunc {
 			Show           bool              `json:"show"`
 			Sell           bool              `json:"sell"`
 			GroupID        *int64            `json:"group_id"`
+			UpgradeGroupID *int64            `json:"upgrade_group_id"`
 			Sort           int               `json:"sort"`
 			Content        string            `json:"content"`
 		}
@@ -417,6 +420,7 @@ func AdminUpdatePlan(services *service.Services) gin.HandlerFunc {
 		plan.Show = req.Show
 		plan.Sell = req.Sell
 		plan.GroupID = req.GroupID
+		plan.UpgradeGroupID = req.UpgradeGroupID
 		plan.Sort = req.Sort
 		plan.Content = req.Content
 		plan.UpdatedAt = time.Now().Unix()

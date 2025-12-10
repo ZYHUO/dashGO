@@ -85,6 +85,7 @@ func (s *PlanService) GetPlanInfo(plan *model.Plan) map[string]interface{} {
 		"id":                   plan.ID,
 		"name":                 plan.Name,
 		"group_id":             plan.GroupID,
+		"upgrade_group_id":     plan.UpgradeGroupID,
 		"transfer_enable":      plan.TransferEnable,
 		"speed_limit":          plan.SpeedLimit,
 		"device_limit":         plan.DeviceLimit,
