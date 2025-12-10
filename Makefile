@@ -72,13 +72,22 @@ agent-all: agent-linux-amd64 agent-linux-arm64 agent-darwin-amd64 agent-darwin-a
 
 # Database migrations
 migrate:
-	$(GOCMD) run ./cmd/migrate -action up
+	@bash migrate.sh up
 
 migrate-status:
-	$(GOCMD) run ./cmd/migrate -action status
+	@bash migrate.sh status
 
 migrate-auto:
-	$(GOCMD) run ./cmd/migrate -action auto
+	@bash migrate.sh auto
+
+migrate-down:
+	@bash migrate.sh down
+
+migrate-reset:
+	@bash migrate.sh reset
+
+migrate-create:
+	@bash migrate.sh create $(name)
 
 # Build migrate tool
 build-migrate:
@@ -87,3 +96,85 @@ build-migrate:
 # Release (build all binaries)
 release: build-all agent-all build-migrate
 	@echo "Release binaries built successfully"
+
+# Local installation
+install-dev:
+	@bash local-install.sh dev
+
+install-prod:
+	@bash local-install.sh prod
+
+install-build:
+	@bash local-install.sh build
+
+install-migrate:
+	@bash local-install.sh migrate
+
+install-frontend:
+	@bash local-install.sh frontend
+
+# Frontend
+frontend-install:
+	cd web && npm install
+
+frontend-dev:
+	cd web && npm run dev
+
+frontend-build:
+	cd web && npm run build
+
+# Development helpers
+dev: deps
+	@echo "Starting development environment..."
+	@$(GOCMD) run ./cmd/server -config configs/config.yaml
+
+dev-watch:
+	@which air > /dev/null || go install github.com/cosmtrek/air@latest
+	@air -c .air.toml
+
+# Help
+help:
+	@echo "XBoard Makefile Commands:"
+	@echo ""
+	@echo "Build Commands:"
+	@echo "  make build              - Build server binary"
+	@echo "  make build-all          - Build for all platforms"
+	@echo "  make agent              - Build agent binary"
+	@echo "  make agent-all          - Build agent for all platforms"
+	@echo "  make release            - Build all release binaries"
+	@echo ""
+	@echo "Run Commands:"
+	@echo "  make run                - Run server"
+	@echo "  make dev                - Run in development mode"
+	@echo "  make dev-watch          - Run with hot reload (requires air)"
+	@echo ""
+	@echo "Installation Commands:"
+	@echo "  make install-dev        - Install development environment"
+	@echo "  make install-prod       - Install production environment"
+	@echo "  make install-build      - Build binaries"
+	@echo "  make install-migrate    - Run database migrations"
+	@echo "  make install-frontend   - Build frontend"
+	@echo ""
+	@echo "Frontend Commands:"
+	@echo "  make frontend-install   - Install frontend dependencies"
+	@echo "  make frontend-dev       - Run frontend dev server"
+	@echo "  make frontend-build     - Build frontend for production"
+	@echo ""
+	@echo "Docker Commands:"
+	@echo "  make docker-build       - Build Docker image"
+	@echo "  make docker-run         - Start Docker containers"
+	@echo "  make docker-stop        - Stop Docker containers"
+	@echo ""
+	@echo "Database Commands:"
+	@echo "  make migrate            - Run migrations"
+	@echo "  make migrate-status     - Check migration status"
+	@echo "  make migrate-auto       - Auto migrate (dev only)"
+	@echo "  make migrate-down       - Rollback migration"
+	@echo "  make migrate-reset      - Reset database (dangerous!)"
+	@echo "  make migrate-create name=xxx - Create new migration"
+	@echo ""
+	@echo "Other Commands:"
+	@echo "  make test               - Run tests"
+	@echo "  make clean              - Clean build files"
+	@echo "  make deps               - Download dependencies"
+	@echo "  make help               - Show this help message"

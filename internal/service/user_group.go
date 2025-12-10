@@ -76,15 +76,14 @@ func (s *UserGroupService) GetAll() ([]model.UserGroup, error) {
 // GetGroupInfo 获取用户组详细信息（包含节点和套餐列表）
 func (s *UserGroupService) GetGroupInfo(group *model.UserGroup) map[string]interface{} {
 	info := map[string]interface{}{
-		"id":                      group.ID,
-		"name":                    group.Name,
-		"description":             group.Description,
-		"default_transfer_enable": group.DefaultTransferEnable,
-		"default_speed_limit":     group.DefaultSpeedLimit,
-		"default_device_limit":    group.DefaultDeviceLimit,
-		"sort":                    group.Sort,
-		"created_at":              group.CreatedAt,
-		"updated_at":              group.UpdatedAt,
+		"id":          group.ID,
+		"name":        group.Name,
+		"description": group.Description,
+		"sort":        group.Sort,
+		"created_at":  group.CreatedAt,
+		"updated_at":  group.UpdatedAt,
+		// 注意：不再返回 default_transfer_enable 等字段
+		// 流量、速度、设备限制应该由套餐决定
 	}
 
 	// 获取节点列表

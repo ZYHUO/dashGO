@@ -37,6 +37,20 @@ MIT License
 
 ## 怎么跑？
 
+### 快速开始
+
+```bash
+# 克隆项目
+git clone https://github.com/ZYHUO/xboard-go.git
+cd xboard-go
+
+# 运行安装脚本
+bash local-install.sh
+
+# 或查看快速安装指南
+cat QUICK_INSTALL.md
+```
+
 ### 1. 配置文件
 
 先复制一份配置文件：
@@ -47,7 +61,20 @@ cp configs/config.example.yaml configs/config.yaml
 
 然后改 `configs/config.yaml`，填数据库、Redis、JWT 这些。
 
-### 2. 编译运行
+### 2. 数据库迁移
+
+```bash
+# 执行数据库迁移
+bash migrate.sh up
+
+# 或使用自动迁移（开发环境）
+bash migrate.sh auto
+
+# 查看迁移指南
+cat MIGRATION_GUIDE.md
+```
+
+### 3. 编译运行
 
 ```bash
 # 后端

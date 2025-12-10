@@ -183,6 +183,7 @@ func autoMigrate(db *gorm.DB) {
 		&model.Knowledge{},
 		&model.Host{},
 		&model.ServerNode{},
+		&model.UserGroup{},
 	}
 
 	for _, m := range models {

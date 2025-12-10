@@ -51,14 +51,11 @@ func AdminGetUserGroup(services *service.Services) gin.HandlerFunc {
 func AdminCreateUserGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
-			Name                  string  `json:"name" binding:"required"`
-			Description           string  `json:"description"`
-			ServerIDs             []int64 `json:"server_ids"`
-			PlanIDs               []int64 `json:"plan_ids"`
-			DefaultTransferEnable int64   `json:"default_transfer_enable"`
-			DefaultSpeedLimit     *int    `json:"default_speed_limit"`
-			DefaultDeviceLimit    *int    `json:"default_device_limit"`
-			Sort                  int     `json:"sort"`
+			Name        string  `json:"name" binding:"required"`
+			Description string  `json:"description"`
+			ServerIDs   []int64 `json:"server_ids"`
+			PlanIDs     []int64 `json:"plan_ids"`
+			Sort        int     `json:"sort"`
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -78,16 +75,13 @@ func AdminCreateUserGroup(services *service.Services) gin.HandlerFunc {
 		}
 
 		group := &model.UserGroup{
-			Name:                  req.Name,
-			Description:           req.Description,
-			ServerIDs:             serverIDs,
-			PlanIDs:               planIDs,
-			DefaultTransferEnable: req.DefaultTransferEnable,
-			DefaultSpeedLimit:     req.DefaultSpeedLimit,
-			DefaultDeviceLimit:    req.DefaultDeviceLimit,
-			Sort:                  req.Sort,
-			CreatedAt:             time.Now().Unix(),
-			UpdatedAt:             time.Now().Unix(),
+			Name:        req.Name,
+			Description: req.Description,
+			ServerIDs:   serverIDs,
+			PlanIDs:     planIDs,
+			Sort:        req.Sort,
+			CreatedAt:   time.Now().Unix(),
+			UpdatedAt:   time.Now().Unix(),
 		}
 
 		if err := services.UserGroup.Create(group); err != nil {
@@ -111,14 +105,11 @@ func AdminUpdateUserGroup(services *service.Services) gin.HandlerFunc {
 		}
 
 		var req struct {
-			Name                  string  `json:"name"`
-			Description           string  `json:"description"`
-			ServerIDs             []int64 `json:"server_ids"`
-			PlanIDs               []int64 `json:"plan_ids"`
-			DefaultTransferEnable int64   `json:"default_transfer_enable"`
-			DefaultSpeedLimit     *int    `json:"default_speed_limit"`
-			DefaultDeviceLimit    *int    `json:"default_device_limit"`
-			Sort                  int     `json:"sort"`
+			Name        string  `json:"name"`
+			Description string  `json:"description"`
+			ServerIDs   []int64 `json:"server_ids"`
+			PlanIDs     []int64 `json:"plan_ids"`
+			Sort        int     `json:"sort"`
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -132,9 +123,6 @@ func AdminUpdateUserGroup(services *service.Services) gin.HandlerFunc {
 		}
 		group.Description = req.Description
 		group.Sort = req.Sort
-		group.DefaultTransferEnable = req.DefaultTransferEnable
-		group.DefaultSpeedLimit = req.DefaultSpeedLimit
-		group.DefaultDeviceLimit = req.DefaultDeviceLimit
 
 		// 转换为 JSONArray
 		if req.ServerIDs != nil {
