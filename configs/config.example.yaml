@@ -7,10 +7,15 @@ app:
   listen: ":8080"
 
 database:
-  driver: "mysql"  # mysql, sqlite
+  driver: "sqlite"  # mysql, sqlite
+  
+  # For SQLite: set database to the file path
+  # For MySQL: set database to the database name
+  database: "data/xboard.db"  # SQLite: file path | MySQL: database name
+  
+  # MySQL configuration (only used when driver is "mysql")
   host: "127.0.0.1"
   port: 3306
-  database: "xboard"
   username: "root"
   password: "your_password"
 

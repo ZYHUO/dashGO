@@ -56,12 +56,12 @@ bash setup.sh
 - 5️⃣ 查看迁移状态
 - 6️⃣ 生成配置文件
 
-### 快速开始
+### 快速开始（SQLite - 零配置）
 
 ```bash
 bash setup.sh
 # 选择 1 (全新安装)
-# 选择 1 (SQLite)
+# 选择 1 (SQLite - 推荐)
 ./xboard-server
 ```
 
@@ -71,105 +71,169 @@ bash setup.sh
 - 邮箱：`admin@example.com`
 - 密码：`admin123456`
 
-### 详细文档
+> 💡 **新特性**：现在默认使用 SQLite 数据库，无需安装 MySQL 即可快速启动！适合开发、测试和小规模部署。
 
-- 📖 [完整安装指南](README_SETUP.md)
-- 🚀 [快速开始](QUICK_START.md)
-- 📋 [更新日志](CHANGELOG_v1.0.0.md)
-cat QUICK_INSTALL.md
-```
+### 手动安装
 
-### 1. 配置文件
-
-先复制一份配置文件：
+如果不想用脚本，可以手动操作：
 
 ```bash
-cp configs/config.example.yaml configs/config.yaml
+# 1. 配置文件（已有默认配置，可直接使用）
+# configs/config.yaml 已配置为 SQLite
+
+# 2. 编译
+make build          # 编译 Server
+make agent          # 编译 Agent
+make frontend-build # 编译前端
+
+# 3. 运行迁移
+./migrate-linux-amd64 -config configs/config.yaml
+
+# 4. 启动
+./xboard-server -config configs/config.yaml
 ```
 
-然后改 `configs/config.yaml`，填数据库、Redis、JWT 这些。
+### 数据库选择
 
-### 2. 数据库迁移
+**SQLite（默认）**：
+- ✅ 零配置，开箱即用
+- ✅ 适合 < 1000 用户
+- ✅ 数据文件：`data/xboard.db`
 
-```bash
-# 全新安装：执行数据库迁移
-bash migrate.sh up
-
-# 或使用自动迁移（开发环境）
-bash migrate.sh auto
-
-# 升级现有数据库（MySQL，保留所有数据）
-bash upgrade-mysql.sh
-
-# 查看迁移指南
-cat MIGRATION_GUIDE.md
-```
-
-### 3. 编译运行
-
-```bash
-# 后端
-go build -o xboard ./cmd/server
-
-# 前端
-cd web
-npm install
-npm run build
-cd ..
-
-# 启动
-./xboard -config configs/config.yaml
-```
-
-### 3. 管理员账号
-
-在 `configs/config.yaml` 里写：
-
+**MySQL**：
+- 修改 `configs/config.yaml`：
 ```yaml
-admin:
-  email: "admin@example.com"
+database:
+  driver: "mysql"
+  database: "xboard"
+  host: "127.0.0.1"
+  port: 3306
+  username: "root"
   password: "your_password"
 ```
 
-启动后自动创建管理员。
+### 详细文档
+
+- 📖 [完整安装指南](README_SETUP.md)
+- 🚀 [SQLite 快速开始](QUICK_START_SQLITE.md) ⭐ 推荐
+- 🔧 [编译指南](BUILD.md)
+- 📋 [更新日志](CHANGELOG.md)
+- 🔄 [Agent 自动更新](docs/agent-auto-update.md)
+- 📚 [更多文档](docs/)
 
 ---
 
-## 配置说明（简单说）
+## 编译
 
-- 数据库：MySQL 或 SQLite
-- Redis：填地址和密码
-- JWT：随便搞个随机字符串当 secret
+支持多平台编译：
 
----
+```bash
+# Linux/macOS
+./build-all.sh all
 
-## API（给开发用的）
+# Windows
+.\build-all.ps1 -Target all
 
-用户端：
-- `POST /api/v1/guest/register` 注册
-- `POST /api/v1/guest/login` 登录
-- `GET /api/v1/guest/plans` 套餐列表
-- `GET /api/v1/user/info` 用户信息
-- `GET /api/v1/user/subscribe` 订阅信息
+# 或使用 Makefile
+make release
+```
 
-管理员端：
-- `GET /api/v2/admin/stats/overview` 概览
-- `GET /api/v2/admin/users` 用户列表
-- `GET /api/v2/admin/servers` 节点列表
+详见 [编译指南](BUILD.md)
 
 ---
 
-## 项目结构（大概长这样）
+## 配置说明
+
+主要配置项（`configs/config.yaml`）：
+
+```yaml
+app:
+  listen: ":8080"
+
+database:
+  driver: "sqlite"              # sqlite 或 mysql
+  database: "data/xboard.db"    # SQLite 文件路径
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+
+jwt:
+  secret: "your-random-secret"  # 改成随机字符串
+  expire_hour: 24
+
+node:
+  token: "your-node-token"      # Agent 通信 Token
+```
+
+---
+
+## 项目结构
 
 ```
 xboard-go/
-├── cmd/server/      # 主程序入口
-├── configs/         # 配置文件
-├── internal/        # 后端逻辑
-│   ├── handler/     # 接口
-│   ├── service/     # 业务逻辑
-│   ├── model/       # 数据模型
-│   └── protocol/    # 订阅生成
-├── pkg/             # 工具类
-└── web/             # 前端
+├── cmd/
+│   ├── server/          # Server 主程序
+│   └── migrate/         # 数据库迁移工具
+├── agent/               # Agent 程序
+├── configs/             # 配置文件
+├── internal/            # 后端核心
+│   ├── handler/         # HTTP 处理器
+│   ├── service/         # 业务逻辑
+│   ├── model/           # 数据模型
+│   ├── repository/      # 数据访问
+│   └── protocol/        # 订阅协议
+├── pkg/                 # 公共库
+├── web/                 # Vue 前端
+├── docs/                # 文档
+└── migrations/          # 数据库迁移
 ```
+
+---
+
+## 常见问题
+
+### 1. 如何切换数据库？
+
+编辑 `configs/config.yaml`，修改 `database.driver` 为 `mysql` 或 `sqlite`。
+
+### 2. 如何备份数据？
+
+**SQLite**：
+```bash
+cp data/xboard.db data/xboard.db.backup
+```
+
+**MySQL**：
+```bash
+mysqldump -u root -p xboard > backup.sql
+```
+
+### 3. 如何更新？
+
+```bash
+git pull
+bash setup.sh  # 选择 3 (升级数据库)
+```
+
+### 4. Agent 如何配置？
+
+参考 [Agent 自动更新文档](docs/agent-auto-update.md)
+
+---
+
+## API 文档
+
+主要 API 端点：
+
+**用户端**：
+- `POST /api/v1/guest/register` - 注册
+- `POST /api/v1/guest/login` - 登录
+- `GET /api/v1/user/subscribe` - 获取订阅
+
+**管理端**：
+- `GET /api/v2/admin/stats/overview` - 数据概览
+- `GET /api/v2/admin/users` - 用户管理
+- `GET /api/v2/admin/servers` - 节点管理
+
+完整 API 文档见 `docs/` 目录。

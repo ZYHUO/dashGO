@@ -3,6 +3,7 @@ package repository
 import "gorm.io/gorm"
 
 type Repositories struct {
+	DB            *gorm.DB // Direct database access for services that need it
 	User          *UserRepository
 	Server        *ServerRepository
 	Plan          *PlanRepository
@@ -25,6 +26,7 @@ type Repositories struct {
 
 func NewRepositories(db *gorm.DB) *Repositories {
 	return &Repositories{
+		DB:            db, // Store DB reference for direct access
 		User:          NewUserRepository(db),
 		Server:        NewServerRepository(db),
 		Plan:          NewPlanRepository(db),
