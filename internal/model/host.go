@@ -30,7 +30,6 @@ const (
 type ServerNode struct {
 	ID                int64     `gorm:"primaryKey;column:id" json:"id"`
 	HostID            int64     `gorm:"column:host_id;index" json:"host_id"`
-	ServerID          *int64    `gorm:"column:server_id;index" json:"server_id"` // 绑定的 Server ID，如果设置则继承配置
 	Name              string    `gorm:"column:name" json:"name"`
 	Type              string    `gorm:"column:type" json:"type"` // shadowsocks, vless, trojan 等
 	ListenPort        int       `gorm:"column:listen_port" json:"listen_port"`

@@ -180,3 +180,26 @@ func (r *StatRepository) GetServerTotalTraffic(serverID int64) (model.StatServer
 	}
 	return stat, err
 }
+
+// CreateServerLog 创建流量日志
+func (r *StatRepository) CreateServerLog(log *model.ServerLog) error {
+	return r.db.Create(log).Error
+}
+
+// DeleteOldServerLogs 删除旧的流量日志
+func (r *StatRepository) DeleteOldServerLogs(beforeTime int64) (int64, error) {
+	result := r.db.Where("created_at < ?", beforeTime).Delete(&model.ServerLog{})
+	return result.RowsAffected, result.Error
+}
+
+// DeleteOldUserStats 删除旧的用户统计（日统计）
+func (r *StatRepository) DeleteOldUserStats(beforeTime int64) (int64, error) {
+	result := r.db.Where("record_type = ? AND record_at < ?", "d", beforeTime).Delete(&model.StatUser{})
+	return result.RowsAffected, result.Error
+}
+
+// DeleteOldServerStats 删除旧的节点统计（日统计）
+func (r *StatRepository) DeleteOldServerStats(beforeTime int64) (int64, error) {
+	result := r.db.Where("record_type = ? AND record_at < ?", "d", beforeTime).Delete(&model.StatServer{})
+	return result.RowsAffected, result.Error
+}

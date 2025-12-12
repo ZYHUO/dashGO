@@ -165,14 +165,9 @@ func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{
 	}
 
 	// 2. 从 ServerNode 获取配置（兼容旧逻辑）
-	// 注意：不再处理未绑定的公共服务器，避免重复
 	nodes, err := s.nodeRepo.FindByHostID(hostID)
 	if err == nil {
 		for _, node := range nodes {
-			// 如果节点绑定了 Server，且该 Server 已处理，跳过
-			if node.ServerID != nil && processedServerIDs[*node.ServerID] {
-				continue
-			}
 			inbound := s.buildInbound(&node)
 			if inbound != nil {
 				inbounds = append(inbounds, inbound)
@@ -296,46 +291,12 @@ func (s *HostService) buildInboundFromServer(server *model.Server) map[string]in
 
 // buildInbound 构建 inbound 配置
 func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{} {
-	// 如果绑定了 Server，从 Server 继承配置
-	var protocolSettings model.JSONMap
-	var tlsSettings model.JSONMap
-	var transportSettings model.JSONMap
-	var nodeType string
-	var createdAt int64
-
-	if node.ServerID != nil && *node.ServerID > 0 {
-		// 从绑定的 Server 获取配置
-		server, err := s.serverRepo.FindByID(*node.ServerID)
-		if err == nil && server != nil {
-			nodeType = server.Type
-			protocolSettings = server.ProtocolSettings
-			createdAt = server.CreatedAt
-			// 从 Server 的 ProtocolSettings 中提取 TLS 和 Transport 设置
-			if tls, ok := server.ProtocolSettings["tls_settings"].(map[string]interface{}); ok {
-				tlsSettings = tls
-			}
-			if transport, ok := server.ProtocolSettings["network_settings"].(map[string]interface{}); ok {
-				transportSettings = transport
-			}
-		}
-	}
-
-	// 如果没有绑定或获取失败，使用节点自身的配置
-	if nodeType == "" {
-		nodeType = node.Type
-	}
-	if protocolSettings == nil {
-		protocolSettings = node.ProtocolSettings
-	}
-	if tlsSettings == nil {
-		tlsSettings = node.TLSSettings
-	}
-	if transportSettings == nil {
-		transportSettings = node.TransportSettings
-	}
-	if createdAt == 0 {
-		createdAt = node.CreatedAt
-	}
+	// 使用节点自身的配置
+	protocolSettings := node.ProtocolSettings
+	tlsSettings := node.TLSSettings
+	transportSettings := node.TransportSettings
+	nodeType := node.Type
+	createdAt := node.CreatedAt
 
 	tag := nodeType + "-in-" + fmt.Sprintf("%d", node.ID)
 
@@ -456,35 +417,11 @@ func (s *HostService) buildShadowTLSInbound(inbound map[string]interface{}, node
 
 // GetUsersForNode 获取节点可用的用户列表
 func (s *HostService) GetUsersForNode(node *model.ServerNode) ([]map[string]interface{}, error) {
-	// 如果绑定了 Server，从 Server 获取用户组配置
-	var groupIDs []int64
-	var nodeType string
-	var protocolSettings model.JSONMap
-	var createdAt int64
-
-	if node.ServerID != nil && *node.ServerID > 0 {
-		server, err := s.serverRepo.FindByID(*node.ServerID)
-		if err == nil && server != nil {
-			groupIDs = server.GetGroupIDsAsInt64()
-			nodeType = server.Type
-			protocolSettings = server.ProtocolSettings
-			createdAt = server.CreatedAt
-		}
-	}
-
-	// 如果没有绑定或获取失败，使用节点自身的配置
-	if len(groupIDs) == 0 {
-		groupIDs = node.GetGroupIDsAsInt64()
-	}
-	if nodeType == "" {
-		nodeType = node.Type
-	}
-	if protocolSettings == nil {
-		protocolSettings = node.ProtocolSettings
-	}
-	if createdAt == 0 {
-		createdAt = node.CreatedAt
-	}
+	// 使用节点自身的配置
+	groupIDs := node.GetGroupIDsAsInt64()
+	nodeType := node.Type
+	protocolSettings := node.ProtocolSettings
+	createdAt := node.CreatedAt
 
 	var users []model.User
 	var err error
@@ -753,14 +690,9 @@ func (s *HostService) GetAgentConfig(hostID int64) (*AgentConfig, error) {
 	}
 
 	// 2. 从 ServerNode 获取配置（兼容旧逻辑）
-	// 注意：不再处理未绑定的公共服务器，避免重复
 	nodes, err := s.nodeRepo.FindByHostID(hostID)
 	if err == nil {
 		for _, node := range nodes {
-			// 如果节点绑定了 Server，且该 Server 已处理，跳过
-			if node.ServerID != nil && processedServerIDs[*node.ServerID] {
-				continue
-			}
 			users, _ := s.GetUsersForNode(&node)
 			nodeConfigs = append(nodeConfigs, AgentNodeConfig{
 				ID:    node.ID,

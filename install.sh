@@ -155,12 +155,110 @@ install_deps() {
     command -v tar >/dev/null 2>&1 || deps_needed="$deps_needed tar"
     command -v unzip >/dev/null 2>&1 || deps_needed="$deps_needed unzip"
     command -v git >/dev/null 2>&1 || deps_needed="$deps_needed git"
+    command -v rsync >/dev/null 2>&1 || deps_needed="$deps_needed rsync"
     
     if [ -n "$deps_needed" ]; then
         log_info "安装: $deps_needed"
         $PKG_UPDATE >/dev/null 2>&1 || true
         $PKG_INSTALL $deps_needed >/dev/null 2>&1 || log_warn "部分依赖安装失败"
     fi
+}
+
+# 安装 Node.js 和 npm
+install_nodejs() {
+    if command -v node &>/dev/null && command -v npm &>/dev/null; then
+        local node_version=$(node -v 2>/dev/null)
+        log_info "Node.js 已安装: $node_version"
+        return 0
+    fi
+    
+    log_info "安装 Node.js 和 npm..."
+    
+    case $OS in
+        debian|ubuntu)
+            # 使用 NodeSource 仓库安装最新 LTS 版本
+            curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -
+            $PKG_INSTALL nodejs
+            ;;
+        centos|rhel|rocky|alma|fedora)
+            # 使用 NodeSource 仓库
+            curl -fsSL https://rpm.nodesource.com/setup_lts.x | bash -
+            $PKG_INSTALL nodejs
+            ;;
+        alpine)
+            $PKG_INSTALL nodejs npm
+            ;;
+        *)
+            log_warn "未知系统，尝试通用安装方法..."
+            # 使用 nvm 安装
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm install --lts
+            ;;
+    esac
+    
+    if command -v node &>/dev/null; then
+        log_success "Node.js 安装完成: $(node -v)"
+        log_success "npm 安装完成: $(npm -v)"
+    else
+        log_error "Node.js 安装失败"
+        return 1
+    fi
+}
+
+# 构建前端
+build_frontend() {
+    local web_dir="$1"
+    
+    if [ ! -d "$web_dir" ]; then
+        log_warn "前端目录不存在: $web_dir"
+        return 0
+    fi
+    
+    log_info "开始构建前端..."
+    cd "$web_dir"
+    
+    # 检查是否有 package.json
+    if [ ! -f "package.json" ]; then
+        log_warn "未找到 package.json，跳过前端构建"
+        return 0
+    fi
+    
+    # 安装依赖
+    log_info "安装前端依赖 (这可能需要几分钟)..."
+    if command -v pnpm &>/dev/null; then
+        log_info "使用 pnpm 安装依赖..."
+        pnpm install --frozen-lockfile 2>&1 | grep -v "^npm WARN" || npm install --legacy-peer-deps
+    elif command -v yarn &>/dev/null; then
+        log_info "使用 yarn 安装依赖..."
+        yarn install --frozen-lockfile 2>&1 | grep -v "^npm WARN" || npm install --legacy-peer-deps
+    else
+        log_info "使用 npm 安装依赖..."
+        npm install --legacy-peer-deps 2>&1 | grep -v "^npm WARN"
+    fi
+    
+    if [ $? -ne 0 ]; then
+        log_warn "依赖安装可能有警告，继续构建..."
+    fi
+    
+    # 构建
+    log_info "构建前端资源..."
+    if npm run build 2>&1 | tee /tmp/build.log | grep -v "^npm WARN"; then
+        log_success "前端构建完成"
+        
+        # 检查构建产物
+        if [ -d "dist" ]; then
+            log_info "构建产物位于: $web_dir/dist"
+        else
+            log_warn "未找到 dist 目录，构建可能失败"
+        fi
+    else
+        log_error "前端构建失败，查看日志: /tmp/build.log"
+        log_warn "将继续安装，但前端可能无法正常显示"
+    fi
+    
+    cd - >/dev/null
 }
 
 # 安装 Docker
@@ -204,6 +302,15 @@ install_docker_compose() {
 install_panel() {
     log_info "开始安装 XBoard 面板..."
     
+    # 询问是否构建前端
+    echo ""
+    read -p "是否需要构建前端? (需要 Node.js) [Y/n]: " build_fe
+    build_fe=${build_fe:-Y}
+    
+    if [ "$build_fe" = "Y" ] || [ "$build_fe" = "y" ]; then
+        install_nodejs
+    fi
+    
     install_docker
     install_docker_compose
     
@@ -224,8 +331,24 @@ install_panel() {
     
     cd "$INSTALL_DIR"
     
+    # 构建前端
+    if [ "$build_fe" = "Y" ] || [ "$build_fe" = "y" ]; then
+        if [ -d "web" ]; then
+            build_frontend "$INSTALL_DIR/web"
+        else
+            log_warn "未找到 web 目录，跳过前端构建"
+        fi
+    else
+        log_info "跳过前端构建"
+        log_hint "如需前端，请手动构建: cd $INSTALL_DIR/web && npm install && npm run build"
+    fi
+    
+    # 创建必要目录
+    mkdir -p data
+    mkdir -p web/dist
+    
     # 创建配置文件
-    if [ ! -f "config.yaml" ]; then
+    if [ ! -f "configs/config.yaml" ]; then
         create_panel_config
     fi
     
@@ -242,8 +365,20 @@ install_panel() {
     log_info "启动面板服务..."
     docker compose up -d --build
     
-    log_success "面板安装完成！"
-    show_panel_info
+    # 等待服务启动
+    log_info "等待服务启动..."
+    sleep 10
+    
+    # 检查服务状态
+    if docker compose ps | grep -q "Up"; then
+        log_success "面板安装完成！"
+        show_panel_info
+    else
+        log_error "服务启动失败，查看日志:"
+        docker compose logs --tail=50
+        echo ""
+        log_hint "尝试手动启动: cd $INSTALL_DIR && docker compose up -d"
+    fi
 }
 
 # 创建面板配置
@@ -808,37 +943,85 @@ update_panel() {
         exit 1
     fi
     
+    # 询问是否重新构建前端
+    echo ""
+    read -p "是否重新构建前端? [y/N]: " rebuild_fe
+    
     cd "$INSTALL_DIR"
     
-    # 备份配置
-    cp config.yaml config.yaml.bak
+    # 备份配置和数据
+    log_info "备份配置文件..."
+    cp configs/config.yaml configs/config.yaml.bak 2>/dev/null || cp config.yaml config.yaml.bak 2>/dev/null || true
     cp .env .env.bak 2>/dev/null || true
     
+    # 备份前端构建产物
+    if [ -d "web/dist" ]; then
+        log_info "备份前端构建产物..."
+        mv web/dist web/dist.bak
+    fi
+    
     # 停止服务
+    log_info "停止服务..."
     docker compose down
     
     # 下载新版本
     mkdir -p "$TEMP_DIR"
     cd "$TEMP_DIR"
     
+    log_info "下载最新版本..."
     local REPO_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/archive/refs/heads/main.zip"
     wget -q --show-progress -O xboard.zip "$REPO_URL"
     unzip -q xboard.zip
     
-    # 更新文件 (保留配置)
-    rsync -av --exclude='config.yaml' --exclude='.env' --exclude='storage' --exclude='ssl' \
+    # 更新文件 (保留配置和数据)
+    log_info "更新文件..."
+    rsync -av --exclude='configs/config.yaml' --exclude='config.yaml' --exclude='.env' \
+        --exclude='data' --exclude='storage' --exclude='ssl' --exclude='web/dist' \
         xboard-go-main/* "$INSTALL_DIR/"
     
     cd "$INSTALL_DIR"
     
     # 恢复配置
-    mv config.yaml.bak config.yaml
+    log_info "恢复配置..."
+    if [ -f "configs/config.yaml.bak" ]; then
+        mv configs/config.yaml.bak configs/config.yaml
+    elif [ -f "config.yaml.bak" ]; then
+        mkdir -p configs
+        mv config.yaml.bak configs/config.yaml
+    fi
     mv .env.bak .env 2>/dev/null || true
     
+    # 处理前端
+    if [ "$rebuild_fe" = "y" ] || [ "$rebuild_fe" = "Y" ]; then
+        log_info "重新构建前端..."
+        install_nodejs
+        if [ -d "web" ]; then
+            build_frontend "$INSTALL_DIR/web"
+        fi
+    else
+        # 恢复旧的前端构建
+        if [ -d "web/dist.bak" ]; then
+            log_info "恢复旧的前端构建..."
+            mv web/dist.bak web/dist
+        else
+            log_warn "未找到前端构建产物"
+        fi
+    fi
+    
     # 重新构建并启动
+    log_info "重新启动服务..."
     docker compose up -d --build
     
-    log_success "面板更新完成！"
+    # 等待服务启动
+    sleep 5
+    
+    # 检查状态
+    if docker compose ps | grep -q "Up"; then
+        log_success "面板更新完成！"
+    else
+        log_error "服务启动失败，查看日志:"
+        docker compose logs --tail=30
+    fi
 }
 
 # 更新 Agent

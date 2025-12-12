@@ -518,3 +518,26 @@ func (s *NodeSyncService) GetNodeStatus(server *model.Server) (map[string]interf
 		},
 	}, nil
 }
+
+// RecordUserTrafficStat 记录用户流量统计
+func (s *NodeSyncService) RecordUserTrafficStat(userID int64, rate float64, u, d int64) error {
+	return s.statRepo.RecordUserTraffic(userID, rate, u, d, "d")
+}
+
+// RecordServerTrafficStat 记录节点流量统计
+func (s *NodeSyncService) RecordServerTrafficStat(serverID int64, serverType string, u, d int64) error {
+	return s.statRepo.RecordServerTraffic(serverID, serverType, u, d, "d")
+}
+
+// RecordTrafficLog 记录流量日志
+func (s *NodeSyncService) RecordTrafficLog(userID, serverID int64, u, d int64, rate float64) error {
+	log := &model.ServerLog{
+		UserID:   userID,
+		ServerID: serverID,
+		U:        u,
+		D:        d,
+		Rate:     rate,
+		Method:   "",
+	}
+	return s.statRepo.CreateServerLog(log)
+}
