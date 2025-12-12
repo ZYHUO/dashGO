@@ -17,7 +17,7 @@ func NewAgentVersionService(db *gorm.DB) *AgentVersionService {
 	return &AgentVersionService{db: db}
 }
 
-// GetLatestVersion 获取最新版�?
+// GetLatestVersion 获取最新版�?
 func (s *AgentVersionService) GetLatestVersion() (*model.AgentVersion, error) {
 	var version model.AgentVersion
 	err := s.db.Where("is_latest = ?", true).First(&version).Error
@@ -26,11 +26,11 @@ func (s *AgentVersionService) GetLatestVersion() (*model.AgentVersion, error) {
 		if err == gorm.ErrRecordNotFound {
 			return &model.AgentVersion{
 				Version:      "v1.0.0",
-				DownloadURL:  "https://download.sharon.wiki/xboard-agent-linux-amd64",
+				DownloadURL:  "https://download.sharon.wiki/dashgo-agent-linux-amd64",
 				SHA256:       "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
 				FileSize:     6090936,
 				Strategy:     "manual",
-				ReleaseNotes: "XBoard Agent v1.0.0",
+				ReleaseNotes: "dashGO Agent v1.0.0",
 			}, nil
 		}
 		return nil, err
@@ -38,7 +38,7 @@ func (s *AgentVersionService) GetLatestVersion() (*model.AgentVersion, error) {
 	return &version, nil
 }
 
-// GetByVersion 根据版本号获�?
+// GetByVersion 根据版本号获�?
 func (s *AgentVersionService) GetByVersion(version string) (*model.AgentVersion, error) {
 	var v model.AgentVersion
 	err := s.db.Where("version = ?", version).First(&v).Error
@@ -55,14 +55,14 @@ func (s *AgentVersionService) Update(version *model.AgentVersion) error {
 	return s.db.Save(version).Error
 }
 
-// SetLatest 设置为最新版�?
+// SetLatest 设置为最新版�?
 func (s *AgentVersionService) SetLatest(versionID int64) error {
 	return s.db.Transaction(func(tx *gorm.DB) error {
 		// 取消所有版本的 latest 标记
 		if err := tx.Model(&model.AgentVersion{}).Where("is_latest = ?", true).Update("is_latest", false).Error; err != nil {
 			return err
 		}
-		// 设置指定版本�?latest
+		// 设置指定版本�?latest
 		return tx.Model(&model.AgentVersion{}).Where("id = ?", versionID).Update("is_latest", true).Error
 	})
 }
@@ -86,7 +86,7 @@ func (s *AgentVersionService) List(page, pageSize int) ([]model.AgentVersion, in
 
 // Delete 删除版本
 func (s *AgentVersionService) Delete(versionID int64) error {
-	// 检查是否是最新版�?
+	// 检查是否是最新版�?
 	var version model.AgentVersion
 	if err := s.db.First(&version, versionID).Error; err != nil {
 		return err

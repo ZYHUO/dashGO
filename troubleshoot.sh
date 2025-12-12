@@ -92,7 +92,7 @@ echo ""
 # 7. 数据库连接测试
 echo -e "${GREEN}[7] 测试数据库连接${NC}"
 if docker ps | grep -q dashgo-mysql; then
-    if docker exec xboard-mysql mysqladmin ping -h localhost -pxboard_password &>/dev/null; then
+    if docker exec dashgo-mysql mysqladmin ping -h localhost -pdashgo_password &>/dev/null; then
         echo -e "  ✓ MySQL 连接正常"
     else
         echo -e "  ${RED}✗ MySQL 连接失败${NC}"
@@ -104,8 +104,8 @@ echo ""
 
 # 8. Redis 连接测试
 echo -e "${GREEN}[8] 测试 Redis 连接${NC}"
-if docker ps | grep -q xboard-redis; then
-    if docker exec xboard-redis redis-cli ping &>/dev/null; then
+if docker ps | grep -q dashgo-redis; then
+    if docker exec dashgo-redis redis-cli ping &>/dev/null; then
         echo -e "  ✓ Redis 连接正常"
     else
         echo -e "  ${RED}✗ Redis 连接失败${NC}"
@@ -126,10 +126,10 @@ echo "2. 完全重建:"
 echo "   docker compose down && docker compose up -d --build"
 echo ""
 echo "3. 查看实时日志:"
-echo "   docker compose logs -f xboard"
+echo "   docker compose logs -f dashgo"
 echo ""
 echo "4. 进入容器调试:"
-echo "   docker exec -it xboard sh"
+echo "   docker exec -it dashgo sh"
 echo ""
 echo "5. 清理并重新开始:"
 echo "   docker compose down -v && docker compose up -d"

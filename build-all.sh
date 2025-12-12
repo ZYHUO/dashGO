@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# XBoard 完整编译脚本
+# dashGO 完整编译脚本
 # 用于在 Linux 上编译 Dashboard 和全架构的 Agent
 
 set -e
@@ -23,7 +23,7 @@ SERVER_OUTPUT_DIR="${OUTPUT_DIR}/server"
 WEB_OUTPUT_DIR="${OUTPUT_DIR}/web"
 
 echo -e "${GREEN}========================================${NC}"
-echo -e "${GREEN}XBoard 完整编译脚本${NC}"
+echo -e "${GREEN}dashGO 完整编译脚本${NC}"
 echo -e "${GREEN}版本: ${VERSION}${NC}"
 echo -e "${GREEN}构建时间: ${BUILD_TIME}${NC}"
 echo -e "${GREEN}Git Commit: ${GIT_COMMIT}${NC}"
@@ -68,35 +68,35 @@ build_server() {
     echo -e "${YELLOW}构建 Server (Linux amd64)...${NC}"
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/xboard-server-linux-amd64 \
+        -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-amd64 \
         ./cmd/server
     
     # 构建 Linux arm64
     echo -e "${YELLOW}构建 Server (Linux arm64)...${NC}"
     CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/xboard-server-linux-arm64 \
+        -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-arm64 \
         ./cmd/server
     
     # 构建 Windows amd64
     echo -e "${YELLOW}构建 Server (Windows amd64)...${NC}"
     CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/xboard-server-windows-amd64.exe \
+        -o ${SERVER_OUTPUT_DIR}/dashgo-server-windows-amd64.exe \
         ./cmd/server
     
     # 构建 macOS amd64
     echo -e "${YELLOW}构建 Server (macOS amd64)...${NC}"
     CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/xboard-server-darwin-amd64 \
+        -o ${SERVER_OUTPUT_DIR}/dashgo-server-darwin-amd64 \
         ./cmd/server
     
     # 构建 macOS arm64 (Apple Silicon)
     echo -e "${YELLOW}构建 Server (macOS arm64)...${NC}"
     CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/xboard-server-darwin-arm64 \
+        -o ${SERVER_OUTPUT_DIR}/dashgo-server-darwin-arm64 \
         ./cmd/server
     
     echo -e "${GREEN}✓ Server 构建完成${NC}"
@@ -112,49 +112,49 @@ build_agent() {
     echo -e "${YELLOW}构建 Agent (Linux amd64)...${NC}"
     CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-linux-amd64 .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-linux-amd64 .
     
     # Linux arm64
     echo -e "${YELLOW}构建 Agent (Linux arm64)...${NC}"
     CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-linux-arm64 .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-linux-arm64 .
     
     # Linux 386
     echo -e "${YELLOW}构建 Agent (Linux 386)...${NC}"
     CGO_ENABLED=0 GOOS=linux GOARCH=386 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-linux-386 .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-linux-386 .
     
     # Windows amd64
     echo -e "${YELLOW}构建 Agent (Windows amd64)...${NC}"
     CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-windows-amd64.exe .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-windows-amd64.exe .
     
     # Windows 386
     echo -e "${YELLOW}构建 Agent (Windows 386)...${NC}"
     CGO_ENABLED=0 GOOS=windows GOARCH=386 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-windows-386.exe .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-windows-386.exe .
     
     # macOS amd64
     echo -e "${YELLOW}构建 Agent (macOS amd64)...${NC}"
     CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-darwin-amd64 .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-darwin-amd64 .
     
     # macOS arm64 (Apple Silicon)
     echo -e "${YELLOW}构建 Agent (macOS arm64)...${NC}"
     CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-darwin-arm64 .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-darwin-arm64 .
     
     # FreeBSD amd64
     echo -e "${YELLOW}构建 Agent (FreeBSD amd64)...${NC}"
     CGO_ENABLED=0 GOOS=freebsd GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ../${AGENT_OUTPUT_DIR}/xboard-agent-freebsd-amd64 .
+        -o ../${AGENT_OUTPUT_DIR}/dashgo-agent-freebsd-amd64 .
     
     cd ..
     
@@ -206,7 +206,7 @@ create_version_info() {
     echo -e "${YELLOW}创建版本信息文件...${NC}"
     
     cat > ${OUTPUT_DIR}/VERSION.txt << EOF
-XBoard Build Information
+dashGO Build Information
 ========================
 
 Version: ${VERSION}
@@ -214,21 +214,21 @@ Build Time: ${BUILD_TIME}
 Git Commit: ${GIT_COMMIT}
 
 Server Binaries:
-- xboard-server-linux-amd64
-- xboard-server-linux-arm64
-- xboard-server-windows-amd64.exe
-- xboard-server-darwin-amd64
-- xboard-server-darwin-arm64
+- dashgo-server-linux-amd64
+- dashgo-server-linux-arm64
+- dashgo-server-windows-amd64.exe
+- dashgo-server-darwin-amd64
+- dashgo-server-darwin-arm64
 
 Agent Binaries:
-- xboard-agent-linux-amd64
-- xboard-agent-linux-arm64
-- xboard-agent-linux-386
-- xboard-agent-windows-amd64.exe
-- xboard-agent-windows-386.exe
-- xboard-agent-darwin-amd64
-- xboard-agent-darwin-arm64
-- xboard-agent-freebsd-amd64
+- dashgo-agent-linux-amd64
+- dashgo-agent-linux-arm64
+- dashgo-agent-linux-386
+- dashgo-agent-windows-amd64.exe
+- dashgo-agent-windows-386.exe
+- dashgo-agent-darwin-amd64
+- dashgo-agent-darwin-arm64
+- dashgo-agent-freebsd-amd64
 
 Tools:
 - migrate-linux-amd64

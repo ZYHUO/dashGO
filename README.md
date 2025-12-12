@@ -7,7 +7,7 @@
 
 本项目的开发离不开以下开源项目和工具的支持：
 
-- [Xboard](https://github.com/cedar2025/Xboard) - 感谢 cedar2025 提供的 Xboard 原版项目，本项目参考了其设计理念和数据库结构
+- [Xboard](https://github.com/cedar2025/Xboard) - 感谢 cedar2025 提供的 Xboard 原版项目，本项目参考了其设计理念和数据库结构（注：本项目已重命名为 dashGO）
 - [sing-box 脚本](https://github.com/fscarmen/sing-box) - 感谢 fscarmen 提供的 sing-box 一键安装脚本 参考了一下节点配置部分
 - [AWS Kiro](https://kiro.dev) - 感谢 AWS Kiro 提供的 Claude AI 辅助开发
 

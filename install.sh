@@ -11,8 +11,8 @@ VERSION='v1.2.0'
 GITHUB_REPO="ZYHUO/dashGO"
 GH_PROXY='https://hub.glowp.xyz/'
 INSTALL_DIR="/opt/dashgo"
-AGENT_DIR="/opt/xboard-agent"
-TEMP_DIR="/tmp/xboard-install"
+AGENT_DIR="/opt/dashgo-agent"
+TEMP_DIR="/tmp/dashgo-install"
 SINGBOX_DIR="/etc/sing-box"
 SINGBOX_DEFAULT_VERSION="1.12.0"
 
@@ -50,7 +50,7 @@ show_banner() {
  ╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝ 
 EOF
     echo -e "${NC}"
-    echo -e "${GREEN}XBoard 一键安装脚本 ${VERSION}${NC}"
+    echo -e "${GREEN}dashGO 一键安装脚本 ${VERSION}${NC}"
     echo -e "${BLUE}现代化的机场面板解决方案${NC}"
     echo ""
 }
@@ -300,7 +300,7 @@ install_docker_compose() {
 
 # 安装面板
 install_panel() {
-    log_info "开始安装 XBoard 面板..."
+    log_info "开始安装 dashGO 面板..."
     
     # 询问是否构建前端
     echo ""
@@ -322,7 +322,7 @@ install_panel() {
     local REPO_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/archive/refs/heads/main.zip"
     
     log_info "下载源码..."
-    if ! wget -q --show-progress -O xboard.zip "$REPO_URL"; then
+    if ! wget -q --show-progress -O dashgo.zip "$REPO_URL"; then
         log_error "下载失败"
         exit 1
     fi
@@ -395,9 +395,9 @@ create_panel_config() {
     mkdir -p configs
     
     cat > configs/config.yaml << EOF
-# XBoard Go Configuration for Docker
+# dashGO Configuration for Docker
 app:
-  name: "XBoard"
+  name: "dashGO"
   mode: "release"
   listen: ":8080"
 
@@ -407,7 +407,7 @@ database:
   port: 3306
   username: "root"
   password: "${DB_PASS}"
-  database: "xboard"
+  database: "dashgo"
 
 redis:
   host: "redis"
@@ -430,7 +430,7 @@ mail:
   port: 587
   username: ""
   password: ""
-  from_name: "XBoard"
+  from_name: "dashGO"
   from_addr: "noreply@example.com"
   encryption: "tls"
 
@@ -446,7 +446,7 @@ EOF
     # 保存密码到环境文件
     cat > .env << EOF
 MYSQL_ROOT_PASSWORD=${DB_PASS}
-MYSQL_DATABASE=xboard
+MYSQL_DATABASE=dashgo
 REDIS_PASSWORD=${REDIS_PASS}
 JWT_SECRET=${JWT_SECRET}
 NODE_TOKEN=${NODE_TOKEN}
@@ -464,9 +464,9 @@ create_docker_compose() {
 version: '3.8'
 
 services:
-  xboard:
+  dashgo:
     build: .
-    container_name: xboard
+    container_name: dashgo
     ports:
       - "8080:8080"
     volumes:
@@ -481,11 +481,11 @@ services:
     environment:
       - TZ=Asia/Shanghai
     networks:
-      - xboard-net
+      - dashgo-net
 
   mysql:
     image: mysql:8.0
-    container_name: xboard-mysql
+    container_name: dashgo-mysql
     env_file:
       - .env
     volumes:
@@ -501,11 +501,11 @@ services:
       timeout: 5s
       retries: 5
     networks:
-      - xboard-net
+      - dashgo-net
 
   redis:
     image: redis:7-alpine
-    container_name: xboard-redis
+    container_name: dashgo-redis
     command: redis-server --requirepass ${REDIS_PASSWORD:-}
     volumes:
       - redis_data:/data
@@ -513,11 +513,11 @@ services:
       - "6379:6379"
     restart: unless-stopped
     networks:
-      - xboard-net
+      - dashgo-net
 
   nginx:
     image: nginx:alpine
-    container_name: xboard-nginx
+    container_name: dashgo-nginx
     ports:
       - "80:80"
       - "443:443"
@@ -525,17 +525,17 @@ services:
       - ./nginx.conf:/etc/nginx/nginx.conf
       - ./ssl:/etc/nginx/ssl
     depends_on:
-      - xboard
+      - dashgo
     restart: unless-stopped
     networks:
-      - xboard-net
+      - dashgo-net
 
 volumes:
   mysql_data:
   redis_data:
 
 networks:
-  xboard-net:
+  dashgo-net:
     driver: bridge
 EOF
 }
@@ -543,13 +543,13 @@ EOF
 # 创建初始化 SQL
 create_init_sql() {
     cat > init.sql << 'EOF'
--- XBoard 初始化 SQL
+-- dashGO 初始化 SQL
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- 创建管理员账户 (密码: admin123)
 INSERT INTO `users` (`email`, `password`, `is_admin`, `is_staff`, `balance`, `created_at`, `updated_at`) 
-VALUES ('admin@xboard.local', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
+VALUES ('admin@dashgo.local', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 1, 1, 0, UNIX_TIMESTAMP(), UNIX_TIMESTAMP())
 ON DUPLICATE KEY UPDATE `is_admin` = 1;
 
 SET FOREIGN_KEY_CHECKS = 1;
@@ -577,8 +577,8 @@ http {
     gzip_min_length 1024;
     gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
 
-    upstream xboard {
-        server xboard:8080;
+    upstream dashgo {
+        server dashgo:8080;
     }
 
     server {
@@ -586,7 +586,7 @@ http {
         server_name _;
         
         location / {
-            proxy_pass http://xboard;
+            proxy_pass http://dashgo;
             proxy_http_version 1.1;
             proxy_set_header Upgrade $http_upgrade;
             proxy_set_header Connection "upgrade";
@@ -611,7 +611,7 @@ http {
     #     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256;
     #     
     #     location / {
-    #         proxy_pass http://xboard;
+    #         proxy_pass http://dashgo;
     #         proxy_http_version 1.1;
     #         proxy_set_header Upgrade $http_upgrade;
     #         proxy_set_header Connection "upgrade";
@@ -631,14 +631,14 @@ show_panel_info() {
     
     echo ""
     echo "=========================================="
-    echo -e "${GREEN}XBoard 面板安装完成！${NC}"
+    echo -e "${GREEN}dashGO 面板安装完成！${NC}"
     echo "=========================================="
     echo ""
     echo "访问地址: http://${IP}:80"
     echo "后台地址: http://${IP}:80/admin"
     echo ""
     echo "默认管理员账户:"
-    echo "  邮箱: admin@xboard.local"
+    echo "  邮箱: admin@dashgo.local"
     echo "  密码: admin123"
     echo ""
     echo "安装目录: $INSTALL_DIR"
@@ -747,7 +747,7 @@ install_agent() {
     local panel_url="${1:-$PANEL_URL}"
     local token="${2:-$TOKEN}"
     
-    log_info "开始安装 XBoard Agent..."
+    log_info "开始安装 dashGO Agent..."
     
     install_singbox
     
@@ -756,15 +756,15 @@ install_agent() {
     cd "$TEMP_DIR"
     
     # 下载 Agent
-    local AGENT_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/releases/download/1.1/xboard-agent-linux-${ARCH}"
+    local AGENT_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/releases/download/1.1/dashgo-agent-linux-${ARCH}"
     
     log_info "下载 Agent..."
-    if ! wget -q --show-progress -O "$AGENT_DIR/xboard-agent" "$AGENT_URL"; then
+    if ! wget -q --show-progress -O "$AGENT_DIR/dashgo-agent" "$AGENT_URL"; then
         log_warn "下载预编译版本失败，尝试从源码构建..."
         build_agent_from_source
     fi
     
-    chmod +x "$AGENT_DIR/xboard-agent"
+    chmod +x "$AGENT_DIR/dashgo-agent"
     
     # 创建服务
     create_agent_service "$panel_url" "$token"
@@ -805,15 +805,15 @@ create_agent_service() {
     
     log_info "创建 Agent 服务..."
     
-    cat > /etc/systemd/system/xboard-agent.service << EOF
+    cat > /etc/systemd/system/dashgo-agent.service << EOF
 [Unit]
-Description=XBoard Agent
+Description=dashGO Agent
 Documentation=https://github.com/${GITHUB_REPO}
 After=network.target sing-box.service
 
 [Service]
 Type=simple
-ExecStart=${AGENT_DIR}/xboard-agent -panel ${panel_url} -token ${token}
+ExecStart=${AGENT_DIR}/dashgo-agent -panel ${panel_url} -token ${token}
 Restart=always
 RestartSec=5
 StandardOutput=journal
@@ -825,8 +825,8 @@ WantedBy=multi-user.target
 EOF
     
     systemctl daemon-reload
-    systemctl enable xboard-agent
-    systemctl start xboard-agent
+    systemctl enable dashgo-agent
+    systemctl start dashgo-agent
     
     log_info "Agent 服务已启动"
 }
@@ -835,21 +835,21 @@ EOF
 show_agent_info() {
     echo ""
     echo "=========================================="
-    echo -e "${GREEN}XBoard Agent 安装完成！${NC}"
+    echo -e "${GREEN}dashGO Agent 安装完成！${NC}"
     echo "=========================================="
     echo ""
     echo "安装目录: $AGENT_DIR"
     echo "sing-box 目录: $SINGBOX_DIR"
     echo ""
     echo "常用命令:"
-    echo "  查看 Agent 状态: systemctl status xboard-agent"
-    echo "  查看 Agent 日志: journalctl -u xboard-agent -f"
-    echo "  重启 Agent: systemctl restart xboard-agent"
+    echo "  查看 Agent 状态: systemctl status dashgo-agent"
+    echo "  查看 Agent 日志: journalctl -u dashgo-agent -f"
+    echo "  重启 Agent: systemctl restart dashgo-agent"
     echo "  查看 sing-box 状态: systemctl status sing-box"
     echo "  查看 sing-box 日志: journalctl -u sing-box -f"
     echo ""
     
-    systemctl status xboard-agent --no-pager 2>/dev/null || true
+    systemctl status dashgo-agent --no-pager 2>/dev/null || true
 }
 
 
@@ -886,7 +886,7 @@ install_all() {
 
 # 卸载面板
 uninstall_panel() {
-    log_info "卸载 XBoard 面板..."
+    log_info "卸载 dashGO 面板..."
     
     if [ -d "$INSTALL_DIR" ]; then
         cd "$INSTALL_DIR"
@@ -907,11 +907,11 @@ uninstall_panel() {
 
 # 卸载 Agent
 uninstall_agent() {
-    log_info "卸载 XBoard Agent..."
+    log_info "卸载 dashGO Agent..."
     
-    systemctl stop xboard-agent 2>/dev/null || true
-    systemctl disable xboard-agent 2>/dev/null || true
-    rm -f /etc/systemd/system/xboard-agent.service
+    systemctl stop dashgo-agent 2>/dev/null || true
+    systemctl disable dashgo-agent 2>/dev/null || true
+    rm -f /etc/systemd/system/dashgo-agent.service
     systemctl daemon-reload
     
     rm -rf "$AGENT_DIR"
@@ -936,7 +936,7 @@ uninstall_agent() {
 
 # 更新面板
 update_panel() {
-    log_info "更新 XBoard 面板..."
+    log_info "更新 dashGO 面板..."
     
     if [ ! -d "$INSTALL_DIR" ]; then
         log_error "面板未安装"
@@ -970,8 +970,8 @@ update_panel() {
     
     log_info "下载最新版本..."
     local REPO_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/archive/refs/heads/main.zip"
-    wget -q --show-progress -O xboard.zip "$REPO_URL"
-    unzip -q xboard.zip
+    wget -q --show-progress -O dashgo.zip "$REPO_URL"
+    unzip -q dashgo.zip
     
     # 更新文件 (保留配置和数据)
     log_info "更新文件..."
@@ -1026,32 +1026,32 @@ update_panel() {
 
 # 更新 Agent
 update_agent() {
-    log_info "更新 XBoard Agent..."
+    log_info "更新 dashGO Agent..."
     
-    if [ ! -f "$AGENT_DIR/xboard-agent" ]; then
+    if [ ! -f "$AGENT_DIR/dashgo-agent" ]; then
         log_error "Agent 未安装"
         exit 1
     fi
     
     # 停止服务
-    systemctl stop xboard-agent
+    systemctl stop dashgo-agent
     
     # 下载新版本
     mkdir -p "$TEMP_DIR"
     cd "$TEMP_DIR"
     
-    local AGENT_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/releases/download/1.1/xboard-agent-linux-${ARCH}"
+    local AGENT_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/releases/download/1.1/dashgo-agent-linux-${ARCH}"
     
-    if wget -q --show-progress -O "$AGENT_DIR/xboard-agent.new" "$AGENT_URL"; then
-        mv "$AGENT_DIR/xboard-agent.new" "$AGENT_DIR/xboard-agent"
-        chmod +x "$AGENT_DIR/xboard-agent"
+    if wget -q --show-progress -O "$AGENT_DIR/dashgo-agent.new" "$AGENT_URL"; then
+        mv "$AGENT_DIR/dashgo-agent.new" "$AGENT_DIR/dashgo-agent"
+        chmod +x "$AGENT_DIR/dashgo-agent"
     else
         log_warn "下载失败，尝试从源码构建..."
         build_agent_from_source
     fi
     
     # 重启服务
-    systemctl start xboard-agent
+    systemctl start dashgo-agent
     
     log_success "Agent 更新完成！"
 }

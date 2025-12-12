@@ -7,7 +7,7 @@ GOTEST=$(GOCMD) test
 GOCLEAN=$(GOCMD) clean
 GOGET=$(GOCMD) get
 GOMOD=$(GOCMD) mod
-BINARY_NAME=xboard
+BINARY_NAME=dashgo
 
 # Build flags
 LDFLAGS=-ldflags "-s -w"
@@ -54,19 +54,19 @@ build-all: build-linux build-windows build-darwin
 
 # Agent builds
 agent:
-	cd agent && $(GOBUILD) $(LDFLAGS) -o xboard-agent .
+	cd agent && $(GOBUILD) $(LDFLAGS) -o dashgo-agent .
 
 agent-linux-amd64:
-	cd agent && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o xboard-agent-linux-amd64 .
+	cd agent && CGO_ENABLED=0 GOOS=linux GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o dashgo-agent-linux-amd64 .
 
 agent-linux-arm64:
-	cd agent && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o xboard-agent-linux-arm64 .
+	cd agent && CGO_ENABLED=0 GOOS=linux GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o dashgo-agent-linux-arm64 .
 
 agent-darwin-amd64:
-	cd agent && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o xboard-agent-darwin-amd64 .
+	cd agent && CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 $(GOBUILD) $(LDFLAGS) -o dashgo-agent-darwin-amd64 .
 
 agent-darwin-arm64:
-	cd agent && CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o xboard-agent-darwin-arm64 .
+	cd agent && CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 $(GOBUILD) $(LDFLAGS) -o dashgo-agent-darwin-arm64 .
 
 agent-all: agent-linux-amd64 agent-linux-arm64 agent-darwin-amd64 agent-darwin-arm64
 
@@ -134,7 +134,7 @@ dev-watch:
 
 # Help
 help:
-	@echo "XBoard Makefile Commands:"
+	@echo "dashGO Makefile Commands:"
 	@echo ""
 	@echo "Build Commands:"
 	@echo "  make build              - Build server binary"

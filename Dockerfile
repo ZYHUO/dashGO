@@ -14,7 +14,7 @@ RUN go mod download
 COPY . .
 
 # Build
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o xboard ./cmd/server
+RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o dashgo ./cmd/server
 
 # Runtime stage
 FROM alpine:latest
@@ -28,7 +28,7 @@ RUN apk --no-cache add ca-certificates tzdata
 RUN mkdir -p /app/data /app/configs /app/web/dist
 
 # Copy binary
-COPY --from=builder /app/xboard .
+COPY --from=builder /app/dashgo .
 
 # Copy web frontend if exists
 COPY --from=builder /app/web/dist ./web/dist 2>/dev/null || true

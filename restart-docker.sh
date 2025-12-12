@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# XBoard Docker 重启脚本
+# dashGO Docker 重启脚本
 # 用于快速重启和查看日志
 
 set -e
@@ -50,6 +50,6 @@ log_info "查看容器状态..."
 docker compose ps
 
 echo ""
-log_info "查看 xboard 日志 (Ctrl+C 退出)..."
+log_info "查看 dashgo 日志 (Ctrl+C 退出)..."
 echo ""
-docker compose logs -f xboard
+docker compose logs -f dashgo
