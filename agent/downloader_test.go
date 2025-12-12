@@ -13,7 +13,7 @@ import (
 
 // TestDownloader_Download_Success 测试成功下载
 func TestDownloader_Download_Success(t *testing.T) {
-	// 创建测试服务器
+	// 创建测试服务�?
 	testContent := "test file content for download"
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(testContent)))
@@ -58,7 +58,7 @@ func TestDownloader_Download_Success(t *testing.T) {
 	}
 }
 
-// TestDownloader_Download_HTTPSOnly 测试只允许 HTTPS
+// TestDownloader_Download_HTTPSOnly 测试只允�?HTTPS
 func TestDownloader_Download_HTTPSOnly(t *testing.T) {
 	downloader := NewDownloader()
 	tmpDir := t.TempDir()
@@ -80,7 +80,7 @@ func TestDownloader_Download_HTTPSOnly(t *testing.T) {
 	}
 }
 
-// TestDownloader_Download_ServerError 测试服务器错误
+// TestDownloader_Download_ServerError 测试服务器错�?
 func TestDownloader_Download_ServerError(t *testing.T) {
 	// 创建返回 500 错误的测试服务器
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -123,7 +123,7 @@ func TestDownloader_Download_InvalidPath(t *testing.T) {
 
 // TestDownloader_Download_ProgressCallback 测试进度回调
 func TestDownloader_Download_ProgressCallback(t *testing.T) {
-	// 创建较大的测试内容
+	// 创建较大的测试内�?
 	testContent := strings.Repeat("A", 100*1024) // 100KB
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(testContent)))
@@ -178,7 +178,7 @@ func TestDownloader_DownloadWithRetry_Success(t *testing.T) {
 	attemptCount := 0
 	testContent := "test content"
 
-	// 创建前两次失败，第三次成功的服务器
+	// 创建前两次失败，第三次成功的服务�?
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		attemptCount++
 		if attemptCount < 3 {
@@ -218,7 +218,7 @@ func TestDownloader_DownloadWithRetry_Success(t *testing.T) {
 	}
 }
 
-// TestDownloader_DownloadWithRetry_MaxRetriesExceeded 测试超过最大重试次数
+// TestDownloader_DownloadWithRetry_MaxRetriesExceeded 测试超过最大重试次�?
 func TestDownloader_DownloadWithRetry_MaxRetriesExceeded(t *testing.T) {
 	attemptCount := 0
 
@@ -241,7 +241,7 @@ func TestDownloader_DownloadWithRetry_MaxRetriesExceeded(t *testing.T) {
 		t.Error("Expected error after max retries, got nil")
 	}
 
-	// 应该尝试 1 次初始 + 3 次重试 = 4 次
+	// 应该尝试 1 次初�?+ 3 次重�?= 4 �?
 	expectedAttempts := downloader.maxRetries + 1
 	if attemptCount != expectedAttempts {
 		t.Errorf("Expected %d attempts, got %d", expectedAttempts, attemptCount)
@@ -291,7 +291,7 @@ func TestDownloader_DownloadWithRetry_FirstAttemptSuccess(t *testing.T) {
 	}
 }
 
-// TestDownloader_Download_NoProgressCallback 测试不提供进度回调
+// TestDownloader_Download_NoProgressCallback 测试不提供进度回�?
 func TestDownloader_Download_NoProgressCallback(t *testing.T) {
 	testContent := "test without callback"
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -307,7 +307,7 @@ func TestDownloader_Download_NoProgressCallback(t *testing.T) {
 	downloader := NewDownloader()
 	downloader.client = server.Client()
 
-	// 不提供进度回调
+	// 不提供进度回�?
 	err := downloader.Download(server.URL, destPath, nil)
 	if err != nil {
 		t.Fatalf("Download failed: %v", err)
@@ -319,9 +319,9 @@ func TestDownloader_Download_NoProgressCallback(t *testing.T) {
 	}
 }
 
-// TestDownloader_Download_LargeFile 测试下载大文件
+// TestDownloader_Download_LargeFile 测试下载大文�?
 func TestDownloader_Download_LargeFile(t *testing.T) {
-	// 创建 1MB 的测试内容
+	// 创建 1MB 的测试内�?
 	testContent := strings.Repeat("X", 1024*1024)
 	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Length", fmt.Sprintf("%d", len(testContent)))
@@ -355,7 +355,7 @@ func TestDownloader_Download_LargeFile(t *testing.T) {
 		t.Errorf("File size mismatch: got %d, want %d", info.Size(), len(testContent))
 	}
 
-	// 应该有多次进度更新
+	// 应该有多次进度更�?
 	if progressUpdates < 2 {
 		t.Errorf("Expected multiple progress updates, got %d", progressUpdates)
 	}

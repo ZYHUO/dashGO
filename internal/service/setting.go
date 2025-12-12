@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"xboard/internal/repository"
-	"xboard/pkg/cache"
+	"dashgo/internal/repository"
+	"dashgo/pkg/cache"
 )
 
 type SettingService struct {
@@ -73,7 +73,7 @@ func (s *SettingService) GetBool(key string, defaultVal bool) bool {
 	return val == "1" || val == "true"
 }
 
-// GetAll 获取所有设置
+// GetAll 获取所有设�?
 func (s *SettingService) GetAll() (map[string]string, error) {
 	return s.settingRepo.GetAll()
 }
@@ -138,7 +138,7 @@ type SiteSettings struct {
 
 // GetSiteSettings 获取站点设置
 func (s *SettingService) GetSiteSettings() (*SiteSettings, error) {
-	// 尝试从缓存获取
+	// 尝试从缓存获�?
 	var settings SiteSettings
 	cacheKey := cache.KeySiteSettings
 	if val, err := s.cache.Get(cacheKey); err == nil {
@@ -198,7 +198,7 @@ func (s *SettingService) SetSiteSettings(settings *SiteSettings) error {
 	return nil
 }
 
-// GetString 获取字符串设置
+// GetString 获取字符串设�?
 func (s *SettingService) GetString(key, defaultVal string) string {
 	val, err := s.Get(key)
 	if err != nil || val == "" {

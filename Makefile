@@ -32,7 +32,7 @@ deps:
 	$(GOMOD) tidy
 
 docker-build:
-	docker build -t xboard-go .
+	docker build -t dashgo .
 
 docker-run:
 	docker-compose up -d

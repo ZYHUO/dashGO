@@ -27,12 +27,12 @@ var (
 )
 
 func init() {
-	flag.StringVar(&panelURL, "panel", "", "面板地址 (如: https://your-panel.com)")
+	flag.StringVar(&panelURL, "panel", "", "面板地址 (�? https://your-panel.com)")
 	flag.StringVar(&token, "token", "", "主机 Token")
 	flag.StringVar(&configPath, "config", "/etc/sing-box/config.json", "sing-box 配置文件路径")
-	flag.StringVar(&singboxBin, "singbox", "sing-box", "sing-box 可执行文件路径")
+	flag.StringVar(&singboxBin, "singbox", "sing-box", "sing-box 可执行文件路�?)
 	flag.BoolVar(&triggerUpdate, "update", false, "手动触发更新")
-	flag.BoolVar(&autoUpdate, "auto-update", true, "是否启用自动更新检查")
+	flag.BoolVar(&autoUpdate, "auto-update", true, "是否启用自动更新检�?)
 	flag.IntVar(&updateCheckInterval, "update-check-interval", 3600, "更新检查间隔（秒）")
 }
 
@@ -59,18 +59,18 @@ type Agent struct {
 	httpClient          *http.Client
 	userVersions        map[int64]int64        // 节点用户版本缓存
 	userHashes          map[int64]string       // 节点用户哈希缓存
-	lastTraffic         map[string]TrafficData // 上次流量数据，用于计算增量
+	lastTraffic         map[string]TrafficData // 上次流量数据，用于计算增�?
 	nodeConfigs         []NodeConfig           // 当前节点配置
 	clashAPIPort        int                    // Clash API 端口
 	portUserMap         map[int][]string       // 端口到用户的映射（用于单端口多用户场景）
-	versionManager      *VersionManager        // 版本管理器
+	versionManager      *VersionManager        // 版本管理�?
 	updateChecker       *UpdateChecker         // 更新检查器
-	updateNotifier      *UpdateNotifier        // 更新通知器
+	updateNotifier      *UpdateNotifier        // 更新通知�?
 	updatePending       *UpdateInfo            // 待处理的更新信息
 	manualUpdate        bool                   // 是否手动触发更新
-	autoUpdate          bool                   // 是否启用自动更新检查
-	updateCheckInterval time.Duration          // 更新检查间隔
-	updateMutex         sync.Mutex             // 更新互斥锁
+	autoUpdate          bool                   // 是否启用自动更新检�?
+	updateCheckInterval time.Duration          // 更新检查间�?
+	updateMutex         sync.Mutex             // 更新互斥�?
 	updating            bool                   // 是否正在更新
 }
 
@@ -107,7 +107,7 @@ func NewAgent(manualUpdate bool, autoUpdate bool, updateCheckInterval int) *Agen
 }
 
 // getNodeUsers 获取节点用户（支持增量同步）
-// nodeType: "server" 或 "node"
+// nodeType: "server" �?"node"
 func (a *Agent) getNodeUsers(nodeID int64, nodeType string) ([]map[string]interface{}, bool, error) {
 	hash := a.userHashes[nodeID]
 
@@ -222,7 +222,7 @@ func (a *Agent) sendHeartbeat() error {
 					updateInfo.ReleaseNotes = releaseNotes
 				}
 				
-				// 如果有版本信息，检查是否需要更新
+				// 如果有版本信息，检查是否需要更�?
 				if updateInfo.LatestVersion != "" {
 					a.handleUpdateInfo(updateInfo)
 				}
@@ -233,7 +233,7 @@ func (a *Agent) sendHeartbeat() error {
 	return err
 }
 
-// checkForUpdates 检查更新
+// checkForUpdates 检查更�?
 func (a *Agent) checkForUpdates() error {
 	currentVersion := a.versionManager.GetCurrentVersion()
 	
@@ -264,8 +264,8 @@ func (a *Agent) handleUpdateInfo(updateInfo *UpdateInfo) {
 		return
 	}
 	
-	// 检测到新版本
-	fmt.Printf("🔔 检测到新版本: %s (当前版本: %s)\n", 
+	// 检测到新版�?
+	fmt.Printf("🔔 检测到新版�? %s (当前版本: %s)\n", 
 		updateInfo.LatestVersion, 
 		a.versionManager.GetCurrentVersion())
 	
@@ -278,13 +278,13 @@ func (a *Agent) handleUpdateInfo(updateInfo *UpdateInfo) {
 		fmt.Println("🚀 自动更新策略已启用，准备更新...")
 		if err := a.performUpdate(updateInfo); err != nil {
 			// 错误已在 performUpdate 中处理和记录
-			fmt.Printf("❌ 自动更新失败: %v\n", err)
+			fmt.Printf("�?自动更新失败: %v\n", err)
 		}
 	} else {
 		// 手动更新策略
 		fmt.Println("ℹ️  手动更新策略已启用，等待手动触发更新")
 		fmt.Printf("   下载地址: %s\n", updateInfo.DownloadURL)
-		fmt.Println("   使用 -update 参数重启 Agent 以执行更新")
+		fmt.Println("   使用 -update 参数重启 Agent 以执行更�?)
 		
 		// 保存待处理的更新信息
 		a.updatePending = updateInfo
@@ -294,7 +294,7 @@ func (a *Agent) handleUpdateInfo(updateInfo *UpdateInfo) {
 			fmt.Println("🚀 手动触发更新...")
 			if err := a.performUpdate(updateInfo); err != nil {
 				// 错误已在 performUpdate 中处理和记录
-				fmt.Printf("❌ 手动更新失败: %v\n", err)
+				fmt.Printf("�?手动更新失败: %v\n", err)
 			}
 		}
 	}
@@ -302,12 +302,12 @@ func (a *Agent) handleUpdateInfo(updateInfo *UpdateInfo) {
 
 // performUpdate 执行更新流程
 func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
-	// 使用互斥锁防止并发更新
+	// 使用互斥锁防止并发更�?
 	a.updateMutex.Lock()
 	defer a.updateMutex.Unlock()
 	
 	if a.updating {
-		err := fmt.Errorf("更新已在进行中")
+		err := fmt.Errorf("更新已在进行�?)
 		HandleError(err)
 		return err
 	}
@@ -318,24 +318,24 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 	currentVersion := a.versionManager.GetCurrentVersion()
 	targetVersion := updateInfo.LatestVersion
 	
-	fmt.Printf("🚀 开始更新流程: %s -> %s\n", currentVersion, targetVersion)
+	fmt.Printf("🚀 开始更新流�? %s -> %s\n", currentVersion, targetVersion)
 	fmt.Println("📥 开始下载新版本...")
 	
-	// 创建更新器
+	// 创建更新�?
 	updater, err := NewUpdater()
 	if err != nil {
-		updateErr := NewUpdateError("创建更新器失败", err)
+		updateErr := NewUpdateError("创建更新器失�?, err)
 		HandleError(updateErr)
 		a.updateNotifier.NotifyFailure(currentVersion, targetVersion, updateErr)
 		return updateErr
 	}
 	
-	// 创建下载器
+	// 创建下载�?
 	downloader := NewDownloader()
 	
 	// 下载新版本到临时文件
 	newPath := updater.GetNewPath()
-	fmt.Printf("   下载到: %s\n", newPath)
+	fmt.Printf("   下载�? %s\n", newPath)
 	
 	if err := downloader.DownloadWithRetry(updateInfo.DownloadURL, newPath); err != nil {
 		updateErr := NewNetworkError("下载失败", err)
@@ -344,10 +344,10 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 		return updateErr
 	}
 	
-	fmt.Println("✓ 下载完成")
+	fmt.Println("�?下载完成")
 	
 	// 验证文件
-	fmt.Println("🔍 验证文件完整性...")
+	fmt.Println("🔍 验证文件完整�?..")
 	verifier := NewFileVerifier()
 	
 	if err := verifier.VerifyAll(newPath, updateInfo.FileSize, updateInfo.SHA256); err != nil {
@@ -359,7 +359,7 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 		return updateErr
 	}
 	
-	fmt.Println("✓ 文件验证通过")
+	fmt.Println("�?文件验证通过")
 	
 	// 备份当前版本
 	fmt.Println("💾 备份当前版本...")
@@ -371,53 +371,53 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 		return updateErr
 	}
 	
-	fmt.Println("✓ 备份完成")
+	fmt.Println("�?备份完成")
 	
-	// 替换可执行文件
-	fmt.Println("🔄 替换可执行文件...")
+	// 替换可执行文�?
+	fmt.Println("🔄 替换可执行文�?..")
 	if err := updater.Replace(); err != nil {
-		// 替换失败，尝试回滚
-		fmt.Println("⚠ 替换失败，正在回滚...")
+		// 替换失败，尝试回�?
+		fmt.Println("�?替换失败，正在回�?..")
 		if rollbackErr := updater.Rollback(); rollbackErr != nil {
-			updateErr := NewUpdateError("替换失败且回滚失败", err)
+			updateErr := NewUpdateError("替换失败且回滚失�?, err)
 			HandleError(updateErr)
 			a.updateNotifier.NotifyFailure(currentVersion, targetVersion, updateErr)
 			return updateErr
 		}
-		fmt.Println("✓ 已回滚到原版本")
+		fmt.Println("�?已回滚到原版�?)
 		updateErr := NewUpdateError("替换失败", err)
 		HandleError(updateErr)
 		a.updateNotifier.NotifyRollback(currentVersion, targetVersion, updateErr)
 		return updateErr
 	}
 	
-	fmt.Println("✓ 替换完成")
+	fmt.Println("�?替换完成")
 	
-	// 注意：sing-box 进程继续运行，不需要停止
-	fmt.Println("ℹ️  sing-box 服务继续运行中...")
+	// 注意：sing-box 进程继续运行，不需要停�?
+	fmt.Println("ℹ️  sing-box 服务继续运行�?..")
 	
 	// 发送更新成功通知（在重启前发送，因为重启会退出进程）
 	fmt.Println("📤 发送更新成功通知...")
 	if err := a.updateNotifier.NotifySuccess(currentVersion, targetVersion); err != nil {
-		// 通知失败不影响更新流程
-		fmt.Printf("⚠ 发送成功通知失败: %v\n", err)
+		// 通知失败不影响更新流�?
+		fmt.Printf("�?发送成功通知失败: %v\n", err)
 	}
 	
-	// 重启 Agent（新进程会接管 sing-box 管理）
+	// 重启 Agent（新进程会接�?sing-box 管理�?
 	fmt.Println("🔄 重启 Agent...")
-	fmt.Printf("✓ 更新成功！正在启动新版本 %s\n", targetVersion)
+	fmt.Printf("�?更新成功！正在启动新版本 %s\n", targetVersion)
 	
-	// 重启会导致当前进程退出
+	// 重启会导致当前进程退�?
 	if err := updater.Restart(); err != nil {
-		// 重启失败，回滚
-		fmt.Println("⚠ 重启失败，正在回滚...")
+		// 重启失败，回�?
+		fmt.Println("�?重启失败，正在回�?..")
 		if rollbackErr := updater.Rollback(); rollbackErr != nil {
-			updateErr := NewUpdateError("重启失败且回滚失败", err)
+			updateErr := NewUpdateError("重启失败且回滚失�?, err)
 			HandleError(updateErr)
 			a.updateNotifier.NotifyFailure(currentVersion, targetVersion, updateErr)
 			return updateErr
 		}
-		fmt.Println("✓ 已回滚到原版本")
+		fmt.Println("�?已回滚到原版�?)
 		updateErr := NewUpdateError("重启失败", err)
 		HandleError(updateErr)
 		a.updateNotifier.NotifyRollback(currentVersion, targetVersion, updateErr)
@@ -463,7 +463,7 @@ func (a *Agent) updateConfig(config *AgentConfig) (bool, error) {
 		a.portUserMap[node.Port] = users
 	}
 
-	// 注入用户到 inbounds
+	// 注入用户�?inbounds
 	singboxConfig := config.SingBoxConfig
 	hasUserChange := false
 
@@ -471,11 +471,11 @@ func (a *Agent) updateConfig(config *AgentConfig) (bool, error) {
 		for i, inbound := range inbounds {
 			if ib, ok := inbound.(map[string]interface{}); ok {
 				tag, _ := ib["tag"].(string)
-				// 找到对应的节点配置
+				// 找到对应的节点配�?
 				for _, node := range config.Nodes {
 					if node.Tag == tag {
-						// 直接使用配置中的用户（已经是正确格式）
-						// 不再单独调用用户接口，因为 GetAgentConfig 已经返回了正确格式的用户
+						// 直接使用配置中的用户（已经是正确格式�?
+						// 不再单独调用用户接口，因�?GetAgentConfig 已经返回了正确格式的用户
 						if len(node.Users) > 0 {
 							ib["users"] = node.Users
 							hasUserChange = true
@@ -530,7 +530,7 @@ func (a *Agent) startSingbox() error {
 		return err
 	}
 
-	fmt.Println("✓ sing-box 已启动")
+	fmt.Println("�?sing-box 已启�?)
 	return nil
 }
 
@@ -538,7 +538,7 @@ func (a *Agent) stopSingbox() {
 	if a.singboxCmd != nil && a.singboxCmd.Process != nil {
 		a.singboxCmd.Process.Signal(syscall.SIGTERM)
 		a.singboxCmd.Wait()
-		fmt.Println("✓ sing-box 已停止")
+		fmt.Println("�?sing-box 已停�?)
 	}
 }
 
@@ -548,7 +548,7 @@ type ConnectionTraffic struct {
 	Download int64
 }
 
-// getTrafficFromClashAPI 从 Clash API 获取流量统计
+// getTrafficFromClashAPI �?Clash API 获取流量统计
 // 通过跟踪每个连接的流量变化来计算用户流量
 func (a *Agent) getTrafficFromClashAPI() (map[string]TrafficData, error) {
 	url := fmt.Sprintf("http://127.0.0.1:%d/connections", a.clashAPIPort)
@@ -607,23 +607,23 @@ func (a *Agent) getTrafficFromClashAPI() (map[string]TrafficData, error) {
 	return traffic, nil
 }
 
-// reportTraffic 上报流量到面板
+// reportTraffic 上报流量到面�?
 // 策略：优先尝试用户级流量，失败则使用端口流量平均分配
 func (a *Agent) reportTraffic() error {
-	// 方案1：尝试从 Clash API 获取用户级流量
+	// 方案1：尝试从 Clash API 获取用户级流�?
 	traffic, err := a.getTrafficFromClashAPI()
 	if err == nil && len(traffic) > 0 {
 		return a.reportUserTraffic(traffic)
 	}
 
-	// 方案2：使用端口流量平均分配（备用方案）
-	// 这种方式不够精确，但至少能统计总流量
+	// 方案2：使用端口流量平均分配（备用方案�?
+	// 这种方式不够精确，但至少能统计总流�?
 	return a.reportTrafficByPort()
 }
 
-// reportUserTraffic 上报用户级流量（精确统计）
+// reportUserTraffic 上报用户级流量（精确统计�?
 func (a *Agent) reportUserTraffic(traffic map[string]TrafficData) error {
-	fmt.Printf("📊 获取到 %d 个用户的流量数据\n", len(traffic))
+	fmt.Printf("📊 获取�?%d 个用户的流量数据\n", len(traffic))
 
 	// 计算增量流量
 	trafficReport := make([]map[string]interface{}, 0)
@@ -632,14 +632,14 @@ func (a *Agent) reportUserTraffic(traffic map[string]TrafficData) error {
 		uploadDelta := data.Upload - last.Upload
 		downloadDelta := data.Download - last.Download
 
-		// 只上报有增量的用户
+		// 只上报有增量的用�?
 		if uploadDelta > 0 || downloadDelta > 0 {
 			trafficReport = append(trafficReport, map[string]interface{}{
 				"username": user,
 				"upload":   uploadDelta,
 				"download": downloadDelta,
 			})
-			fmt.Printf("  用户 %s: ↑%.2f MB ↓%.2f MB\n", user, float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
+			fmt.Printf("  用户 %s: �?.2f MB �?.2f MB\n", user, float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
 		}
 		a.lastTraffic[user] = data
 	}
@@ -661,17 +661,17 @@ func (a *Agent) reportUserTraffic(traffic map[string]TrafficData) error {
 		"nodes": nodes,
 	})
 	if err != nil {
-		fmt.Printf("⚠ 流量上报失败: %v\n", err)
+		fmt.Printf("�?流量上报失败: %v\n", err)
 	} else {
-		fmt.Printf("✓ 已上报 %d 个用户的流量\n", len(trafficReport))
+		fmt.Printf("�?已上�?%d 个用户的流量\n", len(trafficReport))
 	}
 	return err
 }
 
-// reportTrafficByPort 通过端口流量平均分配给用户（备用方案）
-// 注意：这种方式不够精确，但至少能统计总流量
+// reportTrafficByPort 通过端口流量平均分配给用户（备用方案�?
+// 注意：这种方式不够精确，但至少能统计总流�?
 func (a *Agent) reportTrafficByPort() error {
-	// 尝试从 Clash API 获取总流量
+	// 尝试�?Clash API 获取总流�?
 	url := fmt.Sprintf("http://127.0.0.1:%d/traffic", a.clashAPIPort)
 	resp, err := a.httpClient.Get(url)
 	if err != nil {
@@ -688,7 +688,7 @@ func (a *Agent) reportTrafficByPort() error {
 		return nil
 	}
 
-	// 如果没有流量，直接返回
+	// 如果没有流量，直接返�?
 	if result.Up == 0 && result.Down == 0 {
 		return nil
 	}
@@ -707,7 +707,7 @@ func (a *Agent) reportTrafficByPort() error {
 		Download: result.Down,
 	}
 
-	fmt.Printf("📊 总流量（平均分配模式）: ↑%.2f MB ↓%.2f MB\n", float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
+	fmt.Printf("📊 总流量（平均分配模式�? �?.2f MB �?.2f MB\n", float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
 
 	// 统计所有用户数
 	totalUsers := 0
@@ -719,7 +719,7 @@ func (a *Agent) reportTrafficByPort() error {
 		return nil
 	}
 
-	// 为每个节点的所有用户平均分配流量
+	// 为每个节点的所有用户平均分配流�?
 	nodes := make([]map[string]interface{}, 0)
 	for _, node := range a.nodeConfigs {
 		users := a.portUserMap[node.Port]
@@ -750,7 +750,7 @@ func (a *Agent) reportTrafficByPort() error {
 			"users": trafficReport,
 		})
 
-		fmt.Printf("  节点 %d: 为 %d 个用户分配流量（平均 ↑%.2f MB ↓%.2f MB/人）\n", 
+		fmt.Printf("  节点 %d: �?%d 个用户分配流量（平均 �?.2f MB �?.2f MB/人）\n", 
 			node.ID, len(users), 
 			float64(avgUpload)/1024/1024, 
 			float64(avgDownload)/1024/1024)
@@ -764,58 +764,58 @@ func (a *Agent) reportTrafficByPort() error {
 		"nodes": nodes,
 	})
 	if err != nil {
-		fmt.Printf("⚠ 流量上报失败: %v\n", err)
+		fmt.Printf("�?流量上报失败: %v\n", err)
 	} else {
-		fmt.Printf("✓ 已上报流量（平均分配模式）\n")
+		fmt.Printf("�?已上报流量（平均分配模式）\n")
 	}
 	return err
 }
 
 func (a *Agent) Run() {
-	// 启动时记录当前版本
+	// 启动时记录当前版�?
 	currentVersion := a.versionManager.GetCurrentVersion()
 	fmt.Printf("XBoard Agent %s\n", currentVersion)
 	fmt.Printf("面板: %s\n", a.panelURL)
 	
 	// 显示更新配置
 	if a.autoUpdate {
-		fmt.Printf("自动更新: 已启用 (检查间隔: %v)\n", a.updateCheckInterval)
+		fmt.Printf("自动更新: 已启�?(检查间�? %v)\n", a.updateCheckInterval)
 	} else {
-		fmt.Println("自动更新: 已禁用")
+		fmt.Println("自动更新: 已禁�?)
 	}
 	
 	fmt.Println("正在连接...")
 
-	// 首次获取配置并启动
+	// 首次获取配置并启�?
 	config, err := a.getConfig()
 	if err != nil {
-		fmt.Printf("✗ 获取配置失败: %v\n", err)
+		fmt.Printf("�?获取配置失败: %v\n", err)
 		os.Exit(1)
 	}
 
 	if _, err := a.updateConfig(config); err != nil {
-		fmt.Printf("✗ 更新配置失败: %v\n", err)
+		fmt.Printf("�?更新配置失败: %v\n", err)
 		os.Exit(1)
 	}
 
 	if err := a.startSingbox(); err != nil {
-		fmt.Printf("✗ 启动 sing-box 失败: %v\n", err)
+		fmt.Printf("�?启动 sing-box 失败: %v\n", err)
 		os.Exit(1)
 	}
 
-	// 发送首次心跳（包含版本信息）
+	// 发送首次心跳（包含版本信息�?
 	if err := a.sendHeartbeat(); err != nil {
-		fmt.Printf("⚠ 心跳发送失败: %v\n", err)
+		fmt.Printf("�?心跳发送失�? %v\n", err)
 	} else {
-		fmt.Println("✓ 已连接到面板")
+		fmt.Println("�?已连接到面板")
 	}
 
 	// 启动定时任务
 	heartbeatTicker := time.NewTicker(30 * time.Second)
 	configTicker := time.NewTicker(60 * time.Second)
-	trafficTicker := time.NewTicker(60 * time.Second) // 每分钟上报流量
+	trafficTicker := time.NewTicker(60 * time.Second) // 每分钟上报流�?
 	
-	// 添加定期检查更新的 ticker（可配置间隔）
+	// 添加定期检查更新的 ticker（可配置间隔�?
 	var updateCheckTicker *time.Ticker
 	if a.autoUpdate && a.updateCheckInterval > 0 {
 		updateCheckTicker = time.NewTicker(a.updateCheckInterval)
@@ -830,31 +830,31 @@ func (a *Agent) Run() {
 		select {
 		case <-heartbeatTicker.C:
 			if err := a.sendHeartbeat(); err != nil {
-				fmt.Printf("⚠ 心跳失败: %v\n", err)
+				fmt.Printf("�?心跳失败: %v\n", err)
 			}
 
 		case <-trafficTicker.C:
 			if err := a.reportTraffic(); err != nil {
-				// 流量上报失败不打印错误，可能是 sing-box 还没启动完成
+				// 流量上报失败不打印错误，可能�?sing-box 还没启动完成
 			}
 
 		case <-configTicker.C:
 			config, err := a.getConfig()
 			if err != nil {
-				fmt.Printf("⚠ 获取配置失败: %v\n", err)
+				fmt.Printf("�?获取配置失败: %v\n", err)
 				continue
 			}
 
 			updated, err := a.updateConfig(config)
 			if err != nil {
-				fmt.Printf("⚠ 更新配置失败: %v\n", err)
+				fmt.Printf("�?更新配置失败: %v\n", err)
 				continue
 			}
 
 			if updated {
 				fmt.Println("配置已更新，重启 sing-box...")
 				if err := a.startSingbox(); err != nil {
-					fmt.Printf("✗ 重启失败: %v\n", err)
+					fmt.Printf("�?重启失败: %v\n", err)
 				}
 			}
 
@@ -865,13 +865,13 @@ func (a *Agent) Run() {
 			// 返回一个永远不会触发的 channel
 			return make(<-chan time.Time)
 		}():
-			// 定期检查更新
+			// 定期检查更�?
 			if err := a.checkForUpdates(); err != nil {
-				fmt.Printf("⚠ 检查更新失败: %v\n", err)
+				fmt.Printf("�?检查更新失�? %v\n", err)
 			}
 
 		case sig := <-sigChan:
-			fmt.Printf("\n收到信号 %v，正在退出...\n", sig)
+			fmt.Printf("\n收到信号 %v，正在退�?..\n", sig)
 			heartbeatTicker.Stop()
 			configTicker.Stop()
 			trafficTicker.Stop()

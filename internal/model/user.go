@@ -48,7 +48,7 @@ func (User) TableName() string {
 	return "v2_user"
 }
 
-// IsActive 检查用户是否活跃
+// IsActive 检查用户是否活�?
 func (u *User) IsActive() bool {
 	if u.Banned {
 		return false
@@ -67,7 +67,7 @@ func (u *User) HasTraffic() bool {
 	return u.U+u.D < u.TransferEnable
 }
 
-// GetUsedTraffic 获取已使用流量
+// GetUsedTraffic 获取已使用流�?
 func (u *User) GetUsedTraffic() int64 {
 	return u.U + u.D
 }

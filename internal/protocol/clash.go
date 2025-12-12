@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 
 	"gopkg.in/yaml.v3"
 )
@@ -63,10 +63,10 @@ func GenerateClashConfig(servers []service.ServerInfo, user *model.User) string 
 		groupName := config.ProxyGroups[i].Name
 		switch groupName {
 		case "🚀 节点选择":
-			// 节点选择组：添加所有节点
+			// 节点选择组：添加所有节�?
 			config.ProxyGroups[i].Proxies = append(config.ProxyGroups[i].Proxies, proxyNames...)
 		case "♻️ 自动选择", "🔯 故障转移", "🔮 负载均衡":
-			// 自动选择/故障转移/负载均衡：添加所有节点
+			// 自动选择/故障转移/负载均衡：添加所有节�?
 			config.ProxyGroups[i].Proxies = proxyNames
 		case "📲 电报消息", "🤖 OpenAI", "📹 YouTube", "🎬 Netflix", "🍎 苹果服务", "🎮 游戏平台", "🐟 漏网之鱼":
 			// 其他分组：添加所有节点到末尾
@@ -84,7 +84,7 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		// 获取加密方式，优先使用 method，其次 cipher
+		// 获取加密方式，优先使�?method，其�?cipher
 		cipher := "aes-256-gcm"
 		if m, ok := ps["method"].(string); ok && m != "" {
 			cipher = m
@@ -92,8 +92,8 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 			cipher = c
 		}
 
-		// 密码：对于 SS2022，使用 server.Password（已包含服务器密钥:用户密钥格式）
-		// 对于普通 SS，使用用户 UUID
+		// 密码：对�?SS2022，使�?server.Password（已包含服务器密�?用户密钥格式�?
+		// 对于普�?SS，使用用�?UUID
 		password := server.Password
 		if password == "" {
 			password = user.UUID
@@ -329,7 +329,7 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 		return proxy
 
 	case "shadowtls":
-		// ShadowTLS 在 Clash Meta 中需要配合 SS 使用
+		// ShadowTLS �?Clash Meta 中需要配�?SS 使用
 		proxy := map[string]interface{}{
 			"name":               server.Name,
 			"type":               "ss",
@@ -354,7 +354,7 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 		return proxy
 
 	case "naive":
-		// NaiveProxy 在 Clash Meta 中不直接支持，返回 nil
+		// NaiveProxy �?Clash Meta 中不直接支持，返�?nil
 		return nil
 	}
 
@@ -414,7 +414,7 @@ func parsePluginOpts(opts string) map[string]interface{} {
 
 // parsePort 解析端口字符串，返回整数端口
 func parsePort(portStr string) int {
-	// 处理端口范围，取第一个端口
+	// 处理端口范围，取第一个端�?
 	if strings.Contains(portStr, "-") {
 		parts := strings.Split(portStr, "-")
 		portStr = parts[0]

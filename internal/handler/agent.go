@@ -7,13 +7,13 @@ import (
 	"net/http"
 	"strconv"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
 
-// AgentAuth Agent 认证中间件
+// AgentAuth Agent 认证中间�?
 func AgentAuth(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.GetHeader("Authorization")
@@ -84,7 +84,7 @@ func AgentGetConfig(services *service.Services) gin.HandlerFunc {
 }
 
 // AgentGetUsers 获取节点用户（支持增量同步）
-// 注意：此接口返回的是 sing-box 格式的用户配置，包含 name 和 password
+// 注意：此接口返回的是 sing-box 格式的用户配置，包含 name �?password
 func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		host := getHostFromContext(c)
@@ -94,7 +94,7 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 		}
 
 		nodeID, _ := strconv.ParseInt(c.Query("node_id"), 10, 64)
-		nodeType := c.Query("type") // server 或 node
+		nodeType := c.Query("type") // server �?node
 		lastHash := c.Query("hash")
 
 		if nodeID == 0 {
@@ -106,13 +106,13 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 
 		// 根据类型获取用户
 		if nodeType == "server" {
-			// 从 Server 获取用户
+			// �?Server 获取用户
 			server, err := services.Server.FindServer(nodeID, "")
 			if err != nil {
 				c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
 				return
 			}
-			// 验证 Server 属于该主机
+			// 验证 Server 属于该主�?
 			if server.HostID == nil || *server.HostID != host.ID {
 				c.JSON(http.StatusForbidden, gin.H{"error": "server not belong to this host"})
 				return
@@ -124,13 +124,13 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 				return
 			}
 		} else {
-			// 从 ServerNode 获取用户
+			// �?ServerNode 获取用户
 			node, nodeErr := services.Host.GetNodeByID(nodeID)
 			if nodeErr != nil {
 				c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})
 				return
 			}
-			// 验证节点属于该主机
+			// 验证节点属于该主�?
 			if node.HostID != host.ID {
 				c.JSON(http.StatusForbidden, gin.H{"error": "node not belong to this host"})
 				return
@@ -168,7 +168,7 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AgentSyncStatus Agent 同步状态
+// AgentSyncStatus Agent 同步状�?
 func AgentSyncStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		host := getHostFromContext(c)
@@ -194,7 +194,7 @@ func AgentSyncStatus(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 更新节点状态
+		// 更新节点状�?
 		for _, nodeData := range req.Nodes {
 			services.Server.UpdateOnlineUsers(nodeData.ID, "", nodeData.OnlineUsers)
 			services.Server.UpdateLoadStatus(nodeData.ID, "", map[string]interface{}{
@@ -240,13 +240,13 @@ func AgentReportTraffic(services *service.Services) gin.HandlerFunc {
 			var serverType string = "unknown"
 			var serverID int64 = nodeData.ID
 			
-			// 尝试从 Server 获取
+			// 尝试�?Server 获取
 			server, err := services.Server.FindServer(nodeData.ID, "")
 			if err == nil && server != nil {
 				rate = server.Rate
 				serverType = server.Type
 			} else {
-				// 尝试从 ServerNode 获取
+				// 尝试�?ServerNode 获取
 				node, err := services.Host.GetNodeByID(nodeData.ID)
 				if err == nil && node != nil {
 					rate = node.Rate
@@ -254,13 +254,13 @@ func AgentReportTraffic(services *service.Services) gin.HandlerFunc {
 				}
 			}
 
-			// 处理每个用户的流量
+			// 处理每个用户的流�?
 			for _, userData := range nodeData.Users {
 				if userData.Upload == 0 && userData.Download == 0 {
 					continue
 				}
 				
-				// Username 是 UUID 的前8位，使用前缀匹配
+				// Username �?UUID 的前8位，使用前缀匹配
 				user, err := services.User.GetByUUIDPrefix(userData.Username)
 				if err != nil {
 					continue
@@ -273,21 +273,21 @@ func AgentReportTraffic(services *service.Services) gin.HandlerFunc {
 				// 更新用户流量
 				services.User.UpdateTraffic(user.ID, u, d)
 				
-				// 记录用户流量统计（日统计）
+				// 记录用户流量统计（日统计�?
 				services.NodeSync.RecordUserTrafficStat(user.ID, rate, u, d)
 				
 				// 记录流量日志
 				services.NodeSync.RecordTrafficLog(user.ID, serverID, u, d, rate)
 			}
 			
-			// 计算节点总流量
+			// 计算节点总流�?
 			var totalU, totalD int64
 			for _, userData := range nodeData.Users {
 				totalU += int64(float64(userData.Upload) * rate)
 				totalD += int64(float64(userData.Download) * rate)
 			}
 			
-			// 记录节点流量统计（日统计）
+			// 记录节点流量统计（日统计�?
 			if totalU > 0 || totalD > 0 {
 				services.NodeSync.RecordServerTrafficStat(serverID, serverType, totalU, totalD)
 			}
@@ -502,13 +502,13 @@ func AgentGetVersion(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 获取当前 Agent 版本（从请求头或查询参数）
+		// 获取当前 Agent 版本（从请求头或查询参数�?
 		currentVersion := c.GetHeader("X-Agent-Version")
 		if currentVersion == "" {
 			currentVersion = c.Query("version")
 		}
 
-		// 从数据库获取最新版本信息
+		// 从数据库获取最新版本信�?
 		version, err := services.AgentVersion.GetLatestVersion()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -565,10 +565,10 @@ func AgentUpdateStatus(services *service.Services) gin.HandlerFunc {
 
 		// 打印日志
 		if req.Status == "success" {
-			fmt.Printf("✅ Host %d (%s) updated successfully: %s -> %s\n",
+			fmt.Printf("�?Host %d (%s) updated successfully: %s -> %s\n",
 				host.ID, host.Name, req.FromVersion, req.ToVersion)
 		} else if req.Status == "failed" {
-			fmt.Printf("❌ Host %d (%s) update failed: %s -> %s, error: %s\n",
+			fmt.Printf("�?Host %d (%s) update failed: %s -> %s, error: %s\n",
 				host.ID, host.Name, req.FromVersion, req.ToVersion, req.ErrorMessage)
 		} else if req.Status == "rollback" {
 			fmt.Printf("🔄 Host %d (%s) rolled back: %s -> %s, reason: %s\n",
@@ -645,7 +645,7 @@ func AdminUpdateAgentVersion(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminSetLatestAgentVersion 设置最新版本
+// AdminSetLatestAgentVersion 设置最新版�?
 func AdminSetLatestAgentVersion(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)

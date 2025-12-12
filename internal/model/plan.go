@@ -6,7 +6,7 @@ type Plan struct {
 	GroupID            *int64    `gorm:"column:group_id" json:"group_id"`
 	TransferEnable     int64     `gorm:"column:transfer_enable" json:"transfer_enable"`       // 流量配额（字节）
 	Name               string    `gorm:"column:name" json:"name"`
-	SpeedLimit         *int      `gorm:"column:speed_limit" json:"speed_limit"`               // 速度限制（Mbps）
+	SpeedLimit         *int      `gorm:"column:speed_limit" json:"speed_limit"`               // 速度限制（Mbps�?
 	DeviceLimit        *int      `gorm:"column:device_limit" json:"device_limit"`             // 设备数量限制
 	Show               bool      `gorm:"column:show;default:false" json:"show"`
 	Sell               bool      `gorm:"column:sell;default:true" json:"sell"`
@@ -22,8 +22,8 @@ type Plan struct {
 	OnetimePrice       *int64    `gorm:"column:onetime_price" json:"onetime_price"`
 	ResetPrice         *int64    `gorm:"column:reset_price" json:"reset_price"`
 	ResetTrafficMethod *int      `gorm:"column:reset_traffic_method" json:"reset_traffic_method"`
-	CapacityLimit      *int      `gorm:"column:capacity_limit" json:"capacity_limit"`         // 最大可售数量（null或0=不限制）
-	SoldCount          int       `gorm:"column:sold_count;default:0" json:"sold_count"`       // 已售出数量
+	CapacityLimit      *int      `gorm:"column:capacity_limit" json:"capacity_limit"`         // 最大可售数量（null�?=不限制）
+	SoldCount          int       `gorm:"column:sold_count;default:0" json:"sold_count"`       // 已售出数�?
 	UpgradeGroupID     *int64    `gorm:"column:upgrade_group_id" json:"upgrade_group_id"`     // 购买后升级到的用户组ID
 	CreatedAt          int64     `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt          int64     `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
@@ -36,10 +36,10 @@ func (Plan) TableName() string {
 // 流量重置方式
 const (
 	ResetTrafficFollowSystem  = -1 // 跟随系统设置
-	ResetTrafficFirstDayMonth = 0  // 每月1号
+	ResetTrafficFirstDayMonth = 0  // 每月1�?
 	ResetTrafficMonthly       = 1  // 按月重置
-	ResetTrafficNever         = 2  // 不重置
-	ResetTrafficFirstDayYear  = 3  // 每年1月1日
+	ResetTrafficNever         = 2  // 不重�?
+	ResetTrafficFirstDayYear  = 3  // 每年1�?�?
 	ResetTrafficYearly        = 4  // 按年重置
 )
 
@@ -77,7 +77,7 @@ func GetPeriodDays(period string) int {
 	}
 }
 
-// GetPriceByPeriod 获取指定周期的价格
+// GetPriceByPeriod 获取指定周期的价�?
 func (p *Plan) GetPriceByPeriod(period string) int64 {
 	switch period {
 	case PeriodMonthly:
@@ -116,20 +116,20 @@ func (p *Plan) GetPriceByPeriod(period string) int64 {
 	return 0
 }
 
-// CanPurchase 检查套餐是否可以购买
+// CanPurchase 检查套餐是否可以购�?
 func (p *Plan) CanPurchase() bool {
-	// 如果没有设置限制，可以购买
+	// 如果没有设置限制，可以购�?
 	if p.CapacityLimit == nil || *p.CapacityLimit <= 0 {
 		return true
 	}
 	
-	// 检查是否还有剩余
+	// 检查是否还有剩�?
 	return p.SoldCount < *p.CapacityLimit
 }
 
 // GetRemainingCount 获取剩余可售数量
 func (p *Plan) GetRemainingCount() int {
-	// 如果没有设置限制，返回 -1 表示不限制
+	// 如果没有设置限制，返�?-1 表示不限�?
 	if p.CapacityLimit == nil || *p.CapacityLimit <= 0 {
 		return -1
 	}

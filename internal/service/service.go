@@ -1,9 +1,9 @@
 package service
 
 import (
-	"xboard/internal/config"
-	"xboard/internal/repository"
-	"xboard/pkg/cache"
+	"dashgo/internal/config"
+	"dashgo/internal/repository"
+	"dashgo/pkg/cache"
 )
 
 type Services struct {
@@ -40,7 +40,7 @@ func NewServices(repos *repository.Repositories, cache *cache.Client, cfg *confi
 	orderService := NewOrderService(repos.Order, repos.User, repos.Plan, repos.Coupon)
 	userGroupService := NewUserGroupService(repos.UserGroup, repos.Server, repos.Plan, repos.User)
 	
-	// 设置 UserGroupService 的 ServerService 依赖
+	// 设置 UserGroupService �?ServerService 依赖
 	userGroupService.SetServerService(serverService)
 
 	return &Services{

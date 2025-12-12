@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 )
 
 // GenerateSurgeConfig 生成 Surge 配置
@@ -55,7 +55,7 @@ func buildSurgeProxy(server service.ServerInfo, user *model.User) string {
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		// 获取加密方式，默认 aes-256-gcm
+		// 获取加密方式，默�?aes-256-gcm
 		cipher := "aes-256-gcm"
 		if c, ok := ps["cipher"].(string); ok && c != "" {
 			cipher = c
@@ -67,7 +67,7 @@ func buildSurgeProxy(server service.ServerInfo, user *model.User) string {
 		if password == "" {
 			password = user.UUID
 		}
-		// Surge 支持的 SS 加密方式
+		// Surge 支持�?SS 加密方式
 		line := fmt.Sprintf("%s = ss, %s, %d, encrypt-method=%s, password=%s",
 			server.Name, server.Host, port, cipher, password)
 		
@@ -246,7 +246,7 @@ func buildSurgeProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case "shadowtls":
-		// ShadowTLS 在 Surge 中使用 SS + shadow-tls 插件
+		// ShadowTLS �?Surge 中使�?SS + shadow-tls 插件
 		cipher := "2022-blake3-aes-128-gcm"
 		if method, ok := ps["detour_method"].(string); ok && method != "" {
 			cipher = method
@@ -266,6 +266,6 @@ func buildSurgeProxy(server service.ServerInfo, user *model.User) string {
 
 // GenerateSurfboardConfig 生成 Surfboard 配置 (类似 Surge)
 func GenerateSurfboardConfig(servers []service.ServerInfo, user *model.User) string {
-	// Surfboard 配置格式与 Surge 类似
+	// Surfboard 配置格式�?Surge 类似
 	return GenerateSurgeConfig(servers, user)
 }

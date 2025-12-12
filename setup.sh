@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# XBoard-Go 一键安装/升级/修复脚本
+# dashGO 一键安装/升级/修复脚本
 # 支持：全新安装、现有数据库安装、升级、修复迁移问题
 
 set -e
@@ -44,13 +44,13 @@ download_binaries() {
     esac
     
     # 下载 server
-    if [ ! -f "xboard-server-linux-${ARCH}" ]; then
-        log_info "下载 xboard-server-linux-${ARCH}..."
-        if ! wget -q --show-progress "${DOWNLOAD_BASE_URL}/server/xboard-server-linux-${ARCH}" -O "xboard-server-linux-${ARCH}"; then
+    if [ ! -f "dashgo-server-linux-${ARCH}" ]; then
+        log_info "下载 dashgo-server-linux-${ARCH}..."
+        if ! wget -q --show-progress "${DOWNLOAD_BASE_URL}/server/dashgo-server-linux-${ARCH}" -O "dashgo-server-linux-${ARCH}"; then
             log_error "下载 server 失败"
             exit 1
         fi
-        chmod +x "xboard-server-linux-${ARCH}"
+        chmod +x "dashgo-server-linux-${ARCH}"
     fi
     
     # 下载 migrate
@@ -64,7 +64,7 @@ download_binaries() {
     fi
     
     # 创建符号链接
-    ln -sf "xboard-server-linux-${ARCH}" xboard-server
+    ln -sf "dashgo-server-linux-${ARCH}" dashgo-server
     ln -sf "migrate-linux-${ARCH}" migrate
     
     log_success "二进制文件下载完成"
@@ -83,8 +83,8 @@ show_banner() {
  ╚═╝  ╚═╝╚═════╝  ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═════╝        ╚═════╝  ╚═════╝ 
 EOF
     echo -e "${NC}"
-    echo -e "${GREEN}XBoard-Go 一键安装/升级/修复工具${NC}"
-    echo -e "${BLUE}https://github.com/ZYHUO/xboard-go${NC}"
+    echo -e "${GREEN}dashGO 一键安装/升级/修复工具${NC}"
+    echo -e "${BLUE}https://github.com/ZYHUO/dashGO${NC}"
     echo ""
 }
 
@@ -125,13 +125,13 @@ install_local() {
         log_info "使用 SQLite 数据库..."
         cat > "$CONFIG_FILE" <<EOF
 app:
-  name: "XBoard"
+  name: "dashGO"
   mode: "debug"
   listen: ":8080"
 
 database:
   driver: "sqlite"
-  database: "xboard.db"
+  database: "dashgo.db"
 
 redis:
   host: "localhost"
@@ -161,8 +161,8 @@ EOF
         read -p "MySQL 端口 (默认: 3306): " mysql_port
         mysql_port=${mysql_port:-3306}
         
-        read -p "数据库名 (默认: xboard): " mysql_db
-        mysql_db=${mysql_db:-xboard}
+        read -p "数据库名 (默认: dashgo): " mysql_db
+        mysql_db=${mysql_db:-dashgo}
         
         read -p "用户名 (默认: root): " mysql_user
         mysql_user=${mysql_user:-root}
@@ -172,7 +172,7 @@ EOF
         
         cat > "$CONFIG_FILE" <<EOF
 app:
-  name: "XBoard"
+  name: "dashGO"
   mode: "debug"
   listen: ":8080"
 
@@ -218,7 +218,7 @@ EOF
     log_success "安装完成！"
     echo ""
     echo "启动服务:"
-    echo "  ./xboard-server"
+    echo "  ./dashgo-server"
     echo ""
     echo "默认管理员账号:"
     echo "  邮箱: admin@example.com"
@@ -261,7 +261,7 @@ install_existing_db() {
     log_info "生成配置文件..."
     cat > "$CONFIG_FILE" <<EOF
 app:
-  name: "XBoard"
+  name: "dashGO"
   mode: "release"
   listen: ":8080"
 
@@ -306,7 +306,7 @@ EOF
     log_success "安装完成！"
     echo ""
     echo "启动服务:"
-    echo "  ./xboard-server"
+    echo "  ./dashgo-server"
     echo ""
 }
 
@@ -507,7 +507,7 @@ generate_config() {
         
         cat > "$CONFIG_FILE" <<EOF
 app:
-  name: "XBoard"
+  name: "dashGO"
   mode: "release"
   listen: ":8080"
 
@@ -543,13 +543,13 @@ EOF
         # SQLite
         cat > "$CONFIG_FILE" <<EOF
 app:
-  name: "XBoard"
+  name: "dashGO"
   mode: "release"
   listen: ":8080"
 
 database:
   driver: "sqlite"
-  database: "xboard.db"
+  database: "dashgo.db"
 
 redis:
   host: "localhost"

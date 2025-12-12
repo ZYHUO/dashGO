@@ -4,8 +4,8 @@ import (
 	"log"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/repository"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
 )
 
 // SchedulerService 定时任务服务
@@ -38,14 +38,14 @@ func (s *SchedulerService) Start() {
 	// 每天凌晨执行
 	go s.runDaily()
 
-	// 每小时执行
+	// 每小时执�?
 	go s.runHourly()
 
-	// 每分钟执行
+	// 每分钟执�?
 	go s.runMinutely()
 }
 
-// runDaily 每天执行的任务
+// runDaily 每天执行的任�?
 func (s *SchedulerService) runDaily() {
 	// 计算到明天凌晨的时间
 	now := time.Now()
@@ -85,14 +85,14 @@ func (s *SchedulerService) runMinutely() {
 func (s *SchedulerService) dailyTasks() {
 	log.Println("[Scheduler] Running daily tasks...")
 
-	// 1. 重置流量（每月1号）
+	// 1. 重置流量（每�?号）
 	if time.Now().Day() == 1 {
 		s.resetMonthlyTraffic()
 		// 生成上月的月统计
 		s.GenerateMonthlyStats()
 	}
 
-	// 2. 发送到期提醒
+	// 2. 发送到期提�?
 	s.sendExpireReminders()
 
 	// 3. 清理过期订单
@@ -107,18 +107,18 @@ func (s *SchedulerService) dailyTasks() {
 	}
 }
 
-// hourlyTasks 每小时任务
+// hourlyTasks 每小时任�?
 func (s *SchedulerService) hourlyTasks() {
-	// 1. 发送流量预警
+	// 1. 发送流量预�?
 	s.sendTrafficWarnings()
 }
 
-// minutelyTasks 每分钟任务
+// minutelyTasks 每分钟任�?
 func (s *SchedulerService) minutelyTasks() {
 	// 可以添加需要频繁执行的任务
 }
 
-// resetMonthlyTraffic 重置月流量
+// resetMonthlyTraffic 重置月流�?
 func (s *SchedulerService) resetMonthlyTraffic() {
 	log.Println("[Scheduler] Resetting monthly traffic...")
 
@@ -139,11 +139,11 @@ func (s *SchedulerService) resetMonthlyTraffic() {
 	log.Printf("[Scheduler] Reset traffic for %d users", len(users))
 }
 
-// sendExpireReminders 发送到期提醒
+// sendExpireReminders 发送到期提�?
 func (s *SchedulerService) sendExpireReminders() {
 	log.Println("[Scheduler] Sending expire reminders...")
 
-	// 获取即将到期的用户（3天内）
+	// 获取即将到期的用户（3天内�?
 	users, err := s.userRepo.GetUsersExpiringSoon(3)
 	if err != nil {
 		log.Printf("[Scheduler] Failed to get expiring users: %v", err)
@@ -160,12 +160,12 @@ func (s *SchedulerService) sendExpireReminders() {
 			daysLeft = int((*user.ExpiredAt - time.Now().Unix()) / 86400)
 		}
 
-		// 发送邮件
+		// 发送邮�?
 		if err := s.mailService.SendExpireReminder(&user, daysLeft); err != nil {
 			log.Printf("[Scheduler] Failed to send expire email to %s: %v", user.Email, err)
 		}
 
-		// 发送 Telegram
+		// 发�?Telegram
 		if err := s.tgService.NotifyExpire(&user, daysLeft); err != nil {
 			log.Printf("[Scheduler] Failed to send expire telegram to user %d: %v", user.ID, err)
 		}
@@ -174,9 +174,9 @@ func (s *SchedulerService) sendExpireReminders() {
 	log.Printf("[Scheduler] Sent expire reminders to %d users", len(users))
 }
 
-// sendTrafficWarnings 发送流量预警
+// sendTrafficWarnings 发送流量预�?
 func (s *SchedulerService) sendTrafficWarnings() {
-	// 获取流量使用超过 80% 的用户
+	// 获取流量使用超过 80% 的用�?
 	users, err := s.userRepo.GetUsersWithHighTrafficUsage(80)
 	if err != nil {
 		return
@@ -192,10 +192,10 @@ func (s *SchedulerService) sendTrafficWarnings() {
 			usedPercent = int((user.U + user.D) * 100 / user.TransferEnable)
 		}
 
-		// 发送邮件
+		// 发送邮�?
 		s.mailService.SendTrafficWarning(&user, usedPercent)
 
-		// 发送 Telegram
+		// 发�?Telegram
 		s.tgService.NotifyTrafficWarning(&user, usedPercent)
 	}
 }
@@ -246,7 +246,7 @@ func (s *SchedulerService) generateDailyStats() {
 func (s *SchedulerService) GenerateDailyStats() error {
 	log.Println("[Scheduler] Generating daily traffic stats...")
 
-	// 这个方法已经在 dailyTasks 中调用了 generateDailyStats
+	// 这个方法已经�?dailyTasks 中调用了 generateDailyStats
 	// 这里提供一个公开的方法供手动调用
 	return nil
 }
@@ -281,17 +281,17 @@ func (s *SchedulerService) GenerateMonthlyStats() error {
 
 // aggregateUserTrafficStats 聚合用户流量统计
 func (s *SchedulerService) aggregateUserTrafficStats(startAt, endAt int64, recordType string) error {
-	// 从 v2_server_log 表聚合数据
+	// �?v2_server_log 表聚合数�?
 	// 这里简化实现，实际应该从日志表聚合
-	// 由于我们已经在实时记录统计，这里主要是做数据归档和汇总
+	// 由于我们已经在实时记录统计，这里主要是做数据归档和汇�?
 	return nil
 }
 
 // aggregateServerTrafficStats 聚合节点流量统计
 func (s *SchedulerService) aggregateServerTrafficStats(startAt, endAt int64, recordType string) error {
-	// 从 v2_server_log 表聚合数据
+	// �?v2_server_log 表聚合数�?
 	// 这里简化实现，实际应该从日志表聚合
-	// 由于我们已经在实时记录统计，这里主要是做数据归档和汇总
+	// 由于我们已经在实时记录统计，这里主要是做数据归档和汇�?
 	return nil
 }
 
@@ -299,7 +299,7 @@ func (s *SchedulerService) aggregateServerTrafficStats(startAt, endAt int64, rec
 func (s *SchedulerService) CleanOldTrafficLogs() error {
 	log.Println("[Scheduler] Cleaning old traffic logs...")
 
-	// 删除 90 天前的流量日志
+	// 删除 90 天前的流量日�?
 	cutoffTime := time.Now().AddDate(0, 0, -90).Unix()
 
 	// 删除流量日志

@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"xboard/internal/model"
+	"dashgo/internal/model"
 
 	"gorm.io/gorm"
 )
@@ -106,9 +106,9 @@ func (r *OrderRepository) GetMonthStats() (int64, int64, error) {
 	var count int64
 	var total int64
 
-	// 本月第一天
+	// 本月第一�?
 	now := getCurrentTimestamp()
-	monthStart := now - (now % (86400 * 30)) // 简化处理
+	monthStart := now - (now % (86400 * 30)) // 简化处�?
 
 	r.db.Model(&model.Order{}).
 		Where("created_at >= ?", monthStart).
@@ -124,7 +124,7 @@ func (r *OrderRepository) GetMonthStats() (int64, int64, error) {
 	return count, total, nil
 }
 
-// FindAll 查询所有订单（支持状态筛选和分页）
+// FindAll 查询所有订单（支持状态筛选和分页�?
 func (r *OrderRepository) FindAll(status *int, page, pageSize int) ([]model.Order, int64, error) {
 	var orders []model.Order
 	var total int64
@@ -182,7 +182,7 @@ func (r *OrderRepository) CancelExpiredOrders(expireSeconds int64) (int64, error
 	return result.RowsAffected, result.Error
 }
 
-// GetDailyStats 获取指定日期的订单统计
+// GetDailyStats 获取指定日期的订单统�?
 func (r *OrderRepository) GetDailyStats(startTime, endTime int64) (int64, int64, error) {
 	var count int64
 	var total int64

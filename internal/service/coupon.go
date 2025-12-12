@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/repository"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
 )
 
-// CouponService 优惠券服务
+// CouponService 优惠券服�?
 type CouponService struct {
 	couponRepo *repository.CouponRepository
 	orderRepo  *repository.OrderRepository
@@ -30,7 +30,7 @@ func (s *CouponService) CheckCoupon(code string, planID int64, period string, us
 		return nil, 0, errors.New("coupon not found")
 	}
 
-	// 检查时间
+	// 检查时�?
 	now := time.Now().Unix()
 	if coupon.StartedAt > now {
 		return nil, 0, errors.New("coupon not started")
@@ -39,7 +39,7 @@ func (s *CouponService) CheckCoupon(code string, planID int64, period string, us
 		return nil, 0, errors.New("coupon expired")
 	}
 
-	// 检查使用次数
+	// 检查使用次�?
 	if coupon.LimitUse != nil && *coupon.LimitUse > 0 {
 		usedCount, _ := s.couponRepo.GetUsedCount(coupon.ID)
 		if usedCount >= int64(*coupon.LimitUse) {
@@ -47,7 +47,7 @@ func (s *CouponService) CheckCoupon(code string, planID int64, period string, us
 		}
 	}
 
-	// 检查用户使用次数
+	// 检查用户使用次�?
 	if coupon.LimitUseWithUser != nil && *coupon.LimitUseWithUser > 0 {
 		userUsedCount, _ := s.couponRepo.GetUserUsedCount(coupon.ID, userID)
 		if userUsedCount >= int64(*coupon.LimitUseWithUser) {
@@ -55,7 +55,7 @@ func (s *CouponService) CheckCoupon(code string, planID int64, period string, us
 		}
 	}
 
-	// 检查套餐限制
+	// 检查套餐限�?
 	if coupon.LimitPlanIDs != nil && *coupon.LimitPlanIDs != "" {
 		planIDs := strings.Split(*coupon.LimitPlanIDs, ",")
 		planIDStr := strconv.FormatInt(planID, 10)
@@ -71,7 +71,7 @@ func (s *CouponService) CheckCoupon(code string, planID int64, period string, us
 		}
 	}
 
-	// 检查周期限制
+	// 检查周期限�?
 	if coupon.LimitPeriod != nil && *coupon.LimitPeriod != "" {
 		periods := strings.Split(*coupon.LimitPeriod, ",")
 		found := false
@@ -99,14 +99,14 @@ func (s *CouponService) CalculateDiscount(coupon *model.Coupon, amount int64) in
 		}
 		return coupon.Value
 	case model.CouponTypePercent:
-		// 百分比折扣
+		// 百分比折�?
 		discount := amount * coupon.Value / 100
 		return discount
 	}
 	return 0
 }
 
-// UseCoupon 使用优惠券
+// UseCoupon 使用优惠�?
 func (s *CouponService) UseCoupon(couponID, orderID, userID int64) error {
 	return s.couponRepo.RecordUsage(couponID, orderID, userID)
 }
@@ -116,22 +116,22 @@ func (s *CouponService) GetAll() ([]model.Coupon, error) {
 	return s.couponRepo.GetAll()
 }
 
-// GetByID 根据 ID 获取优惠券
+// GetByID 根据 ID 获取优惠�?
 func (s *CouponService) GetByID(id int64) (*model.Coupon, error) {
 	return s.couponRepo.FindByID(id)
 }
 
-// Create 创建优惠券
+// Create 创建优惠�?
 func (s *CouponService) Create(coupon *model.Coupon) error {
 	return s.couponRepo.Create(coupon)
 }
 
-// Update 更新优惠券
+// Update 更新优惠�?
 func (s *CouponService) Update(coupon *model.Coupon) error {
 	return s.couponRepo.Update(coupon)
 }
 
-// Delete 删除优惠券
+// Delete 删除优惠�?
 func (s *CouponService) Delete(id int64) error {
 	return s.couponRepo.Delete(id)
 }
@@ -152,7 +152,7 @@ func (s *CouponService) GenerateCodes(coupon *model.Coupon, count int) ([]string
 	return codes, nil
 }
 
-// generateRandomCode 生成随机码
+// generateRandomCode 生成随机�?
 func generateRandomCode(length int) string {
 	const charset = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 	result := make([]byte, length)

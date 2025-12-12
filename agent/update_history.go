@@ -18,7 +18,7 @@ type UpdateRecord struct {
 	ErrorMessage string    `json:"error_message,omitempty"`
 }
 
-// UpdateHistory 更新历史管理器
+// UpdateHistory 更新历史管理�?
 type UpdateHistory struct {
 	filePath string
 	records  []UpdateRecord
@@ -29,7 +29,7 @@ type updateHistoryFile struct {
 	Records []UpdateRecord `json:"records"`
 }
 
-// NewUpdateHistory 创建更新历史管理器
+// NewUpdateHistory 创建更新历史管理�?
 func NewUpdateHistory(filePath string) (*UpdateHistory, error) {
 	uh := &UpdateHistory{
 		filePath: filePath,
@@ -38,7 +38,7 @@ func NewUpdateHistory(filePath string) (*UpdateHistory, error) {
 
 	// 尝试加载现有记录
 	if err := uh.load(); err != nil {
-		// 如果文件不存在，这是正常的
+		// 如果文件不存在，这是正常�?
 		if !os.IsNotExist(err) {
 			return nil, fmt.Errorf("failed to load update history: %w", err)
 		}
@@ -54,7 +54,7 @@ func (uh *UpdateHistory) AddRecord(record UpdateRecord) error {
 		record.Timestamp = time.Now()
 	}
 
-	// 添加到记录列表
+	// 添加到记录列�?
 	uh.records = append(uh.records, record)
 
 	// 持久化到文件
@@ -66,26 +66,26 @@ func (uh *UpdateHistory) AddRecord(record UpdateRecord) error {
 }
 
 // GetRecords 获取更新记录
-// limit: 返回的最大记录数，0 表示返回所有记录
+// limit: 返回的最大记录数�? 表示返回所有记�?
 func (uh *UpdateHistory) GetRecords(limit int) []UpdateRecord {
-	// 按时间戳降序排序（最新的在前）
+	// 按时间戳降序排序（最新的在前�?
 	sorted := make([]UpdateRecord, len(uh.records))
 	copy(sorted, uh.records)
 	sort.Slice(sorted, func(i, j int) bool {
 		return sorted[i].Timestamp.After(sorted[j].Timestamp)
 	})
 
-	// 如果 limit 为 0 或大于记录数，返回所有记录
+	// 如果 limit �?0 或大于记录数，返回所有记�?
 	if limit <= 0 || limit > len(sorted) {
 		return sorted
 	}
 
-	// 返回前 limit 条记录
+	// 返回�?limit 条记�?
 	return sorted[:limit]
 }
 
-// Cleanup 清理旧记录
-// days: 保留最近多少天的记录
+// Cleanup 清理旧记�?
+// days: 保留最近多少天的记�?
 func (uh *UpdateHistory) Cleanup(days int) error {
 	if days <= 0 {
 		return fmt.Errorf("days must be positive")
@@ -121,7 +121,7 @@ func (uh *UpdateHistory) Cleanup(days int) error {
 	return nil
 }
 
-// load 从文件加载更新历史
+// load 从文件加载更新历�?
 func (uh *UpdateHistory) load() error {
 	// 读取文件
 	data, err := os.ReadFile(uh.filePath)
@@ -139,7 +139,7 @@ func (uh *UpdateHistory) load() error {
 	return nil
 }
 
-// save 保存更新历史到文件
+// save 保存更新历史到文�?
 func (uh *UpdateHistory) save() error {
 	// 确保目录存在
 	dir := filepath.Dir(uh.filePath)

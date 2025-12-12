@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -116,7 +116,7 @@ func AdminResetUserTraffic(services *service.Services) gin.HandlerFunc {
 
 // ==================== 节点管理 ====================
 
-// AdminListServers 获取服务器列表
+// AdminListServers 获取服务器列�?
 func AdminListServers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		servers, err := services.Server.GetAllServers()
@@ -132,7 +132,7 @@ func AdminListServers(services *service.Services) gin.HandlerFunc {
 			hostMap[host.ID] = host.Name
 		}
 
-		// 构建响应，添加主机名称
+		// 构建响应，添加主机名�?
 		type ServerResponse struct {
 			*model.Server
 			HostName string `json:"host_name,omitempty"`
@@ -153,7 +153,7 @@ func AdminListServers(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCreateServer 创建服务器
+// AdminCreateServer 创建服务�?
 func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -174,7 +174,7 @@ func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果设置了 host_id，验证主机是否存在
+		// 如果设置�?host_id，验证主机是否存�?
 		if req.HostID != nil {
 			if _, err := services.Host.GetByID(*req.HostID); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "host not found"})
@@ -182,13 +182,13 @@ func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 			}
 		}
 
-		// 转换 Tags 为 JSONArray
+		// 转换 Tags �?JSONArray
 		tags := make(model.JSONArray, len(req.Tags))
 		for i, t := range req.Tags {
 			tags[i] = t
 		}
 
-		// 转换 GroupID 为 JSONArray
+		// 转换 GroupID �?JSONArray
 		groupIDs := make(model.JSONArray, len(req.GroupID))
 		for i, g := range req.GroupID {
 			groupIDs[i] = g
@@ -222,7 +222,7 @@ func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateServer 更新服务器
+// AdminUpdateServer 更新服务�?
 func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -251,7 +251,7 @@ func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果设置了 host_id，验证主机是否存在
+		// 如果设置�?host_id，验证主机是否存�?
 		if req.HostID != nil {
 			if _, err := services.Host.GetByID(*req.HostID); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "host not found"})
@@ -259,13 +259,13 @@ func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 			}
 		}
 
-		// 转换 Tags 为 JSONArray
+		// 转换 Tags �?JSONArray
 		tags := make(model.JSONArray, len(req.Tags))
 		for i, t := range req.Tags {
 			tags[i] = t
 		}
 
-		// 转换 GroupID 为 JSONArray
+		// 转换 GroupID �?JSONArray
 		groupIDs := make(model.JSONArray, len(req.GroupID))
 		for i, g := range req.GroupID {
 			groupIDs[i] = g
@@ -292,7 +292,7 @@ func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminDeleteServer 删除服务器
+// AdminDeleteServer 删除服务�?
 func AdminDeleteServer(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -306,7 +306,7 @@ func AdminDeleteServer(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminGetServerStatus 获取服务器状态
+// AdminGetServerStatus 获取服务器状�?
 func AdminGetServerStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 直接返回在线状态，实际状态由 Agent 心跳管理
@@ -325,10 +325,10 @@ func AdminGetServerStatus(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminSyncServerUsers 手动同步服务器用户
+// AdminSyncServerUsers 手动同步服务器用�?
 func AdminSyncServerUsers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Agent 模式下，用户同步由 Agent 自动处理
+		// Agent 模式下，用户同步�?Agent 自动处理
 		// 这里直接返回成功
 		c.JSON(http.StatusOK, gin.H{"data": true})
 	}
@@ -561,7 +561,7 @@ func AdminGetOrder(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateOrderStatus 更新订单状态
+// AdminUpdateOrderStatus 更新订单状�?
 func AdminUpdateOrderStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -581,7 +581,7 @@ func AdminUpdateOrderStatus(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果要激活订单（状态改为已完成）
+		// 如果要激活订单（状态改为已完成�?
 		if req.Status == 3 && order.Status == 0 {
 			// 调用完成订单逻辑
 			if err := services.Order.CompleteOrder(order.TradeNo, "admin_manual"); err != nil {
@@ -589,7 +589,7 @@ func AdminUpdateOrderStatus(services *service.Services) gin.HandlerFunc {
 				return
 			}
 		} else {
-			// 其他状态更新
+			// 其他状态更�?
 			if err := services.Stats.UpdateOrderStatus(id, req.Status); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
@@ -640,7 +640,7 @@ func AdminTicketDetail(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminReplyTicket 管理员回复工单
+// AdminReplyTicket 管理员回复工�?
 func AdminReplyTicket(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUserFromContext(c)
@@ -665,7 +665,7 @@ func AdminReplyTicket(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCloseTicket 管理员关闭工单
+// AdminCloseTicket 管理员关闭工�?
 func AdminCloseTicket(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUserFromContext(c)

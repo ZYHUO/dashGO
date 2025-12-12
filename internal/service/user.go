@@ -4,10 +4,10 @@ import (
 	"errors"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/repository"
-	"xboard/pkg/cache"
-	"xboard/pkg/utils"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
+	"dashgo/pkg/cache"
+	"dashgo/pkg/utils"
 )
 
 type UserService struct {
@@ -22,11 +22,11 @@ func NewUserService(userRepo *repository.UserRepository, cache *cache.Client) *U
 	}
 }
 
-// GetUsersCached 获取用户列表（带缓存）
+// GetUsersCached 获取用户列表（带缓存�?
 func (s *UserService) GetUsersCached(page, pageSize int) ([]model.User, int64, error) {
 	cacheKey := cache.UserListPageKey(page, pageSize)
 
-	// 尝试从缓存获取
+	// 尝试从缓存获�?
 	var cachedResult struct {
 		Users []model.User `json:"users"`
 		Total int64        `json:"total"`
@@ -41,7 +41,7 @@ func (s *UserService) GetUsersCached(page, pageSize int) ([]model.User, int64, e
 		return nil, 0, err
 	}
 
-	// 写入缓存（5分钟）
+	// 写入缓存�?分钟�?
 	cachedResult.Users = users
 	cachedResult.Total = total
 	s.cache.SetJSON(cacheKey, cachedResult, 5*time.Minute)
@@ -49,7 +49,7 @@ func (s *UserService) GetUsersCached(page, pageSize int) ([]model.User, int64, e
 	return users, total, nil
 }
 
-// InvalidateUserCache 使用户缓存失效
+// InvalidateUserCache 使用户缓存失�?
 func (s *UserService) InvalidateUserCache(userID int64) {
 	// 删除用户信息缓存
 	s.cache.Del(cache.UserInfoKey(userID))
@@ -57,17 +57,17 @@ func (s *UserService) InvalidateUserCache(userID int64) {
 	s.cache.DelPattern("USER_LIST_PAGE_*")
 	// 记录用户变更
 	s.cache.RecordUserChange(userID, "update")
-	// 增加版本号
+	// 增加版本�?
 	s.cache.IncrUserListVersion()
 }
 
-// InvalidateUserListCache 使用户列表缓存失效
+// InvalidateUserListCache 使用户列表缓存失�?
 func (s *UserService) InvalidateUserListCache() {
 	s.cache.DelPattern("USER_LIST_PAGE_*")
 	s.cache.Del(cache.KeyUserListTotal)
 }
 
-// GetUserByIDCached 获取用户（带缓存）
+// GetUserByIDCached 获取用户（带缓存�?
 func (s *UserService) GetUserByIDCached(userID int64) (*model.User, error) {
 	cacheKey := cache.UserInfoKey(userID)
 
@@ -82,7 +82,7 @@ func (s *UserService) GetUserByIDCached(userID int64) (*model.User, error) {
 		return nil, err
 	}
 
-	// 写入缓存（10分钟）
+	// 写入缓存�?0分钟�?
 	s.cache.SetJSON(cacheKey, dbUser, 10*time.Minute)
 	return dbUser, nil
 }
@@ -133,7 +133,7 @@ func (s *UserService) Login(email, password string) (*model.User, error) {
 		return nil, errors.New("account is banned")
 	}
 
-	// 更新最后登录时间
+	// 更新最后登录时�?
 	now := time.Now().Unix()
 	user.LastLoginAt = &now
 	s.userRepo.Update(user)
@@ -174,7 +174,7 @@ func (s *UserService) TrafficFetch(server *model.Server, trafficData map[int64][
 		rate = 1
 	}
 
-	// 应用倍率并检查流量限制
+	// 应用倍率并检查流量限�?
 	for userID, traffic := range trafficData {
 		u := int64(float64(traffic[0]) * rate)
 		d := int64(float64(traffic[1]) * rate)
@@ -198,9 +198,9 @@ func (s *UserService) TrafficFetch(server *model.Server, trafficData map[int64][
 			// s.userRepo.Update(user)
 			
 			// 方案2：只记录日志（温和）
-			// 下次 GetAvailableUsers 时会自动过滤掉
+			// 下次 GetAvailableUsers 时会自动过滤�?
 			
-			// 使缓存失效，确保下次拉取用户列表时不包含该用户
+			// 使缓存失效，确保下次拉取用户列表时不包含该用�?
 			s.InvalidateUserCache(userID)
 		}
 	}
@@ -297,7 +297,7 @@ func (s *UserService) GetNodeUsersWithCache(nodeID int64, groupIDs []int64, last
 	// 获取当前版本
 	currentVersion, _ := s.cache.GetNodeUserVersion(nodeID)
 
-	// 如果客户端版本与当前版本相同，返回空（无变化）
+	// 如果客户端版本与当前版本相同，返回空（无变化�?
 	if lastVersion > 0 && lastVersion == currentVersion {
 		return &NodeUsersResult{
 			Version:  currentVersion,
@@ -305,10 +305,10 @@ func (s *UserService) GetNodeUsersWithCache(nodeID int64, groupIDs []int64, last
 		}, nil
 	}
 
-	// 尝试从缓存获取
+	// 尝试从缓存获�?
 	var users []NodeUserInfo
 	if err := s.cache.GetJSON(cacheKey, &users); err == nil {
-		// 检查哈希是否变化
+		// 检查哈希是否变�?
 		cachedHash, _ := s.cache.Get(hashKey)
 		currentHash := cache.ComputeHash(users)
 		if cachedHash == currentHash {
@@ -374,7 +374,7 @@ type NodeUsersResult struct {
 	HasChange bool           `json:"has_change"`
 }
 
-// GetChangedUsers 获取变更的用户（增量同步）
+// GetChangedUsers 获取变更的用户（增量同步�?
 func (s *UserService) GetChangedUsers(sinceVersion int64) ([]int64, int64, error) {
 	currentVersion, _ := s.cache.GetUserListVersion()
 	if sinceVersion >= currentVersion {
@@ -408,7 +408,7 @@ func (s *UserService) GetByEmail(email string) (*model.User, error) {
 	return s.userRepo.FindByEmail(email)
 }
 
-// RegisterWithIP 带 IP 记录的用户注册
+// RegisterWithIP �?IP 记录的用户注�?
 func (s *UserService) RegisterWithIP(email, password string, inviteUserID *int64, ip string) (*model.User, error) {
 	// 检查邮箱是否已存在
 	existing, _ := s.userRepo.FindByEmail(email)
@@ -450,7 +450,7 @@ func (s *UserService) SendEmailCode(email string) error {
 	// 生成 6 位验证码
 	code := utils.GenerateNumericCode(6)
 
-	// 存储到缓存（10分钟有效）
+	// 存储到缓存（10分钟有效�?
 	cacheKey := "email_code:" + email
 	if err := s.cache.Set(cacheKey, code, 10*time.Minute); err != nil {
 		return err
@@ -458,11 +458,11 @@ func (s *UserService) SendEmailCode(email string) error {
 
 	// 这里需要调用邮件服务发送验证码
 	// 由于 UserService 没有直接引用 MailService，需要通过其他方式
-	// 实际实现中可以通过事件或者在 handler 层处理
+	// 实际实现中可以通过事件或者在 handler 层处�?
 	return nil
 }
 
-// VerifyEmailCode 验证邮箱验证码
+// VerifyEmailCode 验证邮箱验证�?
 func (s *UserService) VerifyEmailCode(email, code string) bool {
 	cacheKey := "email_code:" + email
 	storedCode, err := s.cache.Get(cacheKey)
@@ -483,7 +483,7 @@ func (s *UserService) SetEmailCode(email, code string) error {
 	return s.cache.Set(cacheKey, code, 10*time.Minute)
 }
 
-// GetEmailCodeCooldown 获取验证码冷却时间
+// GetEmailCodeCooldown 获取验证码冷却时�?
 func (s *UserService) GetEmailCodeCooldown(email string) int64 {
 	cacheKey := "email_code_cooldown:" + email
 	ttl, err := s.cache.TTL(cacheKey)
@@ -493,7 +493,7 @@ func (s *UserService) GetEmailCodeCooldown(email string) int64 {
 	return int64(ttl.Seconds())
 }
 
-// SetEmailCodeCooldown 设置验证码冷却
+// SetEmailCodeCooldown 设置验证码冷�?
 func (s *UserService) SetEmailCodeCooldown(email string) error {
 	cacheKey := "email_code_cooldown:" + email
 	return s.cache.Set(cacheKey, "1", 60*time.Second)

@@ -20,7 +20,7 @@ func (Host) TableName() string {
 	return "v2_host"
 }
 
-// HostStatus 主机状态
+// HostStatus 主机状�?
 const (
 	HostStatusOffline = 0
 	HostStatusOnline  = 1
@@ -31,7 +31,7 @@ type ServerNode struct {
 	ID                int64     `gorm:"primaryKey;column:id" json:"id"`
 	HostID            int64     `gorm:"column:host_id;index" json:"host_id"`
 	Name              string    `gorm:"column:name" json:"name"`
-	Type              string    `gorm:"column:type" json:"type"` // shadowsocks, vless, trojan 等
+	Type              string    `gorm:"column:type" json:"type"` // shadowsocks, vless, trojan �?
 	ListenPort        int       `gorm:"column:listen_port" json:"listen_port"`
 	GroupIDs          JSONArray `gorm:"column:group_ids;type:json" json:"group_ids"`
 	Rate              float64   `gorm:"column:rate;default:1" json:"rate"`
@@ -63,7 +63,7 @@ const (
 	NodeTypeHTTP        = "http"
 )
 
-// GetGroupIDsAsInt64 获取 group_ids 为 int64 数组
+// GetGroupIDsAsInt64 获取 group_ids �?int64 数组
 func (n *ServerNode) GetGroupIDsAsInt64() []int64 {
 	result := make([]int64, 0)
 	for _, v := range n.GroupIDs {

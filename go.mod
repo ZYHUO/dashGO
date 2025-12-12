@@ -1,4 +1,4 @@
-module xboard
+module dashgo
 
 go 1.21
 

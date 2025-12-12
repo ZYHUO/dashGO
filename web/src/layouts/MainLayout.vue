@@ -26,7 +26,7 @@ const isActive = (path: string) => {
   return route.path.startsWith(path)
 }
 
-const siteName = computed(() => siteSettings.value.site_name || 'XBoard')
+const siteName = computed(() => siteSettings.value.site_name || 'dashGO')
 const primaryColor = computed(() => siteSettings.value.primary_color || '#6366f1')
 
 const fetchSettings = async () => {

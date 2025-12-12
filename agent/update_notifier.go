@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// UpdateStatus 更新状态
+// UpdateStatus 更新状�?
 type UpdateStatus string
 
 const (
@@ -16,7 +16,7 @@ const (
 	UpdateStatusSuccess UpdateStatus = "success"
 	// UpdateStatusFailed 更新失败
 	UpdateStatusFailed UpdateStatus = "failed"
-	// UpdateStatusRollback 已回滚
+	// UpdateStatusRollback 已回�?
 	UpdateStatusRollback UpdateStatus = "rollback"
 )
 
@@ -29,14 +29,14 @@ type UpdateNotification struct {
 	Timestamp    time.Time    `json:"timestamp"`
 }
 
-// UpdateNotifier 更新通知器
+// UpdateNotifier 更新通知�?
 type UpdateNotifier struct {
 	panelURL string
 	token    string
 	client   *http.Client
 }
 
-// NewUpdateNotifier 创建更新通知器
+// NewUpdateNotifier 创建更新通知�?
 func NewUpdateNotifier(panelURL, token string) *UpdateNotifier {
 	return &UpdateNotifier{
 		panelURL: panelURL,
@@ -57,15 +57,15 @@ func (un *UpdateNotifier) NotifySuccess(fromVersion, toVersion string) error {
 	fmt.Printf("📤 发送更新成功通知: %s -> %s\n", fromVersion, toVersion)
 	
 	if err := un.sendNotification(notification); err != nil {
-		fmt.Printf("⚠ 发送成功通知失败: %v\n", err)
+		fmt.Printf("�?发送成功通知失败: %v\n", err)
 		return err
 	}
 
-	fmt.Println("✓ 成功通知已发送")
+	fmt.Println("�?成功通知已发�?)
 	return nil
 }
 
-// NotifyFailure 发送更新失败告警
+// NotifyFailure 发送更新失败告�?
 func (un *UpdateNotifier) NotifyFailure(fromVersion, toVersion string, err error) error {
 	errorMessage := ""
 	if err != nil {
@@ -80,15 +80,15 @@ func (un *UpdateNotifier) NotifyFailure(fromVersion, toVersion string, err error
 		Timestamp:    time.Now(),
 	}
 
-	fmt.Printf("📤 发送更新失败告警: %s -> %s\n", fromVersion, toVersion)
+	fmt.Printf("📤 发送更新失败告�? %s -> %s\n", fromVersion, toVersion)
 	fmt.Printf("   错误: %s\n", errorMessage)
 	
 	if err := un.sendNotification(notification); err != nil {
-		fmt.Printf("⚠ 发送失败告警失败: %v\n", err)
+		fmt.Printf("�?发送失败告警失�? %v\n", err)
 		return err
 	}
 
-	fmt.Println("✓ 失败告警已发送")
+	fmt.Println("�?失败告警已发�?)
 	return nil
 }
 
@@ -111,15 +111,15 @@ func (un *UpdateNotifier) NotifyRollback(fromVersion, toVersion string, err erro
 	fmt.Printf("   原因: %s\n", errorMessage)
 	
 	if err := un.sendNotification(notification); err != nil {
-		fmt.Printf("⚠ 发送回滚通知失败: %v\n", err)
+		fmt.Printf("�?发送回滚通知失败: %v\n", err)
 		return err
 	}
 
-	fmt.Println("✓ 回滚通知已发送")
+	fmt.Println("�?回滚通知已发�?)
 	return nil
 }
 
-// sendNotification 发送通知到 Panel
+// sendNotification 发送通知�?Panel
 func (un *UpdateNotifier) sendNotification(notification UpdateNotification) error {
 	url := un.panelURL + "/api/v1/agent/update-status"
 
@@ -138,14 +138,14 @@ func (un *UpdateNotifier) sendNotification(notification UpdateNotification) erro
 	req.Header.Set("Authorization", un.token)
 	req.Header.Set("Content-Type", "application/json")
 
-	// 发送请求
+	// 发送请�?
 	resp, err := un.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send request: %w", err)
 	}
 	defer resp.Body.Close()
 
-	// 检查响应状态
+	// 检查响应状�?
 	if resp.StatusCode != http.StatusOK {
 		var result map[string]interface{}
 		if err := json.NewDecoder(resp.Body).Decode(&result); err == nil {

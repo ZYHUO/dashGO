@@ -16,7 +16,7 @@ const emailCode = ref('')
 const loading = ref(false)
 const sendingCode = ref(false)
 const error = ref('')
-const siteName = ref('XBoard')
+const siteName = ref('dashGO')
 const emailVerifyEnabled = ref(false)
 const cooldown = ref(0)
 

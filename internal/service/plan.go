@@ -1,8 +1,8 @@
 package service
 
 import (
-	"xboard/internal/model"
-	"xboard/internal/repository"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
 )
 
 type PlanService struct {
@@ -17,7 +17,7 @@ func NewPlanService(planRepo *repository.PlanRepository, userRepo *repository.Us
 	}
 }
 
-// GetAll 获取所有套餐
+// GetAll 获取所有套�?
 func (s *PlanService) GetAll() ([]model.Plan, error) {
 	return s.planRepo.GetAll()
 }
@@ -44,7 +44,7 @@ func (s *PlanService) Update(plan *model.Plan) error {
 
 // Delete 删除套餐
 func (s *PlanService) Delete(id int64) error {
-	// 检查是否有用户使用该套餐
+	// 检查是否有用户使用该套�?
 	count, err := s.userRepo.CountByPlanID(id)
 	if err != nil {
 		return err

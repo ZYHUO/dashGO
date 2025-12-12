@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# XBoard 故障排查脚本
+# dashGO 故障排查脚本
 
 GREEN='\033[0;32m'
 RED='\033[0;31m'
@@ -9,7 +9,7 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 echo -e "${BLUE}========================================${NC}"
-echo -e "${BLUE}XBoard 故障排查工具${NC}"
+echo -e "${BLUE}dashGO 故障排查工具${NC}"
 echo -e "${BLUE}========================================${NC}"
 echo ""
 
@@ -62,11 +62,11 @@ fi
 echo ""
 
 # 5. 查看最近的日志
-echo -e "${GREEN}[5] 查看 xboard 最近日志${NC}"
-if docker ps -a | grep -q xboard; then
-    docker compose logs --tail=50 xboard
+echo -e "${GREEN}[5] 查看 dashgo 最近日志${NC}"
+if docker ps -a | grep -q dashgo; then
+    docker compose logs --tail=50 dashgo
 else
-    echo -e "  ${YELLOW}! xboard 容器不存在${NC}"
+    echo -e "  ${YELLOW}! dashgo 容器不存在${NC}"
 fi
 echo ""
 
@@ -91,7 +91,7 @@ echo ""
 
 # 7. 数据库连接测试
 echo -e "${GREEN}[7] 测试数据库连接${NC}"
-if docker ps | grep -q xboard-mysql; then
+if docker ps | grep -q dashgo-mysql; then
     if docker exec xboard-mysql mysqladmin ping -h localhost -pxboard_password &>/dev/null; then
         echo -e "  ✓ MySQL 连接正常"
     else

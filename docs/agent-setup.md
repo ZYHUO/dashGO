@@ -16,7 +16,7 @@ XBoard Agent 是一个轻量级客户端，运行在 sing-box 服务器上，自
 在服务器上执行面板显示的命令：
 
 ```bash
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/agent/install.sh | bash -s -- https://your-panel.com YOUR_TOKEN
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/agent/install.sh | bash -s -- https://your-panel.com YOUR_TOKEN
 ```
 
 脚本会自动：
@@ -29,9 +29,9 @@ curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/agent/install.sh
 
 ```bash
 # 下载 Agent
-wget https://github.com/ZYHUO/xboard-go/releases/download/1.1/xboard-agent
-chmod +x xboard-agent
-mv xboard-agent /usr/local/bin/
+wget https://github.com/ZYHUO/dashGO/releases/download/1.1/dashgo-agent
+chmod +x dashgo-agent
+mv dashgo-agent /usr/local/bin/
 
 # 运行
 xboard-agent -panel https://your-panel.com -token YOUR_TOKEN

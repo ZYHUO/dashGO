@@ -6,30 +6,30 @@
 
 ```bash
 # 下载并运行安装脚本
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash -s -- panel
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash -s -- panel
 ```
 
 ### 一键安装节点 (Agent)
 
 ```bash
 # 在节点服务器上运行
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash -s -- agent <面板地址> <Token>
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash -s -- agent <面板地址> <Token>
 
 # 示例
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash -s -- agent https://panel.example.com abc123def456
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash -s -- agent https://panel.example.com abc123def456
 ```
 
 ### 完整安装 (面板 + 节点)
 
 ```bash
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash -s -- all
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash -s -- all
 ```
 
 ### 交互式安装
 
 ```bash
 # 下载脚本
-wget -O install.sh https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh
+wget -O install.sh https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh
 chmod +x install.sh
 
 # 运行交互式菜单
@@ -198,9 +198,9 @@ docker exec -it xboard-mysql mysql -u xboard -p
 ### 更新面板
 
 ```bash
-bash /opt/xboard/install.sh update-panel
+bash /opt/dashgo/install.sh update-panel
 # 或
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash -s -- update-panel
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash -s -- update-panel
 ```
 
 ### 更新节点
@@ -208,7 +208,7 @@ curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bas
 ```bash
 bash install.sh update-agent
 # 或
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash -s -- update-agent
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash -s -- update-agent
 ```
 
 ## 卸载
@@ -227,4 +227,4 @@ bash install.sh uninstall-agent
 
 ## 支持
 
-如有问题，请提交 Issue: https://github.com/ZYHUO/xboard-go/issues
+如有问题，请提交 Issue: https://github.com/ZYHUO/dashGO/issues

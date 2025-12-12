@@ -12,7 +12,7 @@ func TestNewUpdateHistory(t *testing.T) {
 	tmpDir := t.TempDir()
 	historyFile := filepath.Join(tmpDir, "update-history.json")
 
-	// 测试创建新的更新历史管理器
+	// 测试创建新的更新历史管理�?
 	uh, err := NewUpdateHistory(historyFile)
 	if err != nil {
 		t.Fatalf("NewUpdateHistory failed: %v", err)
@@ -40,7 +40,7 @@ func TestAddRecord(t *testing.T) {
 		t.Fatalf("NewUpdateHistory failed: %v", err)
 	}
 
-	// 添加一条记录
+	// 添加一条记�?
 	record := UpdateRecord{
 		FromVersion:  "v1.0.0",
 		ToVersion:    "v1.1.0",
@@ -53,7 +53,7 @@ func TestAddRecord(t *testing.T) {
 		t.Fatalf("AddRecord failed: %v", err)
 	}
 
-	// 验证记录已添加
+	// 验证记录已添�?
 	if len(uh.records) != 1 {
 		t.Errorf("Expected 1 record, got %d", len(uh.records))
 	}
@@ -63,7 +63,7 @@ func TestAddRecord(t *testing.T) {
 		t.Error("Timestamp should be set automatically")
 	}
 
-	// 验证文件已创建
+	// 验证文件已创�?
 	if _, err := os.Stat(historyFile); os.IsNotExist(err) {
 		t.Error("History file should be created")
 	}
@@ -93,7 +93,7 @@ func TestAddRecordWithTimestamp(t *testing.T) {
 		t.Fatalf("AddRecord failed: %v", err)
 	}
 
-	// 验证时间戳保持不变
+	// 验证时间戳保持不�?
 	if !uh.records[0].Timestamp.Equal(timestamp) {
 		t.Errorf("Expected timestamp %v, got %v", timestamp, uh.records[0].Timestamp)
 	}
@@ -136,20 +136,20 @@ func TestGetRecords(t *testing.T) {
 		}
 	}
 
-	// 测试获取所有记录
+	// 测试获取所有记�?
 	allRecords := uh.GetRecords(0)
 	if len(allRecords) != 3 {
 		t.Errorf("Expected 3 records, got %d", len(allRecords))
 	}
 
-	// 验证记录按时间降序排列（最新的在前）
+	// 验证记录按时间降序排列（最新的在前�?
 	for i := 0; i < len(allRecords)-1; i++ {
 		if allRecords[i].Timestamp.Before(allRecords[i+1].Timestamp) {
 			t.Error("Records should be sorted by timestamp in descending order")
 		}
 	}
 
-	// 测试获取限制数量的记录
+	// 测试获取限制数量的记�?
 	limitedRecords := uh.GetRecords(2)
 	if len(limitedRecords) != 2 {
 		t.Errorf("Expected 2 records, got %d", len(limitedRecords))
@@ -170,7 +170,7 @@ func TestGetRecordsEmpty(t *testing.T) {
 		t.Fatalf("NewUpdateHistory failed: %v", err)
 	}
 
-	// 测试空记录列表
+	// 测试空记录列�?
 	records := uh.GetRecords(10)
 	if len(records) != 0 {
 		t.Errorf("Expected 0 records, got %d", len(records))
@@ -186,7 +186,7 @@ func TestCleanup(t *testing.T) {
 		t.Fatalf("NewUpdateHistory failed: %v", err)
 	}
 
-	// 添加不同时间的记录
+	// 添加不同时间的记�?
 	now := time.Now()
 	records := []UpdateRecord{
 		{
@@ -215,18 +215,18 @@ func TestCleanup(t *testing.T) {
 		}
 	}
 
-	// 清理 30 天前的记录
+	// 清理 30 天前的记�?
 	err = uh.Cleanup(30)
 	if err != nil {
 		t.Fatalf("Cleanup failed: %v", err)
 	}
 
-	// 验证只保留了 30 天内的记录
+	// 验证只保留了 30 天内的记�?
 	if len(uh.records) != 2 {
 		t.Errorf("Expected 2 records after cleanup, got %d", len(uh.records))
 	}
 
-	// 验证保留的是正确的记录
+	// 验证保留的是正确的记�?
 	for _, record := range uh.records {
 		if record.FromVersion == "v1.0.0" {
 			t.Error("Old record (40 days) should be removed")
@@ -243,7 +243,7 @@ func TestCleanupInvalidDays(t *testing.T) {
 		t.Fatalf("NewUpdateHistory failed: %v", err)
 	}
 
-	// 测试无效的天数
+	// 测试无效的天�?
 	err = uh.Cleanup(0)
 	if err == nil {
 		t.Error("Cleanup should fail with days = 0")
@@ -333,7 +333,7 @@ func TestMultipleRecords(t *testing.T) {
 		}
 	}
 
-	// 验证所有记录都已添加
+	// 验证所有记录都已添�?
 	if len(uh.records) != 4 {
 		t.Errorf("Expected 4 records, got %d", len(uh.records))
 	}

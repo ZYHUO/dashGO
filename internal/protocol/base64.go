@@ -7,11 +7,11 @@ import (
 	"net/url"
 	"strings"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 )
 
-// GenerateBase64Links 生成 Base64 编码的订阅链接
+// GenerateBase64Links 生成 Base64 编码的订阅链�?
 func GenerateBase64Links(servers []service.ServerInfo, user *model.User) string {
 	var links []string
 
@@ -51,7 +51,7 @@ func generateLink(server service.ServerInfo, user *model.User) string {
 func generateSSLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
 	
-	// 获取加密方式，默认 aes-256-gcm
+	// 获取加密方式，默�?aes-256-gcm
 	cipher := "aes-256-gcm"
 	if c, ok := ps["cipher"].(string); ok && c != "" {
 		cipher = c
@@ -59,8 +59,8 @@ func generateSSLink(server service.ServerInfo, user *model.User) string {
 		cipher = m
 	}
 	
-	// 密码：对于 SS2022，使用 server.Password（已包含服务器密钥:用户密钥格式）
-	// 对于普通 SS，使用用户 UUID
+	// 密码：对�?SS2022，使�?server.Password（已包含服务器密�?用户密钥格式�?
+	// 对于普�?SS，使用用�?UUID
 	password := server.Password
 	if password == "" {
 		password = user.UUID
@@ -345,7 +345,7 @@ func generateShadowTLSLink(server service.ServerInfo, user *model.User) string {
 		cipher = method
 	}
 	
-	// 握手服务器
+	// 握手服务�?
 	handshakeServer := "addons.mozilla.org"
 	if hs, ok := ps["handshake_server"].(string); ok && hs != "" {
 		handshakeServer = hs

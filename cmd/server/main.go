@@ -5,14 +5,14 @@ import (
 	"log"
 	"time"
 
-	"xboard/internal/config"
-	"xboard/internal/handler"
-	"xboard/internal/model"
-	"xboard/internal/repository"
-	"xboard/internal/service"
-	"xboard/pkg/cache"
-	"xboard/pkg/database"
-	"xboard/pkg/utils"
+	"dashgo/internal/config"
+	"dashgo/internal/handler"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
+	"dashgo/internal/service"
+	"dashgo/pkg/cache"
+	"dashgo/pkg/database"
+	"dashgo/pkg/utils"
 
 	"github.com/gin-gonic/gin"
 )

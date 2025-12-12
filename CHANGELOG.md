@@ -1,4 +1,4 @@
-# XBoard-Go v1.0.0 更新日志
+# dashGO v1.0.0 更新日志
 
 ## 发布日期：2024-12-11
 
@@ -82,7 +82,7 @@ database:
 bash setup.sh
 
 # 安装 Agent（自动下载二进制）
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/agent/install.sh | bash -s -- <面板地址> <Token>
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/agent/install.sh | bash -s -- <面板地址> <Token>
 ```
 
 **优势**：
@@ -644,9 +644,9 @@ mysql -u root -p xboard -e "SELECT * FROM migrations;"
 
 ## 📞 支持
 
-- GitHub: https://github.com/ZYHUO/xboard-go
-- Issues: https://github.com/ZYHUO/xboard-go/issues
-- Discussions: https://github.com/ZYHUO/xboard-go/discussions
+- GitHub: https://github.com/ZYHUO/dashGO
+- Issues: https://github.com/ZYHUO/dashGO/issues
+- Discussions: https://github.com/ZYHUO/dashGO/discussions
 
 ---
 

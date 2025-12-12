@@ -2,7 +2,7 @@ package repository
 
 import (
 	"time"
-	"xboard/internal/model"
+	"dashgo/internal/model"
 
 	"gorm.io/gorm"
 )
@@ -100,7 +100,7 @@ func (r *StatRepository) GetServerStats(serverID int64, startAt, endAt int64) ([
 }
 
 
-// CreateOrUpdateStat 创建或更新统计
+// CreateOrUpdateStat 创建或更新统�?
 func (r *StatRepository) CreateOrUpdateStat(stat *model.Stat) error {
 	var existing model.Stat
 	err := r.db.Where("record_at = ? AND record_type = ?", stat.RecordAt, stat.RecordType).First(&existing).Error
@@ -123,7 +123,7 @@ func (r *StatRepository) GetOrderStats(startAt, endAt int64) ([]model.Stat, erro
 	return stats, err
 }
 
-// GetServerTrafficStats 获取服务器流量统计
+// GetServerTrafficStats 获取服务器流量统�?
 func (r *StatRepository) GetServerTrafficStats(startAt, endAt int64) ([]model.StatServer, error) {
 	var stats []model.StatServer
 	err := r.db.Where("record_at >= ? AND record_at <= ?", startAt, endAt).
@@ -132,7 +132,7 @@ func (r *StatRepository) GetServerTrafficStats(startAt, endAt int64) ([]model.St
 	return stats, err
 }
 
-// GetServerRanking 获取服务器排名
+// GetServerRanking 获取服务器排�?
 func (r *StatRepository) GetServerRanking(limit int) ([]model.StatServer, error) {
 	var stats []model.StatServer
 	err := r.db.Model(&model.StatServer{}).
@@ -156,7 +156,7 @@ func (r *StatRepository) GetUserRanking(limit int) ([]model.StatUser, error) {
 	return stats, err
 }
 
-// GetTotalTraffic 获取总流量
+// GetTotalTraffic 获取总流�?
 func (r *StatRepository) GetTotalTraffic(startAt, endAt int64) (int64, error) {
 	var total int64
 	err := r.db.Model(&model.StatServer{}).
@@ -167,7 +167,7 @@ func (r *StatRepository) GetTotalTraffic(startAt, endAt int64) (int64, error) {
 }
 
 
-// GetServerTotalTraffic 获取节点总流量
+// GetServerTotalTraffic 获取节点总流�?
 func (r *StatRepository) GetServerTotalTraffic(serverID int64) (model.StatServer, error) {
 	var stat model.StatServer
 	err := r.db.Model(&model.StatServer{}).
@@ -192,13 +192,13 @@ func (r *StatRepository) DeleteOldServerLogs(beforeTime int64) (int64, error) {
 	return result.RowsAffected, result.Error
 }
 
-// DeleteOldUserStats 删除旧的用户统计（日统计）
+// DeleteOldUserStats 删除旧的用户统计（日统计�?
 func (r *StatRepository) DeleteOldUserStats(beforeTime int64) (int64, error) {
 	result := r.db.Where("record_type = ? AND record_at < ?", "d", beforeTime).Delete(&model.StatUser{})
 	return result.RowsAffected, result.Error
 }
 
-// DeleteOldServerStats 删除旧的节点统计（日统计）
+// DeleteOldServerStats 删除旧的节点统计（日统计�?
 func (r *StatRepository) DeleteOldServerStats(beforeTime int64) (int64, error) {
 	result := r.db.Where("record_type = ? AND record_at < ?", "d", beforeTime).Delete(&model.StatServer{})
 	return result.RowsAffected, result.Error

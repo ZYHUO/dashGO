@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 
 	"gopkg.in/yaml.v3"
 )
@@ -30,7 +30,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		// 获取加密方式，默认 aes-256-gcm
+		// 获取加密方式，默�?aes-256-gcm
 		cipher := "aes-256-gcm"
 		if c, ok := ps["cipher"].(string); ok && c != "" {
 			cipher = c
@@ -42,7 +42,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		if password == "" {
 			password = user.UUID
 		}
-		// shadowsocks=example.com:443, method=chacha20-ietf-poly1305, password=pwd, obfs=wss, obfs-host=example.com, obfs-uri=/path, fast-open=false, udp-relay=false, tag=节点名
+		// shadowsocks=example.com:443, method=chacha20-ietf-poly1305, password=pwd, obfs=wss, obfs-host=example.com, obfs-uri=/path, fast-open=false, udp-relay=false, tag=节点�?
 		line := fmt.Sprintf("shadowsocks=%s:%d, method=%s, password=%s",
 			server.Host, port, cipher, password)
 
@@ -70,7 +70,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeVmess:
-		// vmess=example.com:443, method=chacha20-ietf-poly1305, password=uuid, obfs=wss, obfs-host=example.com, obfs-uri=/path, tls-verification=true, fast-open=false, udp-relay=false, tag=节点名
+		// vmess=example.com:443, method=chacha20-ietf-poly1305, password=uuid, obfs=wss, obfs-host=example.com, obfs-uri=/path, tls-verification=true, fast-open=false, udp-relay=false, tag=节点�?
 		line := fmt.Sprintf("vmess=%s:%d, method=chacha20-poly1305, password=%s",
 			server.Host, port, user.UUID)
 
@@ -113,7 +113,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeTrojan:
-		// trojan=example.com:443, password=pwd, over-tls=true, tls-verification=true, fast-open=false, udp-relay=false, tag=节点名
+		// trojan=example.com:443, password=pwd, over-tls=true, tls-verification=true, fast-open=false, udp-relay=false, tag=节点�?
 		line := fmt.Sprintf("trojan=%s:%d, password=%s, over-tls=true",
 			server.Host, port, user.UUID)
 
@@ -138,7 +138,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		}
 
 		if version == 2 {
-			// hysteria2=example.com:443, password=pwd, download-bandwidth=100, tag=节点名
+			// hysteria2=example.com:443, password=pwd, download-bandwidth=100, tag=节点�?
 			line := fmt.Sprintf("hysteria2=%s:%d, password=%s",
 				server.Host, port, user.UUID)
 
@@ -162,7 +162,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		}
 
 	case model.ServerTypeTuic:
-		// tuic=example.com:443, password=pwd, uuid=uuid, tag=节点名
+		// tuic=example.com:443, password=pwd, uuid=uuid, tag=节点�?
 		line := fmt.Sprintf("tuic=%s:%d, password=%s, uuid=%s",
 			server.Host, port, user.UUID, user.UUID)
 
@@ -183,7 +183,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeVless:
-		// vless=example.com:443, method=none, password=uuid, tag=节点名
+		// vless=example.com:443, method=none, password=uuid, tag=节点�?
 		line := fmt.Sprintf("vless=%s:%d, method=none, password=%s",
 			server.Host, port, user.UUID)
 
@@ -231,7 +231,7 @@ func buildQuantumultXProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeAnytls:
-		// anytls=example.com:443, password=pwd, tag=节点名
+		// anytls=example.com:443, password=pwd, tag=节点�?
 		line := fmt.Sprintf("anytls=%s:%d, password=%s",
 			server.Host, port, user.UUID)
 
@@ -268,7 +268,7 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		// 获取加密方式，默认 aes-256-gcm
+		// 获取加密方式，默�?aes-256-gcm
 		cipher := "aes-256-gcm"
 		if c, ok := ps["cipher"].(string); ok && c != "" {
 			cipher = c
@@ -280,13 +280,13 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 		if password == "" {
 			password = user.UUID
 		}
-		// 节点名 = Shadowsocks,服务器地址,端口,加密方式,密码
+		// 节点�?= Shadowsocks,服务器地址,端口,加密方式,密码
 		line := fmt.Sprintf("%s = Shadowsocks,%s,%d,%s,\"%s\"",
 			server.Name, server.Host, port, cipher, password)
 		return line
 
 	case model.ServerTypeVmess:
-		// 节点名 = vmess,服务器地址,端口,加密方式,UUID,transport
+		// 节点�?= vmess,服务器地址,端口,加密方式,UUID,transport
 		line := fmt.Sprintf("%s = vmess,%s,%d,auto,\"%s\"",
 			server.Name, server.Host, port, user.UUID)
 
@@ -314,7 +314,7 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeTrojan:
-		// 节点名 = trojan,服务器地址,端口,密码
+		// 节点�?= trojan,服务器地址,端口,密码
 		line := fmt.Sprintf("%s = trojan,%s,%d,\"%s\"",
 			server.Name, server.Host, port, user.UUID)
 
@@ -335,7 +335,7 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 		}
 
 		if version == 2 {
-			// 节点名 = Hysteria2,服务器地址,端口,密码
+			// 节点�?= Hysteria2,服务器地址,端口,密码
 			line := fmt.Sprintf("%s = Hysteria2,%s,%d,\"%s\"",
 				server.Name, server.Host, port, user.UUID)
 
@@ -358,7 +358,7 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 		}
 
 	case model.ServerTypeTuic:
-		// 节点名 = tuic,服务器地址,端口,uuid,密码
+		// 节点�?= tuic,服务器地址,端口,uuid,密码
 		line := fmt.Sprintf("%s = tuic,%s,%d,\"%s\",\"%s\"",
 			server.Name, server.Host, port, user.UUID, user.UUID)
 
@@ -371,7 +371,7 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeVless:
-		// 节点名 = vless,服务器地址,端口,uuid
+		// 节点�?= vless,服务器地址,端口,uuid
 		line := fmt.Sprintf("%s = vless,%s,%d,\"%s\"",
 			server.Name, server.Host, port, user.UUID)
 
@@ -430,7 +430,7 @@ func buildLoonProxy(server service.ServerInfo, user *model.User) string {
 		return line
 
 	case model.ServerTypeAnytls:
-		// 节点名 = anytls,服务器地址,端口,密码
+		// 节点�?= anytls,服务器地址,端口,密码
 		line := fmt.Sprintf("%s = anytls,%s,%d,\"%s\"",
 			server.Name, server.Host, port, user.UUID)
 
@@ -466,7 +466,7 @@ func GenerateClashMetaConfig(servers []service.ServerInfo, user *model.User) str
 		}
 	}
 
-	// 更新代理组
+	// 更新代理�?
 	for i := range config.ProxyGroups {
 		if config.ProxyGroups[i].Name == "Proxy" || config.ProxyGroups[i].Name == "Auto" {
 			config.ProxyGroups[i].Proxies = append(config.ProxyGroups[i].Proxies, proxyNames...)
@@ -481,7 +481,7 @@ func buildClashMetaProxy(server service.ServerInfo, user *model.User) map[string
 	ps := server.ProtocolSettings
 	port := parsePort(server.Port)
 
-	// 基础配置与 Clash 相同
+	// 基础配置�?Clash 相同
 	proxy := buildClashProxy(server, user)
 	if proxy == nil {
 		return nil

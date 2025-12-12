@@ -5,7 +5,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"xboard/internal/config"
+	"dashgo/internal/config"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/sqlite"
@@ -32,7 +32,7 @@ func New(cfg config.DatabaseConfig) (*gorm.DB, error) {
 	}
 
 	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Warn), // 只打印警告和错误，不打印普通 SQL
+		Logger: logger.Default.LogMode(logger.Warn), // 只打印警告和错误，不打印普�?SQL
 	})
 	if err != nil {
 		return nil, err

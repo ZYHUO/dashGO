@@ -2,7 +2,7 @@ package repository
 
 import (
 	"time"
-	"xboard/internal/model"
+	"dashgo/internal/model"
 
 	"gorm.io/gorm"
 )
@@ -80,10 +80,10 @@ func (r *UserRepository) GetAvailableUsers(groupIDs []int64) ([]model.User, erro
 	// 2. u + d < transfer_enable 表示还有剩余流量
 	query = query.Where("(transfer_enable = 0 OR u + d < transfer_enable)")
 	
-	// 过期检查
+	// 过期检�?
 	query = query.Where("(expired_at IS NULL OR expired_at = 0 OR expired_at >= ?)", now)
 	
-	// 只选择必要的字段
+	// 只选择必要的字�?
 	err := query.Select("id", "uuid", "speed_limit", "device_limit", "u", "d", "transfer_enable").Find(&users).Error
 	return users, err
 }
@@ -94,7 +94,7 @@ func (r *UserRepository) GetAllAvailableUsers() ([]model.User, error) {
 	now := getCurrentTimestamp()
 	err := r.db.
 		Where("banned = ?", false).
-		Where("(transfer_enable = 0 OR u + d < transfer_enable)"). // 流量为0表示无限制
+		Where("(transfer_enable = 0 OR u + d < transfer_enable)"). // 流量�?表示无限�?
 		Where("(expired_at IS NULL OR expired_at = 0 OR expired_at >= ?)", now).
 		Select("id", "uuid", "speed_limit", "device_limit", "u", "d", "transfer_enable").
 		Find(&users).Error
@@ -152,7 +152,7 @@ func (r *UserRepository) Count() (int64, error) {
 	return count, err
 }
 
-// CountActive 统计活跃用户数
+// CountActive 统计活跃用户�?
 func (r *UserRepository) CountActive() (int64, error) {
 	var count int64
 	now := time.Now().Unix()
@@ -164,7 +164,7 @@ func (r *UserRepository) CountActive() (int64, error) {
 	return count, err
 }
 
-// CountOnline 统计在线用户数
+// CountOnline 统计在线用户�?
 func (r *UserRepository) CountOnline(seconds int64) (int64, error) {
 	var count int64
 	threshold := time.Now().Unix() - seconds
@@ -204,7 +204,7 @@ func (r *UserRepository) GetUsersNeedTrafficReset() ([]model.User, error) {
 	return users, err
 }
 
-// GetUsersExpiringSoon 获取即将过期的用户
+// GetUsersExpiringSoon 获取即将过期的用�?
 func (r *UserRepository) GetUsersExpiringSoon(days int) ([]model.User, error) {
 	var users []model.User
 	now := time.Now().Unix()
@@ -216,7 +216,7 @@ func (r *UserRepository) GetUsersExpiringSoon(days int) ([]model.User, error) {
 	return users, err
 }
 
-// GetUsersWithHighTrafficUsage 获取流量使用率高的用户
+// GetUsersWithHighTrafficUsage 获取流量使用率高的用�?
 func (r *UserRepository) GetUsersWithHighTrafficUsage(percentage int) ([]model.User, error) {
 	var users []model.User
 	err := r.db.Where("transfer_enable > 0").

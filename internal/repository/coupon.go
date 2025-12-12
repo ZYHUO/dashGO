@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"xboard/internal/model"
+	"dashgo/internal/model"
 
 	"gorm.io/gorm"
 )
@@ -190,7 +190,7 @@ func (r *NoticeRepository) GetVisible() ([]model.Notice, error) {
 	return notices, err
 }
 
-// KnowledgeRepository 知识库仓库
+// KnowledgeRepository 知识库仓�?
 type KnowledgeRepository struct {
 	db *gorm.DB
 }

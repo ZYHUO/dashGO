@@ -16,7 +16,7 @@ XBoard 的 Go 语言重写版本，后端节点使用 sing-box server。
 ## 项目结构
 
 ```
-xboard-go/
+dashGO/
 ├── cmd/server/main.go          # 入口
 ├── internal/
 │   ├── config/                 # 配置管理
@@ -47,7 +47,7 @@ xboard-go/
 ### 使用 Docker Compose（推荐）
 
 ```bash
-cd xboard-go
+cd dashGO
 cp configs/config.example.yaml configs/config.yaml
 # 编辑 config.yaml 配置数据库等信息
 docker-compose up -d
@@ -99,9 +99,9 @@ telegram:
 #### 4. 启动后端
 
 ```bash
-cd xboard-go
+cd dashGO
 go mod tidy
-go build -o xboard cmd/server/main.go
+go build -o dashgo cmd/server/main.go
 ./xboard -config configs/config.yaml
 ```
 

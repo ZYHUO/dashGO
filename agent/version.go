@@ -9,12 +9,12 @@ import (
 // Version 当前 Agent 版本
 const Version = "v1.0.0"
 
-// VersionManager 版本管理器
+// VersionManager 版本管理�?
 type VersionManager struct {
 	currentVersion string
 }
 
-// NewVersionManager 创建版本管理器
+// NewVersionManager 创建版本管理�?
 func NewVersionManager(version string) *VersionManager {
 	return &VersionManager{
 		currentVersion: version,
@@ -26,7 +26,7 @@ func (vm *VersionManager) GetCurrentVersion() string {
 	return vm.currentVersion
 }
 
-// ParseVersion 解析版本号
+// ParseVersion 解析版本�?
 func (vm *VersionManager) ParseVersion(version string) (*semver.Version, error) {
 	v, err := semver.NewVersion(version)
 	if err != nil {
@@ -35,7 +35,7 @@ func (vm *VersionManager) ParseVersion(version string) (*semver.Version, error) 
 	return v, nil
 }
 
-// CompareVersion 比较两个版本号
+// CompareVersion 比较两个版本�?
 // 返回: -1 (当前版本更旧), 0 (版本相同), 1 (当前版本更新)
 func (vm *VersionManager) CompareVersion(remote string) (int, error) {
 	currentVer, err := vm.ParseVersion(vm.currentVersion)

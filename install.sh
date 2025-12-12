@@ -1,16 +1,16 @@
 #!/bin/bash
 
-# XBoard 一键安装脚本
+# dashGO 一键安装脚本
 # 支持面板和 Agent 的完整部署
-# 用法: curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh | bash
+# 用法: curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh | bash
 # 或者: bash install.sh [panel|agent|all]
 
 set -e
 
 VERSION='v1.2.0'
-GITHUB_REPO="ZYHUO/xboard-go"
+GITHUB_REPO="ZYHUO/dashGO"
 GH_PROXY='https://hub.glowp.xyz/'
-INSTALL_DIR="/opt/xboard"
+INSTALL_DIR="/opt/dashgo"
 AGENT_DIR="/opt/xboard-agent"
 TEMP_DIR="/tmp/xboard-install"
 SINGBOX_DIR="/etc/sing-box"
@@ -326,8 +326,8 @@ install_panel() {
         log_error "下载失败"
         exit 1
     fi
-    unzip -q xboard.zip
-    cp -r xboard-go-main/* "$INSTALL_DIR/"
+    unzip -q dashgo.zip
+    cp -r dashGO-main/* "$INSTALL_DIR/"
     
     cd "$INSTALL_DIR"
     
@@ -789,11 +789,11 @@ build_agent_from_source() {
     fi
     
     cd "$TEMP_DIR"
-    git clone --depth 1 "${GH_PROXY}https://github.com/${GITHUB_REPO}.git" xboard-go 2>/dev/null || \
-    git clone --depth 1 "https://github.com/${GITHUB_REPO}.git" xboard-go
+    git clone --depth 1 "${GH_PROXY}https://github.com/${GITHUB_REPO}.git" dashGO 2>/dev/null || \
+    git clone --depth 1 "https://github.com/${GITHUB_REPO}.git" dashGO
     
-    cd xboard-go/agent
-    go build -ldflags="-s -w" -o "$AGENT_DIR/xboard-agent" .
+    cd dashGO/agent
+    go build -ldflags="-s -w" -o "$AGENT_DIR/dashgo-agent" .
     
     log_info "从源码构建完成"
 }
@@ -977,7 +977,7 @@ update_panel() {
     log_info "更新文件..."
     rsync -av --exclude='configs/config.yaml' --exclude='config.yaml' --exclude='.env' \
         --exclude='data' --exclude='storage' --exclude='ssl' --exclude='web/dist' \
-        xboard-go-main/* "$INSTALL_DIR/"
+        dashGO-main/* "$INSTALL_DIR/"
     
     cd "$INSTALL_DIR"
     

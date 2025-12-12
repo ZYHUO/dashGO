@@ -219,5 +219,5 @@ make dev-watch
 ## 技术支持
 
 如有问题，请查看：
-- [GitHub Issues](https://github.com/your-org/xboard-go/issues)
+- [GitHub Issues](https://github.com/ZYHUO/dashGO/issues)
 - [文档目录](docs/)

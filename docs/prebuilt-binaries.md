@@ -44,7 +44,7 @@
 bash setup.sh
 
 # Agent 安装
-curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/agent/install.sh | bash -s -- <面板地址> <Token>
+curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/agent/install.sh | bash -s -- <面板地址> <Token>
 ```
 
 ### 手动下载
@@ -231,8 +231,8 @@ xattr -d com.apple.quarantine xboard-server-darwin-arm64
 
 ```bash
 # 克隆项目
-git clone https://github.com/ZYHUO/xboard-go.git
-cd xboard-go
+git clone https://github.com/ZYHUO/dashGO.git
+cd dashGO
 
 # 构建所有平台
 ./build-all.sh all
@@ -254,4 +254,4 @@ make agent
 ## 技术支持
 
 如有问题，请提交 Issue：
-https://github.com/ZYHUO/xboard-go/issues
+https://github.com/ZYHUO/dashGO/issues

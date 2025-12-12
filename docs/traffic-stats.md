@@ -2,7 +2,7 @@
 
 ## 功能概述
 
-XBoard 提供了完整的流量统计功能，用于监控和分析系统的流量使用情况。
+dashGO 提供了完整的流量统计功能，用于监控和分析系统的流量使用情况。
 
 ## 数据库表结构
 
@@ -341,7 +341,7 @@ Agent 上报流量数据。
 ./migrate-linux-amd64 -config configs/config.yaml
 
 # 或使用 Docker
-docker exec xboard ./migrate -config /app/configs/config.yaml
+docker exec dashgo ./migrate -config /app/configs/config.yaml
 ```
 
 迁移文件位置：

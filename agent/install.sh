@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# XBoard Agent 一键安装脚本
-# 用法: curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/agent/install.sh | bash -s -- <面板地址> <Token>
+# dashGO Agent 一键安装脚本
+# 用法: curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/agent/install.sh | bash -s -- <面板地址> <Token>
 # 或者: bash install.sh <面板地址> <Token>
 
 set -e
@@ -18,7 +18,7 @@ NC='\033[0m'
 # 配置
 PANEL_URL=$1
 TOKEN=$2
-GITHUB_REPO="ZYHUO/xboard-go"
+GITHUB_REPO="ZYHUO/dashGO"
 GH_PROXY='https://hub.glowp.xyz/'
 DOWNLOAD_BASE_URL="https://download.sharon.wiki"
 INSTALL_DIR="/opt/xboard-agent"
@@ -317,12 +317,12 @@ build_agent_from_source() {
     fi
     
     cd "$TEMP_DIR"
-    git clone --depth 1 "https://github.com/${GITHUB_REPO}.git" xboard-go 2>/dev/null || {
-        git clone --depth 1 "${GH_PROXY}https://github.com/${GITHUB_REPO}.git" xboard-go
+    git clone --depth 1 "https://github.com/${GITHUB_REPO}.git" dashGO 2>/dev/null || {
+        git clone --depth 1 "${GH_PROXY}https://github.com/${GITHUB_REPO}.git" dashGO
     }
     
-    cd xboard-go/agent
-    go build -ldflags="-s -w" -o "$INSTALL_DIR/xboard-agent" .
+    cd dashGO/agent
+    go build -ldflags="-s -w" -o "$INSTALL_DIR/dashgo-agent" .
     
     log_info "从源码构建完成"
 }

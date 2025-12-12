@@ -1,9 +1,9 @@
 version: '3.8'
 
 services:
-  xboard:
+  dashgo:
     build: .
-    container_name: xboard
+    container_name: dashgo
     ports:
       - "8080:8080"
     environment:
@@ -27,10 +27,10 @@ services:
 
   mysql:
     image: mysql:8.0
-    container_name: xboard-mysql
+    container_name: dashgo-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: xboard_password
-      MYSQL_DATABASE: xboard
+      MYSQL_ROOT_PASSWORD: dashgo_password
+      MYSQL_DATABASE: dashgo
       MYSQL_CHARACTER_SET_SERVER: utf8mb4
       MYSQL_COLLATION_SERVER: utf8mb4_unicode_ci
     volumes:
@@ -40,7 +40,7 @@ services:
     restart: unless-stopped
     command: --default-authentication-plugin=mysql_native_password
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pxboard_password"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pdashgo_password"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -48,7 +48,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: xboard-redis
+    container_name: dashgo-redis
     volumes:
       - redis_data:/data
     ports:

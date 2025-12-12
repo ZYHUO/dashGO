@@ -4,9 +4,9 @@ import (
 	"errors"
 	"time"
 
-	"xboard/internal/config"
-	"xboard/internal/model"
-	"xboard/internal/repository"
+	"dashgo/internal/config"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -61,7 +61,7 @@ func (s *AuthService) ValidateToken(tokenString string) (*Claims, error) {
 	return nil, errors.New("invalid token")
 }
 
-// GetUserFromToken 从 Token 获取用户
+// GetUserFromToken �?Token 获取用户
 func (s *AuthService) GetUserFromToken(tokenString string) (*model.User, error) {
 	claims, err := s.ValidateToken(tokenString)
 	if err != nil {

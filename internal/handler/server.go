@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,7 +49,7 @@ func ServerUsers(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 更新节点检查时间
+		// 更新节点检查时�?
 		services.Server.UpdateServerStatus(server.ID, server.Type, "check")
 
 		users, err := services.Server.GetAvailableUsers(server)
@@ -95,10 +95,10 @@ func ServerPush(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 更新在线用户数
+		// 更新在线用户�?
 		services.Server.UpdateOnlineUsers(server.ID, server.Type, len(data))
 
-		// 更新推送时间
+		// 更新推送时�?
 		services.Server.UpdateServerStatus(server.ID, server.Type, "push")
 
 		// 处理流量数据
@@ -119,7 +119,7 @@ func ServerPush(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// ServerAlive 在线状态上报
+// ServerAlive 在线状态上�?
 func ServerAlive(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		server := getServerFromContext(c)
@@ -147,7 +147,7 @@ func ServerAliveList(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// ServerStatus 节点状态上报
+// ServerStatus 节点状态上�?
 func ServerStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		server := getServerFromContext(c)
@@ -194,7 +194,7 @@ func ServerStatus(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// getServerFromContext 从上下文获取服务器信息
+// getServerFromContext 从上下文获取服务器信�?
 func getServerFromContext(c *gin.Context) *model.Server {
 	// 先尝试从 context 获取（由中间件设置）
 	if server, ok := c.Get("server"); ok {

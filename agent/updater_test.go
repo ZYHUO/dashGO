@@ -107,7 +107,7 @@ func TestBackupRemovesOldBackup(t *testing.T) {
 		t.Fatalf("Backup failed: %v", err)
 	}
 
-	// 验证备份文件内容是新的
+	// 验证备份文件内容是新�?
 	content, err := os.ReadFile(updater.backupPath)
 	if err != nil {
 		t.Fatalf("Failed to read backup file: %v", err)
@@ -122,12 +122,12 @@ func TestReplace(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 先备份
+	// 先备�?
 	if err := updater.Backup(); err != nil {
 		t.Fatalf("Backup failed: %v", err)
 	}
 
-	// 创建新版本文件
+	// 创建新版本文�?
 	if err := os.WriteFile(updater.newPath, []byte("new version"), 0644); err != nil {
 		t.Fatalf("Failed to create new file: %v", err)
 	}
@@ -146,7 +146,7 @@ func TestReplace(t *testing.T) {
 		t.Errorf("Executable content mismatch: got %s, want 'new version'", string(content))
 	}
 
-	// 验证新文件已被移除
+	// 验证新文件已被移�?
 	if _, err := os.Stat(updater.newPath); err == nil {
 		t.Error("New file should be removed after replace")
 	}
@@ -156,7 +156,7 @@ func TestReplace(t *testing.T) {
 		t.Error("Backup file should still exist after replace")
 	}
 
-	// 验证可执行权限（Unix-like 系统）
+	// 验证可执行权限（Unix-like 系统�?
 	if runtime.GOOS != "windows" {
 		info, err := os.Stat(updater.execPath)
 		if err != nil {
@@ -169,17 +169,17 @@ func TestReplace(t *testing.T) {
 	}
 }
 
-// TestReplaceWithoutBackup 测试没有备份时替换失败
+// TestReplaceWithoutBackup 测试没有备份时替换失�?
 func TestReplaceWithoutBackup(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 创建新版本文件
+	// 创建新版本文�?
 	if err := os.WriteFile(updater.newPath, []byte("new version"), 0644); err != nil {
 		t.Fatalf("Failed to create new file: %v", err)
 	}
 
-	// 尝试替换（应该失败，因为没有备份）
+	// 尝试替换（应该失败，因为没有备份�?
 	if err := updater.Replace(); err == nil {
 		t.Error("Replace should fail without backup")
 	}
@@ -190,7 +190,7 @@ func TestReplaceWithoutNewFile(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 先备份
+	// 先备�?
 	if err := updater.Backup(); err != nil {
 		t.Fatalf("Backup failed: %v", err)
 	}
@@ -206,12 +206,12 @@ func TestRollback(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 先备份
+	// 先备�?
 	if err := updater.Backup(); err != nil {
 		t.Fatalf("Backup failed: %v", err)
 	}
 
-	// 创建一个损坏的新版本
+	// 创建一个损坏的新版�?
 	if err := os.WriteFile(updater.execPath, []byte("corrupted version"), 0644); err != nil {
 		t.Fatalf("Failed to create corrupted file: %v", err)
 	}
@@ -236,12 +236,12 @@ func TestRollback(t *testing.T) {
 	}
 }
 
-// TestRollbackWithoutBackup 测试没有备份时回滚失败
+// TestRollbackWithoutBackup 测试没有备份时回滚失�?
 func TestRollbackWithoutBackup(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 尝试回滚（应该失败，因为没有备份）
+	// 尝试回滚（应该失败，因为没有备份�?
 	if err := updater.Rollback(); err == nil {
 		t.Error("Rollback should fail without backup")
 	}
@@ -279,39 +279,39 @@ func TestCleanupBackupWhenNotExists(t *testing.T) {
 	}
 }
 
-// TestCleanupNew 测试清理新版本文件
+// TestCleanupNew 测试清理新版本文�?
 func TestCleanupNew(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 创建新版本文件
+	// 创建新版本文�?
 	if err := os.WriteFile(updater.newPath, []byte("new version"), 0644); err != nil {
 		t.Fatalf("Failed to create new file: %v", err)
 	}
 
-	// 清理新文件
+	// 清理新文�?
 	if err := updater.CleanupNew(); err != nil {
 		t.Fatalf("CleanupNew failed: %v", err)
 	}
 
-	// 验证新文件已被删除
+	// 验证新文件已被删�?
 	if _, err := os.Stat(updater.newPath); err == nil {
 		t.Error("New file should be removed")
 	}
 }
 
-// TestCleanupNewWhenNotExists 测试清理不存在的新文件
+// TestCleanupNewWhenNotExists 测试清理不存在的新文�?
 func TestCleanupNewWhenNotExists(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
 
-	// 清理不存在的新文件（应该成功）
+	// 清理不存在的新文件（应该成功�?
 	if err := updater.CleanupNew(); err != nil {
 		t.Errorf("CleanupNew should succeed when new file doesn't exist: %v", err)
 	}
 }
 
-// TestGetNewPath 测试获取新版本文件路径
+// TestGetNewPath 测试获取新版本文件路�?
 func TestGetNewPath(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
@@ -326,7 +326,7 @@ func TestGetNewPath(t *testing.T) {
 	}
 }
 
-// TestCompleteUpdateFlow 测试完整的更新流程
+// TestCompleteUpdateFlow 测试完整的更新流�?
 func TestCompleteUpdateFlow(t *testing.T) {
 	updater, tmpDir := setupTestUpdater(t)
 	defer os.RemoveAll(tmpDir)
@@ -336,7 +336,7 @@ func TestCompleteUpdateFlow(t *testing.T) {
 		t.Fatalf("Backup failed: %v", err)
 	}
 
-	// 2. 创建新版本
+	// 2. 创建新版�?
 	if err := os.WriteFile(updater.newPath, []byte("new version"), 0755); err != nil {
 		t.Fatalf("Failed to create new file: %v", err)
 	}
@@ -346,7 +346,7 @@ func TestCompleteUpdateFlow(t *testing.T) {
 		t.Fatalf("Replace failed: %v", err)
 	}
 
-	// 4. 验证新版本
+	// 4. 验证新版�?
 	content, err := os.ReadFile(updater.execPath)
 	if err != nil {
 		t.Fatalf("Failed to read executable: %v", err)
@@ -360,7 +360,7 @@ func TestCompleteUpdateFlow(t *testing.T) {
 		t.Fatalf("CleanupBackup failed: %v", err)
 	}
 
-	// 验证备份已清理
+	// 验证备份已清�?
 	if _, err := os.Stat(updater.backupPath); err == nil {
 		t.Error("Backup should be cleaned up")
 	}
@@ -376,7 +376,7 @@ func TestFailedUpdateWithRollback(t *testing.T) {
 		t.Fatalf("Backup failed: %v", err)
 	}
 
-	// 2. 模拟更新失败（创建损坏的文件）
+	// 2. 模拟更新失败（创建损坏的文件�?
 	if err := os.WriteFile(updater.execPath, []byte("corrupted"), 0644); err != nil {
 		t.Fatalf("Failed to create corrupted file: %v", err)
 	}

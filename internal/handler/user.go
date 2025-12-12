@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"xboard/internal/model"
-	"xboard/internal/protocol"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/protocol"
+	"dashgo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -34,7 +34,7 @@ func UserSubscribe(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 使用用户组服务获取可访问的节点
+		// 使用用户组服务获取可访问的节�?
 		servers, err := services.UserGroup.GetAvailableServersForUser(user)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -192,7 +192,7 @@ func UserCancelOrder(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// ClientSubscribe 客户端订阅
+// ClientSubscribe 客户端订�?
 func ClientSubscribe(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		token := c.Query("token")
@@ -212,7 +212,7 @@ func ClientSubscribe(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 使用用户组服务获取可访问的节点
+		// 使用用户组服务获取可访问的节�?
 		servers, err := services.UserGroup.GetAvailableServersForUser(user)
 		if err != nil {
 			c.String(http.StatusInternalServerError, err.Error())
@@ -229,7 +229,7 @@ func ClientSubscribe(services *service.Services) gin.HandlerFunc {
 			siteName = "XBoard"
 		}
 
-		// 设置订阅信息头
+		// 设置订阅信息�?
 		c.Header("subscription-userinfo", formatSubscriptionInfo(user))
 		c.Header("profile-update-interval", "24")
 		c.Header("profile-title", siteName)
@@ -241,7 +241,7 @@ func ClientSubscribe(services *service.Services) gin.HandlerFunc {
 		case format == "clash" || containsAny(ua, "clash", "stash"):
 			c.String(http.StatusOK, generateClashConfig(servers, user))
 		default:
-			// 默认返回 base64 编码的链接
+			// 默认返回 base64 编码的链�?
 			c.String(http.StatusOK, generateBase64Links(servers, user))
 		}
 	}
@@ -279,7 +279,7 @@ func containsAny(s string, substrs ...string) bool {
 	return false
 }
 
-// 这些函数调用 protocol 包
+// 这些函数调用 protocol �?
 func generateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[string]interface{} {
 	return protocol.GenerateSingBoxConfig(servers, user)
 }

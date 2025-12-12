@@ -149,7 +149,7 @@ onMounted(fetchSettings)
           <div class="grid grid-cols-2 gap-4">
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">站点名称</label>
-              <input v-model="siteSettings.name" type="text" placeholder="XBoard" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"/>
+              <input v-model="siteSettings.name" type="text" placeholder="dashGO" class="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"/>
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">主题色</label>

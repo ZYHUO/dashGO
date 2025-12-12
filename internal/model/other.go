@@ -60,7 +60,7 @@ func (TicketMessage) TableName() string {
 	return "v2_ticket_message"
 }
 
-// Knowledge 知识库
+// Knowledge 知识�?
 type Knowledge struct {
 	ID        int64   `gorm:"primaryKey;column:id" json:"id"`
 	Language  string  `gorm:"column:language;size:5" json:"language"`

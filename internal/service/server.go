@@ -6,11 +6,11 @@ import (
 	"strings"
 	"time"
 
-	"xboard/internal/config"
-	"xboard/internal/model"
-	"xboard/internal/repository"
-	"xboard/pkg/cache"
-	"xboard/pkg/utils"
+	"dashgo/internal/config"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
+	"dashgo/pkg/cache"
+	"dashgo/pkg/utils"
 )
 
 type ServerService struct {
@@ -83,7 +83,7 @@ func (s *ServerService) BuildServerInfo(server *model.Server, user *model.User) 
 	return info
 }
 
-// generateServerPassword 生成服务器密码 (用于客户端订阅)
+// generateServerPassword 生成服务器密�?(用于客户端订�?
 func (s *ServerService) generateServerPassword(server *model.Server, user *model.User) string {
 	if server.Type != model.ServerTypeShadowsocks {
 		return user.UUID
@@ -100,11 +100,11 @@ func (s *ServerService) generateServerPassword(server *model.Server, user *model
 		}
 	}
 
-	// 使用统一的密码生成函数
+	// 使用统一的密码生成函�?
 	return utils.GenerateSS2022Password(cipher, server.CreatedAt, user.UUID)
 }
 
-// GetAvailableUsers 获取节点可用的用户列表
+// GetAvailableUsers 获取节点可用的用户列�?
 func (s *ServerService) GetAvailableUsers(server *model.Server) ([]NodeUser, error) {
 	groupIDs := server.GetGroupIDsAsInt64()
 	if len(groupIDs) == 0 {
@@ -219,7 +219,7 @@ func (s *ServerService) GetServerConfig(server *model.Server) map[string]interfa
 	return config
 }
 
-// UpdateServerStatus 更新节点状态
+// UpdateServerStatus 更新节点状�?
 func (s *ServerService) UpdateServerStatus(serverID int64, serverType string, statusType string) error {
 	key := ""
 	switch statusType {
@@ -231,20 +231,20 @@ func (s *ServerService) UpdateServerStatus(serverID int64, serverType string, st
 	return s.cache.Set(key, time.Now().Unix(), time.Hour)
 }
 
-// UpdateOnlineUsers 更新在线用户数
+// UpdateOnlineUsers 更新在线用户�?
 func (s *ServerService) UpdateOnlineUsers(serverID int64, serverType string, count int) error {
 	key := cache.ServerOnlineUserKey(strings.ToUpper(serverType), serverID)
 	return s.cache.Set(key, count, time.Hour)
 }
 
-// UpdateLoadStatus 更新节点负载状态
+// UpdateLoadStatus 更新节点负载状�?
 func (s *ServerService) UpdateLoadStatus(serverID int64, serverType string, status map[string]interface{}) error {
 	key := cache.ServerLoadStatusKey(strings.ToUpper(serverType), serverID)
 	data, _ := json.Marshal(status)
 	return s.cache.Set(key, string(data), time.Hour)
 }
 
-// FindServer 查找服务器
+// FindServer 查找服务�?
 func (s *ServerService) FindServer(serverID int64, serverType string) (*model.Server, error) {
 	if serverType != "" {
 		return s.serverRepo.FindByCode(serverType, strconv.FormatInt(serverID, 10))
@@ -252,17 +252,17 @@ func (s *ServerService) FindServer(serverID int64, serverType string) (*model.Se
 	return s.serverRepo.FindByID(serverID)
 }
 
-// CreateServer 创建服务器
+// CreateServer 创建服务�?
 func (s *ServerService) CreateServer(server *model.Server) error {
 	return s.serverRepo.Create(server)
 }
 
-// UpdateServer 更新服务器
+// UpdateServer 更新服务�?
 func (s *ServerService) UpdateServer(server *model.Server) error {
 	return s.serverRepo.Update(server)
 }
 
-// DeleteServer 删除服务器
+// DeleteServer 删除服务�?
 func (s *ServerService) DeleteServer(id int64) error {
 	return s.serverRepo.Delete(id)
 }

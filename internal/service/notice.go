@@ -3,8 +3,8 @@ package service
 import (
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/repository"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
 )
 
 // NoticeService 公告服务
@@ -16,7 +16,7 @@ func NewNoticeService(noticeRepo *repository.NoticeRepository) *NoticeService {
 	return &NoticeService{noticeRepo: noticeRepo}
 }
 
-// GetAll 获取所有公告
+// GetAll 获取所有公�?
 func (s *NoticeService) GetAll() ([]model.Notice, error) {
 	return s.noticeRepo.GetAll()
 }
@@ -69,7 +69,7 @@ func (s *NoticeService) Delete(id int64) error {
 	return s.noticeRepo.Delete(id)
 }
 
-// KnowledgeService 知识库服务
+// KnowledgeService 知识库服�?
 type KnowledgeService struct {
 	knowledgeRepo *repository.KnowledgeRepository
 }
@@ -88,7 +88,7 @@ func (s *KnowledgeService) GetVisible(language string) ([]model.Knowledge, error
 	return s.knowledgeRepo.GetVisible(language)
 }
 
-// GetByCategory 按分类获取文章
+// GetByCategory 按分类获取文�?
 func (s *KnowledgeService) GetByCategory(category, language string) ([]model.Knowledge, error) {
 	return s.knowledgeRepo.GetByCategory(category, language)
 }
@@ -116,12 +116,12 @@ func (s *KnowledgeService) Delete(id int64) error {
 	return s.knowledgeRepo.Delete(id)
 }
 
-// GetCategories 获取所有分类
+// GetCategories 获取所有分�?
 func (s *KnowledgeService) GetCategories() ([]string, error) {
 	return s.knowledgeRepo.GetCategories("")
 }
 
-// GetPublic 获取公开知识库文章
+// GetPublic 获取公开知识库文�?
 func (s *KnowledgeService) GetPublic(category string) ([]map[string]interface{}, error) {
 	var items []model.Knowledge
 	var err error

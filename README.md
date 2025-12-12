@@ -1,5 +1,5 @@
 
-# XBoard Go
+# dashGO
 
 这是一个用 Go 写的代理面板，反正够用就对了。
 
@@ -40,7 +40,7 @@ MIT License
 ### 一键安装（推荐）
 
 ```bash
-wget https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh && bash install.sh
+wget https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh && bash install.sh
 ```
 
 > 💡 脚本会自动下载预编译二进制文件，无需本地编译环境。
@@ -59,7 +59,7 @@ wget https://raw.githubusercontent.com/ZYHUO/xboard-go/main/install.sh && bash i
 bash setup.sh
 # 选择 1 (全新安装)
 # 选择 1 (SQLite - 推荐)
-./xboard-server
+./dashgo-server
 ```
 
 访问：http://localhost:8080
@@ -87,7 +87,7 @@ make frontend-build # 编译前端
 ./migrate-linux-amd64 -config configs/config.yaml
 
 # 4. 启动
-./xboard-server -config configs/config.yaml
+./dashgo-server -config configs/config.yaml
 ```
 
 ### 数据库选择
@@ -95,14 +95,14 @@ make frontend-build # 编译前端
 **SQLite（默认）**：
 - ✅ 零配置，开箱即用
 - ✅ 适合 < 1000 用户
-- ✅ 数据文件：`data/xboard.db`
+- ✅ 数据文件：`data/dashgo.db`
 
 **MySQL**：
 - 修改 `configs/config.yaml`：
 ```yaml
 database:
   driver: "mysql"
-  database: "xboard"
+  database: "dashgo"
   host: "127.0.0.1"
   port: 3306
   username: "root"
@@ -150,7 +150,7 @@ app:
 
 database:
   driver: "sqlite"              # sqlite 或 mysql
-  database: "data/xboard.db"    # SQLite 文件路径
+  database: "data/dashgo.db"    # SQLite 文件路径
 
 redis:
   host: "127.0.0.1"
@@ -169,7 +169,7 @@ node:
 ## 项目结构
 
 ```
-xboard-go/
+dashGO/
 ├── cmd/
 │   ├── server/          # Server 主程序
 │   └── migrate/         # 数据库迁移工具
@@ -199,12 +199,12 @@ xboard-go/
 
 **SQLite**：
 ```bash
-cp data/xboard.db data/xboard.db.backup
+cp data/dashgo.db data/dashgo.db.backup
 ```
 
 **MySQL**：
 ```bash
-mysqldump -u root -p xboard > backup.sql
+mysqldump -u root -p dashgo > backup.sql
 ```
 
 ### 3. 如何更新？

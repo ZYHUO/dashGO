@@ -53,7 +53,7 @@ type NodeConfig struct {
 	Token        string `yaml:"token"`         // Node communication token
 	PushInterval int    `yaml:"push_interval"` // seconds
 	PullInterval int    `yaml:"pull_interval"` // seconds
-	EnableSync   bool   `yaml:"enable_sync"`   // 是否启用主动节点同步（默认 false，使用 Agent 模式）
+	EnableSync   bool   `yaml:"enable_sync"`   // 是否启用主动节点同步（默�?false，使�?Agent 模式�?
 }
 
 type MailConfig struct {

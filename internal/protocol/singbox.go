@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"strings"
 
-	"xboard/internal/model"
-	"xboard/internal/service"
+	"dashgo/internal/model"
+	"dashgo/internal/service"
 )
 
 // SingBoxConfig sing-box 配置结构
@@ -105,7 +105,7 @@ func GenerateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[s
 		}
 	}
 
-	// 更新各个分组的 outbounds
+	// 更新各个分组�?outbounds
 	for i, ob := range outbounds {
 		if m, ok := ob.(map[string]interface{}); ok {
 			tag, _ := m["tag"].(string)
@@ -113,7 +113,7 @@ func GenerateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[s
 			
 			switch tag {
 			case "🚀 节点选择":
-				// 节点选择：添加所有节点
+				// 节点选择：添加所有节�?
 				if existing, ok := m["outbounds"].([]string); ok {
 					m["outbounds"] = append(existing, proxyTags...)
 				}
@@ -121,7 +121,7 @@ func GenerateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[s
 				// 自动选择/故障转移：只包含节点
 				m["outbounds"] = proxyTags
 			case "📲 电报消息", "🤖 OpenAI", "📹 YouTube", "🎬 Netflix", "🍎 苹果服务", "🐟 漏网之鱼":
-				// 其他分组：添加所有节点
+				// 其他分组：添加所有节�?
 				if existing, ok := m["outbounds"].([]string); ok {
 					m["outbounds"] = append(existing, proxyTags...)
 				}
@@ -179,7 +179,7 @@ func buildShadowTLS(server service.ServerInfo, user *model.User) map[string]inte
 	ps := server.ProtocolSettings
 	port := parsePort(server.Port)
 
-	// ShadowTLS 需要配合 Shadowsocks 使用
+	// ShadowTLS 需要配�?Shadowsocks 使用
 	out := map[string]interface{}{
 		"type":        "shadowtls",
 		"tag":         server.Name,
@@ -197,7 +197,7 @@ func buildShadowTLS(server service.ServerInfo, user *model.User) map[string]inte
 		},
 	}
 
-	// 握手服务器
+	// 握手服务�?
 	if hs, ok := ps["handshake_server"].(string); ok && hs != "" {
 		out["tls"].(map[string]interface{})["server_name"] = hs
 	}
@@ -326,7 +326,7 @@ func buildShadowsocks(server service.ServerInfo, user *model.User) map[string]in
 	ps := server.ProtocolSettings
 	port := parsePort(server.Port)
 
-	// 获取加密方式，优先使用 cipher，其次 method，默认 aes-256-gcm
+	// 获取加密方式，优先使�?cipher，其�?method，默�?aes-256-gcm
 	cipher := "aes-256-gcm"
 	if c, ok := ps["cipher"].(string); ok && c != "" {
 		cipher = c
@@ -334,8 +334,8 @@ func buildShadowsocks(server service.ServerInfo, user *model.User) map[string]in
 		cipher = m
 	}
 
-	// 密码：对于 SS2022，使用 server.Password（已包含服务器密钥:用户密钥格式）
-	// 对于普通 SS，使用用户 UUID
+	// 密码：对�?SS2022，使�?server.Password（已包含服务器密�?用户密钥格式�?
+	// 对于普�?SS，使用用�?UUID
 	password := server.Password
 	if password == "" {
 		password = user.UUID
@@ -747,7 +747,7 @@ func getDefaultSingBoxConfig() map[string]interface{} {
 	}
 }
 
-// ToJSON 转换为 JSON 字符串
+// ToJSON 转换�?JSON 字符�?
 func ToJSON(config map[string]interface{}) string {
 	data, _ := json.MarshalIndent(config, "", "  ")
 	return string(data)

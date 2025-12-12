@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"xboard/internal/service"
+	"dashgo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -73,7 +73,7 @@ func AdminResetTraffic(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminResetAllTraffic 重置所有用户流量
+// AdminResetAllTraffic 重置所有用户流�?
 func AdminResetAllTraffic(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		count, err := services.Traffic.ResetAllUsersTraffic()
@@ -84,7 +84,7 @@ func AdminResetAllTraffic(services *service.Services) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"data": true,
-			"message": "已重置流量",
+			"message": "已重置流�?,
 			"count": count,
 		})
 	}
@@ -122,11 +122,11 @@ func AdminSendTrafficWarning(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		c.JSON(http.StatusOK, gin.H{"data": true, "message": "预警通知已发送"})
+		c.JSON(http.StatusOK, gin.H{"data": true, "message": "预警通知已发�?})
 	}
 }
 
-// AdminBatchSendTrafficWarnings 批量发送流量预警
+// AdminBatchSendTrafficWarnings 批量发送流量预�?
 func AdminBatchSendTrafficWarnings(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		threshold, _ := strconv.Atoi(c.DefaultQuery("threshold", "80"))
@@ -147,14 +147,14 @@ func AdminBatchSendTrafficWarnings(services *service.Services) gin.HandlerFunc {
 
 		c.JSON(http.StatusOK, gin.H{
 			"data": true,
-			"message": "批量发送完成",
+			"message": "批量发送完�?,
 			"total": len(users),
 			"success": successCount,
 		})
 	}
 }
 
-// AdminAutobanOverTrafficUsers 自动封禁超流量用户
+// AdminAutobanOverTrafficUsers 自动封禁超流量用�?
 func AdminAutobanOverTrafficUsers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		count, err := services.Traffic.AutoBanOverTrafficUsers()

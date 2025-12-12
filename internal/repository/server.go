@@ -3,7 +3,7 @@ package repository
 import (
 	"fmt"
 
-	"xboard/internal/model"
+	"dashgo/internal/model"
 
 	"gorm.io/gorm"
 )
@@ -53,11 +53,11 @@ func (r *ServerRepository) GetAllServers() ([]model.Server, error) {
 	return servers, err
 }
 
-// GetAvailableServers 获取指定权限组的可用服务器
+// GetAvailableServers 获取指定权限组的可用服务�?
 func (r *ServerRepository) GetAvailableServers(groupID int64) ([]model.Server, error) {
 	var servers []model.Server
 	// 使用 JSON_CONTAINS 查询包含指定 group_id 的服务器
-	// JSON_CONTAINS 需要传入 JSON 格式的值
+	// JSON_CONTAINS 需要传�?JSON 格式的�?
 	groupIDJSON := fmt.Sprintf("[%d]", groupID)
 	err := r.db.
 		Where("(JSON_CONTAINS(group_ids, ?) OR group_ids IS NULL OR group_ids = '[]' OR group_ids = '' OR JSON_LENGTH(group_ids) = 0)", groupIDJSON).
@@ -100,14 +100,14 @@ func (r *ServerRepository) Count() (int64, error) {
 	return count, err
 }
 
-// GetByHostID 获取绑定到指定主机的所有节点
+// GetByHostID 获取绑定到指定主机的所有节�?
 func (r *ServerRepository) GetByHostID(hostID int64) ([]model.Server, error) {
 	var servers []model.Server
 	err := r.db.Where("host_id = ?", hostID).Order("sort ASC").Find(&servers).Error
 	return servers, err
 }
 
-// UpdateHostID 更新节点的主机绑定
+// UpdateHostID 更新节点的主机绑�?
 func (r *ServerRepository) UpdateHostID(serverID int64, hostID *int64) error {
 	return r.db.Model(&model.Server{}).Where("id = ?", serverID).Update("host_id", hostID).Error
 }

@@ -7,8 +7,8 @@
 ### 1. 克隆项目
 
 ```bash
-git clone https://github.com/ZYHUO/xboard-go.git
-cd xboard-go
+git clone https://github.com/ZYHUO/dashGO.git
+cd dashGO
 ```
 
 ### 2. 运行安装脚本
@@ -304,7 +304,7 @@ bash local-install.sh migrate
 ## 目录结构
 
 ```
-xboard-go/
+dashGO/
 ├── cmd/                    # 命令行工具
 │   ├── server/            # 主程序
 │   └── migrate/           # 迁移工具
@@ -353,8 +353,8 @@ xboard-go/
 ## 获取帮助
 
 - 文档: [docs/](../docs/)
-- Issues: https://github.com/ZYHUO/xboard-go/issues
-- 讨论: https://github.com/ZYHUO/xboard-go/discussions
+- Issues: https://github.com/ZYHUO/dashGO/issues
+- 讨论: https://github.com/ZYHUO/dashGO/discussions
 
 ## 许可证
 

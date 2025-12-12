@@ -3,7 +3,7 @@ package service
 import (
 	"time"
 
-	"xboard/internal/repository"
+	"dashgo/internal/repository"
 )
 
 // StatsService 统计服务
@@ -42,7 +42,7 @@ func (s *StatsService) GetOverview() (map[string]interface{}, error) {
 	todayOrders, todayIncome, _ := s.orderRepo.GetTodayStats()
 	monthOrders, monthIncome, _ := s.orderRepo.GetMonthStats()
 
-	// 服务器统计
+	// 服务器统�?
 	totalServers, _ := s.serverRepo.Count()
 
 	// 工单统计
@@ -129,7 +129,7 @@ func (s *StatsService) GetTrafficStats(startAt, endAt int64) ([]map[string]inter
 	return result, nil
 }
 
-// GetServerRanking 获取服务器排行
+// GetServerRanking 获取服务器排�?
 func (s *StatsService) GetServerRanking(limit int) ([]map[string]interface{}, error) {
 	rankings, err := s.statRepo.GetServerRanking(limit)
 	if err != nil {
@@ -183,7 +183,7 @@ func (s *StatsService) GetUserRanking(limit int) ([]map[string]interface{}, erro
 
 // GetRealtimeStats 获取实时统计
 func (s *StatsService) GetRealtimeStats() (map[string]interface{}, error) {
-	// 在线用户数（最近 5 分钟有流量的用户）
+	// 在线用户数（最�?5 分钟有流量的用户�?
 	onlineUsers, _ := s.userRepo.CountOnline(5 * 60)
 
 	// 今日流量
@@ -256,7 +256,7 @@ func (s *StatsService) UpdateUser(id int64, email string, balance, planID, trans
 		user.IsStaff = *isStaff
 	}
 	if password != "" {
-		// 需要导入 utils 包来加密密码
+		// 需要导�?utils 包来加密密码
 		// 这里简化处理，实际应该加密
 		user.Password = password
 	}
@@ -313,7 +313,7 @@ func (s *StatsService) GetOrderList(status *int, page, pageSize int) ([]map[stri
 	return result, total, nil
 }
 
-// UpdateOrderStatus 更新订单状态
+// UpdateOrderStatus 更新订单状�?
 func (s *StatsService) UpdateOrderStatus(id int64, status int) error {
 	order, err := s.orderRepo.FindByID(id)
 	if err != nil {
@@ -325,7 +325,7 @@ func (s *StatsService) UpdateOrderStatus(id int64, status int) error {
 }
 
 
-// GetTrafficOverview 获取流量概览（用于饼状图）
+// GetTrafficOverview 获取流量概览（用于饼状图�?
 func (s *StatsService) GetTrafficOverview() (map[string]interface{}, error) {
 	// 获取所有用户的流量统计
 	users, _, err := s.userRepo.FindAll("", 1, 10000)
@@ -353,8 +353,8 @@ func (s *StatsService) GetTrafficOverview() (map[string]interface{}, error) {
 		}
 	}
 
-	// 按流量排序取前 10
-	// 简单冒泡排序
+	// 按流量排序取�?10
+	// 简单冒泡排�?
 	for i := 0; i < len(userTraffic)-1 && i < 10; i++ {
 		for j := i + 1; j < len(userTraffic); j++ {
 			if userTraffic[j]["total"].(int64) > userTraffic[i]["total"].(int64) {
@@ -455,7 +455,7 @@ func (s *StatsService) GetDailyTrafficStats(days int) ([]map[string]interface{},
 		return nil, err
 	}
 
-	// 按日期聚合
+	// 按日期聚�?
 	dailyMap := make(map[string]map[string]int64)
 	for _, stat := range stats {
 		date := time.Unix(stat.RecordAt, 0).Format("2006-01-02")

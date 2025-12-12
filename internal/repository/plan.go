@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"xboard/internal/model"
+	"dashgo/internal/model"
 
 	"gorm.io/gorm"
 )

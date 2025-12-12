@@ -4,8 +4,8 @@ import (
 	"errors"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/repository"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
 )
 
 // TicketService 工单服务
@@ -33,23 +33,23 @@ func NewTicketService(
 	}
 }
 
-// 工单状态
+// 工单状�?
 const (
-	TicketStatusOpen   = 0 // 开启
+	TicketStatusOpen   = 0 // 开�?
 	TicketStatusClosed = 1 // 关闭
 )
 
-// 回复状态
+// 回复状�?
 const (
-	TicketReplyPending = 0 // 待回复
-	TicketReplyReplied = 1 // 已回复
+	TicketReplyPending = 0 // 待回�?
+	TicketReplyReplied = 1 // 已回�?
 )
 
 // 工单级别
 const (
-	TicketLevelLow    = 0 // 低
-	TicketLevelMedium = 1 // 中
-	TicketLevelHigh   = 2 // 高
+	TicketLevelLow    = 0 // �?
+	TicketLevelMedium = 1 // �?
+	TicketLevelHigh   = 2 // �?
 )
 
 // CreateTicket 创建工单
@@ -72,7 +72,7 @@ func (s *TicketService) CreateTicket(userID int64, subject, message string, leve
 		return nil, err
 	}
 
-	// 创建第一条消息
+	// 创建第一条消�?
 	ticketMessage := &model.TicketMessage{
 		UserID:    userID,
 		TicketID:  ticket.ID,
@@ -95,12 +95,12 @@ func (s *TicketService) ReplyTicket(ticketID, userID int64, message string, isAd
 		return nil, errors.New("ticket not found")
 	}
 
-	// 检查权限
+	// 检查权�?
 	if !isAdmin && ticket.UserID != userID {
 		return nil, errors.New("permission denied")
 	}
 
-	// 检查工单状态
+	// 检查工单状�?
 	if ticket.Status == TicketStatusClosed {
 		return nil, errors.New("ticket is closed")
 	}
@@ -118,7 +118,7 @@ func (s *TicketService) ReplyTicket(ticketID, userID int64, message string, isAd
 		return nil, err
 	}
 
-	// 更新工单状态
+	// 更新工单状�?
 	if isAdmin {
 		ticket.ReplyStatus = TicketReplyReplied
 	} else {
@@ -140,7 +140,7 @@ func (s *TicketService) CloseTicket(ticketID, userID int64, isAdmin bool) error 
 		return errors.New("ticket not found")
 	}
 
-	// 检查权限
+	// 检查权�?
 	if !isAdmin && ticket.UserID != userID {
 		return errors.New("permission denied")
 	}
@@ -158,7 +158,7 @@ func (s *TicketService) ReopenTicket(ticketID, userID int64, isAdmin bool) error
 		return errors.New("ticket not found")
 	}
 
-	// 检查权限
+	// 检查权�?
 	if !isAdmin && ticket.UserID != userID {
 		return errors.New("permission denied")
 	}
@@ -182,7 +182,7 @@ func (s *TicketService) GetTicketMessages(ticketID, userID int64, isAdmin bool) 
 		return nil, errors.New("ticket not found")
 	}
 
-	// 检查权限
+	// 检查权�?
 	if !isAdmin && ticket.UserID != userID {
 		return nil, errors.New("permission denied")
 	}
@@ -216,7 +216,7 @@ func (s *TicketService) GetTicketDetail(ticketID, userID int64, isAdmin bool) (*
 		return nil, errors.New("ticket not found")
 	}
 
-	// 检查权限
+	// 检查权�?
 	if !isAdmin && ticket.UserID != userID {
 		return nil, errors.New("permission denied")
 	}
@@ -226,7 +226,7 @@ func (s *TicketService) GetTicketDetail(ticketID, userID int64, isAdmin bool) (*
 		return nil, err
 	}
 
-	// 转换消息格式，添加 is_me 字段
+	// 转换消息格式，添�?is_me 字段
 	msgList := make([]TicketMessageView, 0, len(messages))
 	for _, msg := range messages {
 		msgList = append(msgList, TicketMessageView{

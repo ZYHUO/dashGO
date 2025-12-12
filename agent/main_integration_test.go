@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// TestAgent_UpdateFields 测试 Agent 的更新相关字段
+// TestAgent_UpdateFields 测试 Agent 的更新相关字�?
 func TestAgent_UpdateFields(t *testing.T) {
 	// 测试启用自动更新
 	agent := NewAgent(false, true, 3600)
@@ -34,11 +34,11 @@ func TestAgent_UpdateFields(t *testing.T) {
 	}
 }
 
-// TestAgent_UpdateMutex 测试更新互斥锁
+// TestAgent_UpdateMutex 测试更新互斥�?
 func TestAgent_UpdateMutex(t *testing.T) {
 	agent := NewAgent(false, true, 3600)
 	
-	// 设置 updating 标志为 true，模拟正在进行的更新
+	// 设置 updating 标志�?true，模拟正在进行的更新
 	agent.updateMutex.Lock()
 	agent.updating = true
 	agent.updateMutex.Unlock()
@@ -58,14 +58,14 @@ func TestAgent_UpdateMutex(t *testing.T) {
 		t.Error("Expected error due to concurrent update, but got nil")
 	}
 	
-	if err.Error() != "更新已在进行中" {
-		t.Errorf("Expected '更新已在进行中' error, got: %v", err)
+	if err.Error() != "更新已在进行�? {
+		t.Errorf("Expected '更新已在进行�? error, got: %v", err)
 	} else {
-		t.Logf("✓ Concurrent update correctly blocked: %v", err)
+		t.Logf("�?Concurrent update correctly blocked: %v", err)
 	}
 }
 
-// TestAgent_VersionLogging 测试启动时记录版本
+// TestAgent_VersionLogging 测试启动时记录版�?
 func TestAgent_VersionLogging(t *testing.T) {
 	agent := NewAgent(false, true, 3600)
 	
@@ -81,7 +81,7 @@ func TestAgent_VersionLogging(t *testing.T) {
 	t.Logf("Current version: %s", currentVersion)
 }
 
-// TestAgent_UpdateCheckInterval 测试更新检查间隔配置
+// TestAgent_UpdateCheckInterval 测试更新检查间隔配�?
 func TestAgent_UpdateCheckInterval(t *testing.T) {
 	tests := []struct {
 		name     string

@@ -171,13 +171,13 @@ const getStatusText = (status: number) => status === 1 ? '在线' : '离线'
 const installScript = computed(() => {
   if (!currentToken.value) return ''
   const panel = window.location.origin
-  return `curl -sL https://raw.githubusercontent.com/ZYHUO/xboard-go/main/agent/install.sh | bash -s -- ${panel} ${currentToken.value}`
+  return `curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/agent/install.sh | bash -s -- ${panel} ${currentToken.value}`
 })
 
 // 手动安装命令
 const agentCommand = computed(() => {
   if (!currentToken.value) return ''
-  return `./xboard-agent -panel ${window.location.origin} -token ${currentToken.value}`
+  return `./dashgo-agent -panel ${window.location.origin} -token ${currentToken.value}`
 })
 
 const copyToClipboard = (text: string) => {

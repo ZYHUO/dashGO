@@ -9,9 +9,9 @@ import (
 	"sort"
 	"strings"
 
-	"xboard/internal/config"
-	"xboard/internal/model"
-	"xboard/pkg/database"
+	"dashgo/internal/config"
+	"dashgo/internal/model"
+	"dashgo/pkg/database"
 
 	"gorm.io/gorm"
 )
@@ -19,7 +19,7 @@ import (
 func main() {
 	configPath := flag.String("config", "configs/config.yaml", "配置文件路径")
 	migrationsDir := flag.String("migrations", "migrations", "迁移文件目录")
-	action := flag.String("action", "up", "操作: up=执行迁移, status=查看状态, auto=自动迁移模型")
+	action := flag.String("action", "up", "操作: up=执行迁移, status=查看状�? auto=自动迁移模型")
 	flag.Parse()
 
 	// 加载配置
@@ -28,13 +28,13 @@ func main() {
 		log.Fatalf("加载配置失败: %v", err)
 	}
 
-	// 连接数据库
+	// 连接数据�?
 	db, err := database.New(cfg.Database)
 	if err != nil {
-		log.Fatalf("连接数据库失败: %v", err)
+		log.Fatalf("连接数据库失�? %v", err)
 	}
 
-	// 确保迁移记录表存在
+	// 确保迁移记录表存�?
 	db.AutoMigrate(&Migration{})
 
 	switch *action {
@@ -47,7 +47,7 @@ func main() {
 	default:
 		fmt.Println("用法: migrate -action [up|status|auto]")
 		fmt.Println("  up     - 执行 SQL 迁移文件")
-		fmt.Println("  status - 查看迁移状态")
+		fmt.Println("  status - 查看迁移状�?)
 		fmt.Println("  auto   - 自动迁移模型结构")
 	}
 }
@@ -70,7 +70,7 @@ func runMigrations(db *gorm.DB, dir string) {
 		log.Fatalf("读取迁移目录失败: %v", err)
 	}
 
-	// 过滤并排序 SQL 文件（跳过 rollback 文件）
+	// 过滤并排�?SQL 文件（跳�?rollback 文件�?
 	var sqlFiles []string
 	for _, f := range files {
 		if !f.IsDir() && strings.HasSuffix(f.Name(), ".sql") && !strings.Contains(f.Name(), "_rollback") {
@@ -103,7 +103,7 @@ func runMigrations(db *gorm.DB, dir string) {
 			continue
 		}
 
-		// 分割并执行 SQL 语句
+		// 分割并执�?SQL 语句
 		statements := splitSQL(string(content))
 		for _, stmt := range statements {
 			stmt = strings.TrimSpace(stmt)
@@ -132,7 +132,7 @@ func runMigrations(db *gorm.DB, dir string) {
 	}
 }
 
-// showStatus 显示迁移状态
+// showStatus 显示迁移状�?
 func showStatus(db *gorm.DB, dir string) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -146,13 +146,13 @@ func showStatus(db *gorm.DB, dir string) {
 		executedMap[m.Name] = true
 	}
 
-	fmt.Println("迁移状态:")
+	fmt.Println("迁移状�?")
 	fmt.Println("----------------------------------------")
 	for _, f := range files {
 		if !f.IsDir() && strings.HasSuffix(f.Name(), ".sql") {
-			status := "[ ] 待执行"
+			status := "[ ] 待执�?
 			if executedMap[f.Name()] {
-				status = "[✓] 已执行"
+				status = "[✓] 已执�?
 			}
 			fmt.Printf("%s  %s\n", status, f.Name())
 		}

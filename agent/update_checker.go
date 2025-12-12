@@ -37,7 +37,7 @@ func NewUpdateChecker(panelURL, token string, versionManager *VersionManager) *U
 	}
 }
 
-// CheckUpdate 检查更新
+// CheckUpdate 检查更�?
 func (uc *UpdateChecker) CheckUpdate(currentVersion string) (*UpdateInfo, error) {
 	// Validate token before making request
 	if err := uc.securityValidator.ValidateToken(uc.token); err != nil {
@@ -80,18 +80,18 @@ func (uc *UpdateChecker) CheckUpdate(currentVersion string) (*UpdateInfo, error)
 	return &result.Data, nil
 }
 
-// ShouldUpdate 判断是否需要更新
+// ShouldUpdate 判断是否需要更�?
 func (uc *UpdateChecker) ShouldUpdate(updateInfo *UpdateInfo) (bool, error) {
 	if updateInfo == nil {
 		return false, fmt.Errorf("update info is nil")
 	}
 
-	// 比较版本号
+	// 比较版本�?
 	cmp, err := uc.versionManager.CompareVersion(updateInfo.LatestVersion)
 	if err != nil {
 		return false, fmt.Errorf("failed to compare versions: %w", err)
 	}
 
-	// 如果当前版本更旧（cmp == -1），则需要更新
+	// 如果当前版本更旧（cmp == -1），则需要更�?
 	return cmp == -1, nil
 }

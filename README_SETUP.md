@@ -1,4 +1,4 @@
-# XBoard-Go 安装和升级指南
+# dashGO 安装和升级指南
 
 ## 快速开始
 
@@ -101,7 +101,7 @@ bash setup.sh
 
 ### 3. 升级现有数据库
 
-适合：已安装 XBoard-Go，需要升级到新版本
+适合：已安装 dashGO，需要升级到新版本
 
 **特点**：
 - ✅ 保留所有数据
@@ -432,8 +432,8 @@ Plan (套餐)
 
 ```bash
 # 1. 克隆项目
-git clone https://github.com/ZYHUO/xboard-go.git
-cd xboard-go
+git clone https://github.com/ZYHUO/dashGO.git
+cd dashGO
 
 # 2. 安装依赖
 go mod download
@@ -478,8 +478,8 @@ EOF
 ```yaml
 version: '3'
 services:
-  xboard:
-    image: xboard-go:latest
+  dashgo:
+    image: dashgo:latest
     ports:
       - "8080:8080"
     volumes:
@@ -556,9 +556,9 @@ WantedBy=multi-user.target
 
 ## 支持
 
-- GitHub: https://github.com/ZYHUO/xboard-go
-- Issues: https://github.com/ZYHUO/xboard-go/issues
-- Discussions: https://github.com/ZYHUO/xboard-go/discussions
+- GitHub: https://github.com/ZYHUO/dashGO
+- Issues: https://github.com/ZYHUO/dashGO/issues
+- Discussions: https://github.com/ZYHUO/dashGO/discussions
 
 ---
 

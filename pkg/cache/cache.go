@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"time"
 
-	"xboard/internal/config"
+	"dashgo/internal/config"
 
 	"github.com/go-redis/redis/v8"
 )
@@ -94,7 +94,7 @@ const (
 	KeyAgentConfig    = "AGENT_CONFIG_%d"        // 主机配置缓存
 	KeyAgentUsersHash = "AGENT_USERS_HASH_%d"    // 用户列表哈希
 	KeyNodeUsers      = "NODE_USERS_%d"          // 节点用户列表
-	KeyUserListVersion = "USER_LIST_VERSION"     // 用户列表版本号
+	KeyUserListVersion = "USER_LIST_VERSION"     // 用户列表版本�?
 
 	// 订阅缓存
 	KeySubscription     = "SUBSCRIPTION_%d_%s"   // 用户订阅缓存
@@ -177,7 +177,7 @@ func SiteSettingKey(key string) string {
 	return fmt.Sprintf(KeySiteSetting, key)
 }
 
-// SetJSON 设置 JSON 值
+// SetJSON 设置 JSON �?
 func (c *Client) SetJSON(key string, value interface{}, expiration time.Duration) error {
 	data, err := json.Marshal(value)
 	if err != nil {
@@ -186,7 +186,7 @@ func (c *Client) SetJSON(key string, value interface{}, expiration time.Duration
 	return c.Set(key, string(data), expiration)
 }
 
-// GetJSON 获取 JSON 值
+// GetJSON 获取 JSON �?
 func (c *Client) GetJSON(key string, dest interface{}) error {
 	val, err := c.Get(key)
 	if err != nil {
@@ -296,7 +296,7 @@ func (c *Client) SAdd(key string, members ...interface{}) error {
 	return c.rdb.SAdd(c.ctx, key, members...).Err()
 }
 
-// SMembers 获取集合所有成员
+// SMembers 获取集合所有成�?
 func (c *Client) SMembers(key string) ([]string, error) {
 	return c.rdb.SMembers(c.ctx, key).Result()
 }

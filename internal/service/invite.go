@@ -4,12 +4,12 @@ import (
 	"errors"
 	"time"
 
-	"xboard/internal/model"
-	"xboard/internal/repository"
-	"xboard/pkg/utils"
+	"dashgo/internal/model"
+	"dashgo/internal/repository"
+	"dashgo/pkg/utils"
 )
 
-// InviteService 邀请服务
+// InviteService 邀请服�?
 type InviteService struct {
 	inviteRepo     *repository.InviteCodeRepository
 	userRepo       *repository.UserRepository
@@ -86,7 +86,7 @@ func (s *InviteService) UseInviteCode(code string, newUserID int64) error {
 		return err
 	}
 
-	// 标记邀请码已使用
+	// 标记邀请码已使�?
 	inviteCode.Status = true
 	return s.inviteRepo.Update(inviteCode)
 }
@@ -113,9 +113,9 @@ func (s *InviteService) CalculateCommission(order *model.Order) (int64, error) {
 	case 0: // 系统默认
 		// 默认 10%
 		commission = order.TotalAmount * 10 / 100
-	case 1: // 按周期
+	case 1: // 按周�?
 		commission = order.TotalAmount * 10 / 100
-	case 2: // 按订单
+	case 2: // 按订�?
 		if inviter.CommissionRate != nil {
 			commission = order.TotalAmount * int64(*inviter.CommissionRate) / 100
 		}
@@ -183,9 +183,9 @@ func (s *InviteService) WithdrawCommission(userID int64, amount int64) error {
 	return s.userRepo.Update(user)
 }
 
-// GetInviteStats 获取邀请统计
+// GetInviteStats 获取邀请统�?
 func (s *InviteService) GetInviteStats(userID int64) (map[string]interface{}, error) {
-	// 获取邀请人数
+	// 获取邀请人�?
 	invitedCount, _ := s.userRepo.CountByInviteUserID(userID)
 
 	// 获取佣金统计

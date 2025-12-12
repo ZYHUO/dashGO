@@ -32,13 +32,13 @@ func (Order) TableName() string {
 	return "v2_order"
 }
 
-// 订单状态
+// 订单状�?
 const (
-	OrderStatusPending    = 0 // 待支付
+	OrderStatusPending    = 0 // 待支�?
 	OrderStatusProcessing = 1 // 开通中
-	OrderStatusCancelled  = 2 // 已取消
-	OrderStatusCompleted  = 3 // 已完成
-	OrderStatusDiscounted = 4 // 已折抵
+	OrderStatusCancelled  = 2 // 已取�?
+	OrderStatusCompleted  = 3 // 已完�?
+	OrderStatusDiscounted = 4 // 已折�?
 )
 
 // 订单类型
@@ -70,7 +70,7 @@ func (Payment) TableName() string {
 	return "v2_payment"
 }
 
-// Coupon 优惠券
+// Coupon 优惠�?
 type Coupon struct {
 	ID               int64   `gorm:"primaryKey;column:id" json:"id"`
 	Code             string  `gorm:"column:code" json:"code"`
@@ -92,8 +92,8 @@ func (Coupon) TableName() string {
 	return "v2_coupon"
 }
 
-// 优惠券类型
+// 优惠券类�?
 const (
 	CouponTypeAmount  = 1 // 固定金额
-	CouponTypePercent = 2 // 百分比折扣
+	CouponTypePercent = 2 // 百分比折�?
 )
