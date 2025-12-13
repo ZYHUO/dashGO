@@ -240,13 +240,13 @@ func AgentReportTraffic(services *service.Services) gin.HandlerFunc {
 			var serverType string = "unknown"
 			var serverID int64 = nodeData.ID
 			
-			// 尝试�?Server 获取
+			// 尝试和Server 获取
 			server, err := services.Server.FindServer(nodeData.ID, "")
 			if err == nil && server != nil {
 				rate = server.Rate
 				serverType = server.Type
 			} else {
-				// 尝试�?ServerNode 获取
+				// 尝试和ServerNode 获取
 				node, err := services.Host.GetNodeByID(nodeData.ID)
 				if err == nil && node != nil {
 					rate = node.Rate
@@ -254,13 +254,13 @@ func AgentReportTraffic(services *service.Services) gin.HandlerFunc {
 				}
 			}
 
-			// 处理每个用户的流�?
+			// 处理每个用户的流和
 			for _, userData := range nodeData.Users {
 				if userData.Upload == 0 && userData.Download == 0 {
 					continue
 				}
 				
-				// Username �?UUID 的前8位，使用前缀匹配
+				// Username 和UUID 的前8位，使用前缀匹配
 				user, err := services.User.GetByUUIDPrefix(userData.Username)
 				if err != nil {
 					continue
@@ -273,21 +273,21 @@ func AgentReportTraffic(services *service.Services) gin.HandlerFunc {
 				// 更新用户流量
 				services.User.UpdateTraffic(user.ID, u, d)
 				
-				// 记录用户流量统计（日统计�?
+				// 记录用户流量统计（日统计和
 				services.NodeSync.RecordUserTrafficStat(user.ID, rate, u, d)
 				
 				// 记录流量日志
 				services.NodeSync.RecordTrafficLog(user.ID, serverID, u, d, rate)
 			}
 			
-			// 计算节点总流�?
+			// 计算节点总流和
 			var totalU, totalD int64
 			for _, userData := range nodeData.Users {
 				totalU += int64(float64(userData.Upload) * rate)
 				totalD += int64(float64(userData.Download) * rate)
 			}
 			
-			// 记录节点流量统计（日统计�?
+			// 记录节点流量统计（日统计和
 			if totalU > 0 || totalD > 0 {
 				services.NodeSync.RecordServerTrafficStat(serverID, serverType, totalU, totalD)
 			}
@@ -502,13 +502,13 @@ func AgentGetVersion(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 获取当前 Agent 版本（从请求头或查询参数�?
+		// 获取当前 Agent 版本（从请求头或查询参数和
 		currentVersion := c.GetHeader("X-Agent-Version")
 		if currentVersion == "" {
 			currentVersion = c.Query("version")
 		}
 
-		// 从数据库获取最新版本信�?
+		// 从数据库获取最新版本信和
 		version, err := services.AgentVersion.GetLatestVersion()
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -565,10 +565,10 @@ func AgentUpdateStatus(services *service.Services) gin.HandlerFunc {
 
 		// 打印日志
 		if req.Status == "success" {
-			fmt.Printf("�?Host %d (%s) updated successfully: %s -> %s\n",
+			fmt.Printf("和Host %d (%s) updated successfully: %s -> %s\n",
 				host.ID, host.Name, req.FromVersion, req.ToVersion)
 		} else if req.Status == "failed" {
-			fmt.Printf("�?Host %d (%s) update failed: %s -> %s, error: %s\n",
+			fmt.Printf("和Host %d (%s) update failed: %s -> %s, error: %s\n",
 				host.ID, host.Name, req.FromVersion, req.ToVersion, req.ErrorMessage)
 		} else if req.Status == "rollback" {
 			fmt.Printf("🔄 Host %d (%s) rolled back: %s -> %s, reason: %s\n",
@@ -645,7 +645,7 @@ func AdminUpdateAgentVersion(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminSetLatestAgentVersion 设置最新版�?
+// AdminSetLatestAgentVersion 设置最新版和
 func AdminSetLatestAgentVersion(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)

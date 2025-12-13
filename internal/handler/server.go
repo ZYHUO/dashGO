@@ -49,7 +49,7 @@ func ServerUsers(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 更新节点检查时�?
+		// 更新节点检查时和
 		services.Server.UpdateServerStatus(server.ID, server.Type, "check")
 
 		users, err := services.Server.GetAvailableUsers(server)
@@ -95,10 +95,10 @@ func ServerPush(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 更新在线用户�?
+		// 更新在线用户和
 		services.Server.UpdateOnlineUsers(server.ID, server.Type, len(data))
 
-		// 更新推送时�?
+		// 更新推送时和
 		services.Server.UpdateServerStatus(server.ID, server.Type, "push")
 
 		// 处理流量数据
@@ -119,7 +119,7 @@ func ServerPush(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// ServerAlive 在线状态上�?
+// ServerAlive 在线状态上和
 func ServerAlive(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		server := getServerFromContext(c)
@@ -147,7 +147,7 @@ func ServerAliveList(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// ServerStatus 节点状态上�?
+// ServerStatus 节点状态上和
 func ServerStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		server := getServerFromContext(c)

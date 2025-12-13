@@ -51,7 +51,7 @@ func SHA256(s string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// GetServerKey 生成服务器密�?(用于 Shadowsocks 2022)
+// GetServerKey 生成服务器密和(用于 Shadowsocks 2022)
 // size: 16 for aes-128, 32 for aes-256/chacha20
 func GetServerKey(createdAt int64, size int) string {
 	// 使用 createdAt 作为种子生成固定的服务器密钥
@@ -61,10 +61,10 @@ func GetServerKey(createdAt int64, size int) string {
 	return base64.StdEncoding.EncodeToString(hash[:size])
 }
 
-// UUIDToBase64 �?UUID 转换�?Base64 密钥 (用于 Shadowsocks 2022)
+// UUIDToBase64 和UUID 转换和Base64 密钥 (用于 Shadowsocks 2022)
 // size: 16 for aes-128, 32 for aes-256/chacha20
 func UUIDToBase64(uuidStr string, size int) string {
-	// 移除 UUID 中的连字�?
+	// 移除 UUID 中的连字和
 	cleanUUID := strings.ReplaceAll(uuidStr, "-", "")
 	
 	// 使用 UUID 作为种子生成用户密钥
@@ -74,11 +74,11 @@ func UUIDToBase64(uuidStr string, size int) string {
 	return base64.StdEncoding.EncodeToString(hash[:size])
 }
 
-// GenerateSS2022Password 生成完整�?SS2022 密码
+// GenerateSS2022Password 生成完整和SS2022 密码
 // cipher: 加密方式 (2022-blake3-aes-128-gcm, 2022-blake3-aes-256-gcm, 2022-blake3-chacha20-poly1305)
 // createdAt: 服务器创建时间戳
 // userUUID: 用户 UUID
-// 返回格式: serverKey:userKey (用于客户�? �?serverKey (用于服务�?
+// 返回格式: serverKey:userKey (用于客户和 和serverKey (用于服务和
 func GenerateSS2022Password(cipher string, createdAt int64, userUUID string) string {
 	var keySize int
 	switch cipher {
@@ -87,7 +87,7 @@ func GenerateSS2022Password(cipher string, createdAt int64, userUUID string) str
 	case "2022-blake3-aes-256-gcm", "2022-blake3-chacha20-poly1305":
 		keySize = 32
 	default:
-		// �?SS2022 加密方式，直接返�?UUID
+		// 和SS2022 加密方式，直接返和UUID
 		return userUUID
 	}
 	
@@ -96,7 +96,7 @@ func GenerateSS2022Password(cipher string, createdAt int64, userUUID string) str
 	return serverKey + ":" + userKey
 }
 
-// GetSS2022ServerPassword 获取 SS2022 服务端密�?(仅服务器密钥)
+// GetSS2022ServerPassword 获取 SS2022 服务端密和(仅服务器密钥)
 func GetSS2022ServerPassword(cipher string, createdAt int64) string {
 	var keySize int
 	switch cipher {
@@ -110,7 +110,7 @@ func GetSS2022ServerPassword(cipher string, createdAt int64) string {
 	return GetServerKey(createdAt, keySize)
 }
 
-// GetSS2022UserPassword 获取 SS2022 用户密钥 (仅用户密钥，用于服务端用户列�?
+// GetSS2022UserPassword 获取 SS2022 用户密钥 (仅用户密钥，用于服务端用户列和
 func GetSS2022UserPassword(cipher string, userUUID string) string {
 	var keySize int
 	switch cipher {
@@ -124,7 +124,7 @@ func GetSS2022UserPassword(cipher string, userUUID string) string {
 	return UUIDToBase64(userUUID, keySize)
 }
 
-// RandomPort 从端口范围中随机选择一个端�?
+// RandomPort 从端口范围中随机选择一个端和
 func RandomPort(portRange string) int {
 	parts := strings.Split(portRange, "-")
 	if len(parts) != 2 {
@@ -141,7 +141,7 @@ func RandomPort(portRange string) int {
 	return start + int(b[0])%(end-start+1)
 }
 
-// GenerateNumericCode 生成数字验证�?
+// GenerateNumericCode 生成数字验证和
 func GenerateNumericCode(length int) string {
 	const digits = "0123456789"
 	code := make([]byte, length)

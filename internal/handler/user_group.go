@@ -32,7 +32,7 @@ func AdminListUserGroups(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminGetUserGroup 获取用户组详�?
+// AdminGetUserGroup 获取用户组详和
 func AdminGetUserGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -47,7 +47,7 @@ func AdminGetUserGroup(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCreateUserGroup 创建用户�?
+// AdminCreateUserGroup 创建用户和
 func AdminCreateUserGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -63,7 +63,7 @@ func AdminCreateUserGroup(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 转换�?JSONArray
+		// 转换和JSONArray
 		serverIDs := make(model.JSONArray, len(req.ServerIDs))
 		for i, id := range req.ServerIDs {
 			serverIDs[i] = id
@@ -93,7 +93,7 @@ func AdminCreateUserGroup(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateUserGroup 更新用户�?
+// AdminUpdateUserGroup 更新用户和
 func AdminUpdateUserGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -124,7 +124,7 @@ func AdminUpdateUserGroup(services *service.Services) gin.HandlerFunc {
 		group.Description = req.Description
 		group.Sort = req.Sort
 
-		// 转换�?JSONArray
+		// 转换和JSONArray
 		if req.ServerIDs != nil {
 			serverIDs := make(model.JSONArray, len(req.ServerIDs))
 			for i, id := range req.ServerIDs {
@@ -152,7 +152,7 @@ func AdminUpdateUserGroup(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminDeleteUserGroup 删除用户�?
+// AdminDeleteUserGroup 删除用户和
 func AdminDeleteUserGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
