@@ -308,10 +308,34 @@ install_panel() {
     echo ""
     echo "请选择数据库类型:"
     echo "  1) SQLite (推荐，轻量级，无需额外容器)"
-    echo "  2) MySQL (需要更多资源，适合生产环境)"
+    echo "  2) MySQL (使用外部 MySQL 数据库)"
     echo ""
     read -p "请选择 [1-2]: " db_type
     db_type=${db_type:-1}
+    
+    # 如果选择 MySQL，询问连接信息
+    if [ "$db_type" = "2" ]; then
+        echo ""
+        log_info "请输入 MySQL 数据库连接信息:"
+        echo ""
+        read -p "MySQL 主机地址 [默认: localhost]: " mysql_host
+        mysql_host=${mysql_host:-localhost}
+        
+        read -p "MySQL 端口 [默认: 3306]: " mysql_port
+        mysql_port=${mysql_port:-3306}
+        
+        read -p "MySQL 用户名 [默认: root]: " mysql_user
+        mysql_user=${mysql_user:-root}
+        
+        read -sp "MySQL 密码: " mysql_password
+        echo ""
+        
+        read -p "数据库名称 [默认: dashgo]: " mysql_database
+        mysql_database=${mysql_database:-dashgo}
+        
+        echo ""
+        log_info "请确保数据库 '${mysql_database}' 已创建"
+    fi
     
     # 询问安装方式
     echo ""
@@ -322,36 +346,19 @@ install_panel() {
     read -p "请选择 [1-2]: " install_type
     install_type=${install_type:-1}
     
-    # 警告：预编译版本不支持 SQLite
-    if [ "$install_type" = "1" ] && [ "$db_type" = "1" ]; then
-        echo ""
-        log_warn "注意：当前预编译版本不支持 SQLite (需要 CGO 支持)"
-        echo ""
-        echo "建议选择："
-        echo "  1) 改用 MySQL 数据库"
-        echo "  2) 改用源码构建 (支持 SQLite)"
-        echo "  3) 继续 (将自动切换到源码构建)"
-        echo ""
-        read -p "请选择 [1-3]: " fix_choice
-        case $fix_choice in
-            1)
-                log_info "切换到 MySQL 数据库..."
-                db_type="2"
-                ;;
-            2)
-                log_info "切换到源码构建..."
-                install_type="2"
-                ;;
-            3)
-                log_info "自动切换到源码构建..."
-                install_type="2"
-                ;;
-            *)
-                log_info "自动切换到源码构建..."
-                install_type="2"
-                ;;
-        esac
-    fi
+    # 询问 Web 端口
+    echo ""
+    read -p "请输入 Web 访问端口 [默认: 80]: " web_port
+    web_port=${web_port:-80}
+    
+    # 询问管理员账号
+    echo ""
+    read -p "请输入管理员邮箱 [默认: admin@example.com]: " admin_email
+    admin_email=${admin_email:-admin@example.com}
+    
+    echo ""
+    read -p "请输入管理员密码 [默认: admin123456]: " admin_password
+    admin_password=${admin_password:-admin123456}
     
     install_docker
     install_docker_compose
@@ -506,12 +513,7 @@ install_panel() {
     create_panel_config "$use_mysql"
     
     # 创建 Docker Compose 文件
-    create_docker_compose "$use_mysql"
-    
-    # 仅 MySQL 需要初始化 SQL
-    if [ "$use_mysql" = "true" ]; then
-        create_init_sql
-    fi
+    create_docker_compose "$use_mysql" "$web_port"
     
     # 创建 Nginx 配置
     create_nginx_config
@@ -552,9 +554,9 @@ create_panel_config() {
     mkdir -p configs
     
     if [ "$use_mysql" = "true" ]; then
-        # MySQL 配置
+        # MySQL 配置（使用外部数据库）
         cat > configs/config.yaml << EOF
-# dashGO Configuration for Docker (MySQL)
+# dashGO Configuration for Docker (External MySQL)
 app:
   name: "dashGO"
   mode: "release"
@@ -562,11 +564,11 @@ app:
 
 database:
   driver: "mysql"
-  host: "mysql"
-  port: 3306
-  username: "root"
-  password: "${DB_PASS}"
-  database: "dashgo"
+  host: "${mysql_host}"
+  port: ${mysql_port}
+  username: "${mysql_user}"
+  password: "${mysql_password}"
+  database: "${mysql_database}"
 
 redis:
   host: "redis"
@@ -598,8 +600,8 @@ telegram:
   chat_id: ""
 
 admin:
-  email: "admin@example.com"
-  password: "admin123456"
+  email: "${admin_email}"
+  password: "${admin_password}"
 EOF
     else
         # SQLite 配置 (默认)
@@ -644,32 +646,23 @@ telegram:
   chat_id: ""
 
 admin:
-  email: "admin@example.com"
-  password: "admin123456"
+  email: "${admin_email}"
+  password: "${admin_password}"
 EOF
     fi
     
     # 保存密码到环境文件
-    if [ "$use_mysql" = "true" ]; then
-        cat > .env << EOF
-MYSQL_ROOT_PASSWORD=${DB_PASS}
-MYSQL_DATABASE=dashgo
+    cat > .env << EOF
 REDIS_PASSWORD=${REDIS_PASS}
 JWT_SECRET=${JWT_SECRET}
 NODE_TOKEN=${NODE_TOKEN}
 EOF
-    else
-        cat > .env << EOF
-REDIS_PASSWORD=${REDIS_PASS}
-JWT_SECRET=${JWT_SECRET}
-NODE_TOKEN=${NODE_TOKEN}
-EOF
-    fi
     
     log_info "配置文件已创建: configs/config.yaml"
     if [ "$use_mysql" = "true" ]; then
-        log_hint "数据库类型: MySQL"
-        log_hint "数据库密码: ${DB_PASS}"
+        log_hint "数据库类型: MySQL (外部)"
+        log_hint "数据库地址: ${mysql_host}:${mysql_port}"
+        log_hint "数据库名称: ${mysql_database}"
     else
         log_hint "数据库类型: SQLite (data/dashgo.db)"
     fi
@@ -680,6 +673,7 @@ EOF
 # 创建 Docker Compose 文件
 create_docker_compose() {
     local use_mysql=${1:-false}
+    local web_port=${2:-80}
     
     # 检查是否存在预编译二进制文件
     if [ -f "dashgo-server" ]; then
@@ -704,7 +698,7 @@ EOF
     fi
 
     if [ "$use_mysql" = "true" ]; then
-        # MySQL 版本的 Docker Compose
+        # MySQL 版本的 Docker Compose（使用外部 MySQL）
         cat > docker-compose.yaml << 'EOF'
 services:
   dashgo:
@@ -717,33 +711,10 @@ services:
       - ./data:/app/data
       - ./web/dist:/app/web/dist
     depends_on:
-      mysql:
-        condition: service_healthy
-      redis:
-        condition: service_started
+      - redis
     restart: unless-stopped
     environment:
       - TZ=Asia/Shanghai
-    networks:
-      - dashgo-net
-
-  mysql:
-    image: mysql:8.0
-    container_name: dashgo-mysql
-    env_file:
-      - .env
-    volumes:
-      - mysql_data:/var/lib/mysql
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "3306:3306"
-    restart: unless-stopped
-    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
-    healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
     networks:
       - dashgo-net
 
@@ -763,7 +734,7 @@ services:
     image: nginx:alpine
     container_name: dashgo-nginx
     ports:
-      - "80:80"
+      - "${web_port}:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
@@ -775,7 +746,6 @@ services:
       - dashgo-net
 
 volumes:
-  mysql_data:
   redis_data:
 
 networks:
@@ -819,7 +789,7 @@ services:
     image: nginx:alpine
     container_name: dashgo-nginx
     ports:
-      - "80:80"
+      - "${web_port}:80"
       - "443:443"
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf
@@ -934,12 +904,12 @@ show_panel_info() {
     echo -e "${GREEN}dashGO 面板安装完成！${NC}"
     echo "=========================================="
     echo ""
-    echo "访问地址: http://${IP}:80"
-    echo "后台地址: http://${IP}:80/admin"
+    echo "访问地址: http://${IP}:${web_port}"
+    echo "后台地址: http://${IP}:${web_port}/admin"
     echo ""
-    echo "默认管理员账户:"
-    echo "  邮箱: admin@dashgo.local"
-    echo "  密码: admin123"
+    echo "管理员账户:"
+    echo "  邮箱: ${admin_email}"
+    echo "  密码: ${admin_password}"
     echo ""
     echo "安装目录: $INSTALL_DIR"
     echo ""
