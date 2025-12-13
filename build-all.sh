@@ -60,23 +60,85 @@ build_frontend() {
     echo -e "${GREEN}✓ 前端构建完成${NC}"
 }
 
-# 构建 Server (Dashboard)
-build_server() {
-    echo -e "${YELLOW}开始构建 Server (支持 SQLite，需要 CGO)...${NC}"
+# 使用 Docker 构建 Server (支持交叉编译 + SQLite)
+build_server_docker() {
+    echo -e "${YELLOW}使用 Docker 构建 Server (支持 SQLite)...${NC}"
     
-    # 构建 Linux amd64 (启用 CGO 以支持 SQLite)
+    if ! command -v docker &>/dev/null; then
+        echo -e "${RED}错误: 未安装 Docker${NC}"
+        echo -e "${YELLOW}请使用 'build_server' 函数进行本地编译${NC}"
+        return 1
+    fi
+    
+    # 构建 Linux amd64
     echo -e "${YELLOW}构建 Server (Linux amd64 with SQLite)...${NC}"
-    CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build \
-        -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-amd64 \
-        ./cmd/server
+    docker run --rm --platform linux/amd64 \
+        -v "$PWD":/app -w /app \
+        golang:1.22-alpine sh -c "
+        apk add --no-cache gcc musl-dev && \
+        CGO_ENABLED=1 go build -ldflags='-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}' \
+        -o dashgo-server-linux-amd64 ./cmd/server
+    "
+    mv dashgo-server-linux-amd64 ${SERVER_OUTPUT_DIR}/
+    echo -e "${GREEN}✓ amd64 完成${NC}"
     
-    # 构建 Linux arm64 (启用 CGO 以支持 SQLite)
+    # 构建 Linux arm64
     echo -e "${YELLOW}构建 Server (Linux arm64 with SQLite)...${NC}"
-    CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build \
-        -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
-        -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-arm64 \
-        ./cmd/server
+    docker run --rm --platform linux/arm64 \
+        -v "$PWD":/app -w /app \
+        golang:1.22-alpine sh -c "
+        apk add --no-cache gcc musl-dev && \
+        CGO_ENABLED=1 go build -ldflags='-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}' \
+        -o dashgo-server-linux-arm64 ./cmd/server
+    "
+    mv dashgo-server-linux-arm64 ${SERVER_OUTPUT_DIR}/
+    echo -e "${GREEN}✓ arm64 完成${NC}"
+    
+    echo -e "${GREEN}✓ Server 构建完成 (Docker 模式，支持 SQLite)${NC}"
+}
+
+# 构建 Server (Dashboard) - 本地编译
+build_server() {
+    echo -e "${YELLOW}开始构建 Server (本地编译)...${NC}"
+    
+    # 检测当前架构
+    CURRENT_ARCH=$(uname -m)
+    
+    # 构建 Linux amd64
+    echo -e "${YELLOW}构建 Server (Linux amd64)...${NC}"
+    if [ "$CURRENT_ARCH" = "x86_64" ]; then
+        # 本地架构，启用 CGO 支持 SQLite
+        echo -e "${GREEN}  → 启用 CGO (支持 SQLite)${NC}"
+        CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build \
+            -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
+            -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-amd64 \
+            ./cmd/server
+    else
+        # 交叉编译，禁用 CGO（仅支持 MySQL）
+        echo -e "${YELLOW}  → 交叉编译，禁用 CGO (仅支持 MySQL)${NC}"
+        CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+            -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
+            -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-amd64 \
+            ./cmd/server
+    fi
+    
+    # 构建 Linux arm64
+    echo -e "${YELLOW}构建 Server (Linux arm64)...${NC}"
+    if [ "$CURRENT_ARCH" = "aarch64" ] || [ "$CURRENT_ARCH" = "arm64" ]; then
+        # 本地架构，启用 CGO 支持 SQLite
+        echo -e "${GREEN}  → 启用 CGO (支持 SQLite)${NC}"
+        CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build \
+            -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
+            -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-arm64 \
+            ./cmd/server
+    else
+        # 交叉编译，禁用 CGO（仅支持 MySQL）
+        echo -e "${YELLOW}  → 交叉编译，禁用 CGO (仅支持 MySQL)${NC}"
+        CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
+            -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
+            -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-arm64 \
+            ./cmd/server
+    fi
     
     # 构建 Windows amd64
     echo -e "${YELLOW}构建 Server (Windows amd64)...${NC}"
@@ -277,6 +339,11 @@ main() {
             build_server
             build_migrate
             ;;
+        server-docker)
+            clean
+            build_server_docker
+            build_migrate
+            ;;
         agent)
             clean
             build_agent
@@ -291,16 +358,28 @@ main() {
             create_version_info
             show_results
             ;;
+        all-docker)
+            clean
+            build_frontend
+            build_server_docker
+            build_agent
+            build_migrate
+            generate_checksums
+            create_version_info
+            show_results
+            ;;
         *)
             echo -e "${RED}未知参数: ${1}${NC}"
             echo ""
-            echo "用法: $0 [clean|frontend|server|agent|all]"
+            echo "用法: $0 [clean|frontend|server|server-docker|agent|all|all-docker]"
             echo ""
-            echo "  clean     - 仅清理构建文件"
-            echo "  frontend  - 仅构建前端"
-            echo "  server    - 仅构建 Server"
-            echo "  agent     - 仅构建 Agent (全架构)"
-            echo "  all       - 构建所有组件 (默认)"
+            echo "  clean         - 仅清理构建文件"
+            echo "  frontend      - 仅构建前端"
+            echo "  server        - 仅构建 Server (本地编译，当前架构支持 SQLite)"
+            echo "  server-docker - 仅构建 Server (Docker 编译，所有架构支持 SQLite)"
+            echo "  agent         - 仅构建 Agent (全架构)"
+            echo "  all           - 构建所有组件 (默认，本地编译)"
+            echo "  all-docker    - 构建所有组件 (Docker 编译，推荐)"
             exit 1
             ;;
     esac
