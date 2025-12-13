@@ -40,7 +40,7 @@ MIT License
 ### 一键安装（推荐）
 
 ```bash
-wget https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh && bash install.sh
+wget https://raw.githubusercontent.com/ZYHUO/dashGO/refs/heads/main/install.sh -4 && bash install.sh
 ```
 
 > 💡 脚本会自动下载预编译二进制文件，无需本地编译环境。
