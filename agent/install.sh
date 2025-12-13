@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # dashGO Agent 一键安装脚本
-# 用法: curl -sL https://raw.githubusercontent.com/ZYHUO/dashgo/main/agent/install.sh | bash -s -- <面板地址> <Token>
+# 用法: curl -sL https://raw.githubusercontent.com/ZYHUO/dashGO/main/agent/install.sh | bash -s -- <面板地址> <Token>
 # 或者: bash install.sh <面板地址> <Token>
 
 set -e
@@ -18,7 +18,7 @@ NC='\033[0m'
 # 配置
 PANEL_URL=$1
 TOKEN=$2
-GITHUB_REPO="ZYHUO/dashgo"
+GITHUB_REPO="ZYHUO/dashGO"
 GH_PROXY='https://hub.glowp.xyz/'
 DOWNLOAD_BASE_URL="https://download.sharon.wiki"
 INSTALL_DIR="/opt/dashgo-agent"

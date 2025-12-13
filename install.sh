@@ -10,7 +10,7 @@
 set -e
 
 VERSION='v1.2.0'
-GITHUB_REPO="ZYHUO/dashgo"
+GITHUB_REPO="ZYHUO/dashGO"
 GH_PROXY='https://hub.glowp.xyz/'
 INSTALL_DIR="/opt/dashgo"
 AGENT_DIR="/opt/dashgo-agent"
@@ -344,12 +344,11 @@ install_panel() {
             if wget --show-progress -O dashgo.zip "$REPO_URL" 2>&1; then
                 log_info "解压配置模板..."
                 unzip -q dashgo.zip
-                # 调试：显示解压后的目录
-                log_info "解压后的目录列表:"
-                ls -la
-                # 只复制必要的配置文件和静态资源
+                # 自动检测解压后的目录
                 local extracted_dir=$(ls -d *-main 2>/dev/null | head -1)
-                log_info "检测到的目录: $extracted_dir"
+                if [ -n "$extracted_dir" ]; then
+                    log_info "检测到解压目录: $extracted_dir"
+                fi
                 if [ -n "$extracted_dir" ] && [ -d "$extracted_dir" ]; then
                     cp -r "$extracted_dir/configs" "$INSTALL_DIR/" 2>/dev/null || mkdir -p "$INSTALL_DIR/configs"
                     cp -r "$extracted_dir/web/dist" "$INSTALL_DIR/web/" 2>/dev/null || mkdir -p "$INSTALL_DIR/web/dist"
