@@ -32,7 +32,7 @@ func New(cfg config.DatabaseConfig) (*gorm.DB, error) {
 	}
 
 	db, err := gorm.Open(dialector, &gorm.Config{
-		Logger: logger.Default.LogMode(logger.Warn), // 只打印警告和错误，不打印普�?SQL
+		Logger: logger.Default.LogMode(logger.Warn), // 只打印警告和错误，不打印普通SQL
 	})
 	if err != nil {
 		return nil, err
@@ -47,7 +47,7 @@ func ensureSQLiteDir(dbPath string) error {
 	if dir == "." || dir == "" {
 		return nil // Current directory, no need to create
 	}
-	
+
 	// Check if directory exists
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		// Create directory with 0755 permissions
@@ -55,6 +55,6 @@ func ensureSQLiteDir(dbPath string) error {
 			return err
 		}
 	}
-	
+
 	return nil
 }

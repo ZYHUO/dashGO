@@ -39,8 +39,8 @@ func NewServices(repos *repository.Repositories, cache *cache.Client, cfg *confi
 	serverService := NewServerService(repos.Server, repos.User, cache, cfg)
 	orderService := NewOrderService(repos.Order, repos.User, repos.Plan, repos.Coupon)
 	userGroupService := NewUserGroupService(repos.UserGroup, repos.Server, repos.Plan, repos.User)
-	
-	// 设置 UserGroupService �?ServerService 依赖
+
+	// 设置 UserGroupService 告ServerService 依赖
 	userGroupService.SetServerService(serverService)
 
 	return &Services{

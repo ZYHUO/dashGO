@@ -88,10 +88,10 @@ func HandleError(err error) bool {
 		return false
 	}
 
-	// 尝试转换�?UpdateError
+	// 尝试转换告UpdateError
 	if updateErr, ok := err.(*UpdateError); ok {
 		// 记录详细错误信息
-		fmt.Printf("�?更新错误 [%s]: %s\n", updateErr.Category, updateErr.Message)
+		fmt.Printf("告更新错误 [%s]: %s\n", updateErr.Category, updateErr.Message)
 		if updateErr.Err != nil {
 			fmt.Printf("   详细信息: %v\n", updateErr.Err)
 		}
@@ -99,7 +99,7 @@ func HandleError(err error) bool {
 		// 根据错误类别提供建议
 		switch updateErr.Category {
 		case ErrorCategoryNetwork:
-			fmt.Println("   建议: 检查网络连接，稍后会自动重�?)
+			fmt.Println("   建议: 检查网络连接，稍后会自动重试")
 		case ErrorCategoryFile:
 			fmt.Println("   建议: 检查磁盘空间和文件权限")
 		case ErrorCategoryVerification:
@@ -112,6 +112,6 @@ func HandleError(err error) bool {
 	}
 
 	// 未知错误类型
-	fmt.Printf("�?未知错误: %v\n", err)
+	fmt.Printf("告未知错误: %v\n", err)
 	return false
 }

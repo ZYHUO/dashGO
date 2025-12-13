@@ -61,7 +61,7 @@ func (s *AuthService) ValidateToken(tokenString string) (*Claims, error) {
 	return nil, errors.New("invalid token")
 }
 
-// GetUserFromToken �?Token 获取用户
+// GetUserFromToken 从Token 获取用户
 func (s *AuthService) GetUserFromToken(tokenString string) (*model.User, error) {
 	claims, err := s.ValidateToken(tokenString)
 	if err != nil {

@@ -58,15 +58,15 @@ func (Stat) TableName() string {
 
 // ServerLog 节点日志（流量记录）
 type ServerLog struct {
-	ID        int64  `gorm:"primaryKey;column:id" json:"id"`
-	UserID    int64  `gorm:"column:user_id;index" json:"user_id"`
-	ServerID  int64  `gorm:"column:server_id;index" json:"server_id"`
-	U         int64  `gorm:"column:u" json:"u"`
-	D         int64  `gorm:"column:d" json:"d"`
+	ID        int64   `gorm:"primaryKey;column:id" json:"id"`
+	UserID    int64   `gorm:"column:user_id;index" json:"user_id"`
+	ServerID  int64   `gorm:"column:server_id;index" json:"server_id"`
+	U         int64   `gorm:"column:u" json:"u"`
+	D         int64   `gorm:"column:d" json:"d"`
 	Rate      float64 `gorm:"column:rate;type:decimal(10,2)" json:"rate"`
-	Method    string `gorm:"column:method;size:32" json:"method"`
-	CreatedAt int64  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt int64  `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	Method    string  `gorm:"column:method;size:32" json:"method"`
+	CreatedAt int64   `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+	UpdatedAt int64   `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 }
 
 func (ServerLog) TableName() string {

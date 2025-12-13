@@ -60,17 +60,17 @@ func (TicketMessage) TableName() string {
 	return "v2_ticket_message"
 }
 
-// Knowledge 知识�?
+// Knowledge 知识库
 type Knowledge struct {
-	ID        int64   `gorm:"primaryKey;column:id" json:"id"`
-	Language  string  `gorm:"column:language;size:5" json:"language"`
-	Category  string  `gorm:"column:category" json:"category"`
-	Title     string  `gorm:"column:title" json:"title"`
-	Body      string  `gorm:"column:body;type:text" json:"body"`
-	Sort      *int    `gorm:"column:sort" json:"sort"`
-	Show      bool    `gorm:"column:show;default:false" json:"show"`
-	CreatedAt int64   `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt int64   `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	ID        int64  `gorm:"primaryKey;column:id" json:"id"`
+	Language  string `gorm:"column:language;size:5" json:"language"`
+	Category  string `gorm:"column:category" json:"category"`
+	Title     string `gorm:"column:title" json:"title"`
+	Body      string `gorm:"column:body;type:text" json:"body"`
+	Sort      *int   `gorm:"column:sort" json:"sort"`
+	Show      bool   `gorm:"column:show;default:false" json:"show"`
+	CreatedAt int64  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+	UpdatedAt int64  `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 }
 
 func (Knowledge) TableName() string {

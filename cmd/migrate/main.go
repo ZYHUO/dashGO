@@ -19,7 +19,7 @@ import (
 func main() {
 	configPath := flag.String("config", "configs/config.yaml", "配置文件路径")
 	migrationsDir := flag.String("migrations", "migrations", "迁移文件目录")
-	action := flag.String("action", "up", "操作: up=执行迁移, status=查看状�? auto=自动迁移模型")
+	action := flag.String("action", "up", "操作: up=执行迁移, status=查看状态, auto=自动迁移模型")
 	flag.Parse()
 
 	// 加载配置
@@ -28,13 +28,13 @@ func main() {
 		log.Fatalf("加载配置失败: %v", err)
 	}
 
-	// 连接数据�?
+	// 连接数据库
 	db, err := database.New(cfg.Database)
 	if err != nil {
-		log.Fatalf("连接数据库失�? %v", err)
+		log.Fatalf("连接数据库失败: %v", err)
 	}
 
-	// 确保迁移记录表存�?
+	// 确保迁移记录表存在
 	db.AutoMigrate(&Migration{})
 
 	switch *action {
@@ -47,16 +47,16 @@ func main() {
 	default:
 		fmt.Println("用法: migrate -action [up|status|auto]")
 		fmt.Println("  up     - 执行 SQL 迁移文件")
-		fmt.Println("  status - 查看迁移状�?)
+		fmt.Println("  status - 查看迁移状态")
 		fmt.Println("  auto   - 自动迁移模型结构")
 	}
 }
 
 // Migration 迁移记录
 type Migration struct {
-	ID        int64  `gorm:"primaryKey"`
-	Name      string `gorm:"size:255;uniqueIndex"`
-	ExecutedAt int64 `gorm:"autoCreateTime"`
+	ID         int64  `gorm:"primaryKey"`
+	Name       string `gorm:"size:255;uniqueIndex"`
+	ExecutedAt int64  `gorm:"autoCreateTime"`
 }
 
 func (Migration) TableName() string {
@@ -70,7 +70,7 @@ func runMigrations(db *gorm.DB, dir string) {
 		log.Fatalf("读取迁移目录失败: %v", err)
 	}
 
-	// 过滤并排�?SQL 文件（跳�?rollback 文件�?
+	// 过滤并排序SQL 文件（跳过rollback 文件）
 	var sqlFiles []string
 	for _, f := range files {
 		if !f.IsDir() && strings.HasSuffix(f.Name(), ".sql") && !strings.Contains(f.Name(), "_rollback") {
@@ -103,7 +103,7 @@ func runMigrations(db *gorm.DB, dir string) {
 			continue
 		}
 
-		// 分割并执�?SQL 语句
+		// 分割并执行SQL 语句
 		statements := splitSQL(string(content))
 		for _, stmt := range statements {
 			stmt = strings.TrimSpace(stmt)
@@ -112,8 +112,8 @@ func runMigrations(db *gorm.DB, dir string) {
 			}
 			if err := db.Exec(stmt).Error; err != nil {
 				// 忽略某些错误（如字段已存在）
-				if !strings.Contains(err.Error(), "Duplicate") && 
-				   !strings.Contains(err.Error(), "already exists") {
+				if !strings.Contains(err.Error(), "Duplicate") &&
+					!strings.Contains(err.Error(), "already exists") {
 					fmt.Printf("警告: %v\n", err)
 				}
 			}
@@ -132,7 +132,7 @@ func runMigrations(db *gorm.DB, dir string) {
 	}
 }
 
-// showStatus 显示迁移状�?
+// showStatus 显示迁移状态
 func showStatus(db *gorm.DB, dir string) {
 	files, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -146,13 +146,13 @@ func showStatus(db *gorm.DB, dir string) {
 		executedMap[m.Name] = true
 	}
 
-	fmt.Println("迁移状�?")
+	fmt.Println("迁移状态")
 	fmt.Println("----------------------------------------")
 	for _, f := range files {
 		if !f.IsDir() && strings.HasSuffix(f.Name(), ".sql") {
-			status := "[ ] 待执�?
+			status := "[ ] 待执行"
 			if executedMap[f.Name()] {
-				status = "[✓] 已执�?
+				status = "[✓] 已执行"
 			}
 			fmt.Printf("%s  %s\n", status, f.Name())
 		}
@@ -200,7 +200,7 @@ func autoMigrate(db *gorm.DB) {
 func splitSQL(content string) []string {
 	var statements []string
 	var current strings.Builder
-	
+
 	lines := strings.Split(content, "\n")
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
@@ -214,10 +214,10 @@ func splitSQL(content string) []string {
 			current.Reset()
 		}
 	}
-	
+
 	if current.Len() > 0 {
 		statements = append(statements, current.String())
 	}
-	
+
 	return statements
 }

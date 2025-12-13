@@ -14,22 +14,22 @@ func NewUserGroupRepository(db *gorm.DB) *UserGroupRepository {
 	return &UserGroupRepository{db: db}
 }
 
-// Create 创建用户�?
+// Create 创建用户组
 func (r *UserGroupRepository) Create(group *model.UserGroup) error {
 	return r.db.Create(group).Error
 }
 
-// Update 更新用户�?
+// Update 更新用户组
 func (r *UserGroupRepository) Update(group *model.UserGroup) error {
 	return r.db.Save(group).Error
 }
 
-// Delete 删除用户�?
+// Delete 删除用户组
 func (r *UserGroupRepository) Delete(id int64) error {
 	return r.db.Delete(&model.UserGroup{}, id).Error
 }
 
-// FindByID 根据ID查找用户�?
+// FindByID 根据ID查找用户组
 func (r *UserGroupRepository) FindByID(id int64) (*model.UserGroup, error) {
 	var group model.UserGroup
 	err := r.db.First(&group, id).Error
@@ -53,7 +53,7 @@ func (r *UserGroupRepository) Count() (int64, error) {
 	return count, err
 }
 
-// GetByName 根据名称查找用户�?
+// GetByName 根据名称查找用户组
 func (r *UserGroupRepository) GetByName(name string) (*model.UserGroup, error) {
 	var group model.UserGroup
 	err := r.db.Where("name = ?", name).First(&group).Error
@@ -74,11 +74,11 @@ func (r *UserGroupRepository) AddServerToGroup(groupID, serverID int64) error {
 	serverIDs := group.GetServerIDsAsInt64()
 	for _, id := range serverIDs {
 		if id == serverID {
-			return nil // 已存在，不重复添�?
+			return nil // 已存在，不重复添加
 		}
 	}
 
-	// 添加新节�?
+	// 添加新节点
 	group.ServerIDs = append(group.ServerIDs, serverID)
 	return r.Update(group)
 }
@@ -90,7 +90,7 @@ func (r *UserGroupRepository) RemoveServerFromGroup(groupID, serverID int64) err
 		return err
 	}
 
-	// 过滤掉要删除的节�?
+	// 过滤掉要删除的节点
 	newServerIDs := make(model.JSONArray, 0)
 	for _, v := range group.ServerIDs {
 		if id, ok := v.(float64); ok && int64(id) != serverID {
@@ -115,11 +115,11 @@ func (r *UserGroupRepository) AddPlanToGroup(groupID, planID int64) error {
 	planIDs := group.GetPlanIDsAsInt64()
 	for _, id := range planIDs {
 		if id == planID {
-			return nil // 已存在，不重复添�?
+			return nil // 已存在，不重复添加
 		}
 	}
 
-	// 添加新套�?
+	// 添加新套餐
 	group.PlanIDs = append(group.PlanIDs, planID)
 	return r.Update(group)
 }
@@ -131,7 +131,7 @@ func (r *UserGroupRepository) RemovePlanFromGroup(groupID, planID int64) error {
 		return err
 	}
 
-	// 过滤掉要删除的套�?
+	// 过滤掉要删除的套餐
 	newPlanIDs := make(model.JSONArray, 0)
 	for _, v := range group.PlanIDs {
 		if id, ok := v.(float64); ok && int64(id) != planID {

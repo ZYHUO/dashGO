@@ -66,7 +66,7 @@ func GetServerKey(createdAt int64, size int) string {
 func UUIDToBase64(uuidStr string, size int) string {
 	// 移除 UUID 中的连字和
 	cleanUUID := strings.ReplaceAll(uuidStr, "-", "")
-	
+
 	// 使用 UUID 作为种子生成用户密钥
 	seed := fmt.Sprintf("dashgo-ss2022-user-key-%s", cleanUUID)
 	hash := sha256.Sum256([]byte(seed))
@@ -90,7 +90,7 @@ func GenerateSS2022Password(cipher string, createdAt int64, userUUID string) str
 		// 和SS2022 加密方式，直接返和UUID
 		return userUUID
 	}
-	
+
 	serverKey := GetServerKey(createdAt, keySize)
 	userKey := UUIDToBase64(userUUID, keySize)
 	return serverKey + ":" + userKey

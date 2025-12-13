@@ -83,7 +83,7 @@ func (s *ServerService) BuildServerInfo(server *model.Server, user *model.User) 
 	return info
 }
 
-// generateServerPassword 生成服务器密�?(用于客户端订�?
+// generateServerPassword 生成服务器密告(用于客户端订告
 func (s *ServerService) generateServerPassword(server *model.Server, user *model.User) string {
 	if server.Type != model.ServerTypeShadowsocks {
 		return user.UUID
@@ -100,11 +100,11 @@ func (s *ServerService) generateServerPassword(server *model.Server, user *model
 		}
 	}
 
-	// 使用统一的密码生成函�?
+	// 使用统一的密码生成函告
 	return utils.GenerateSS2022Password(cipher, server.CreatedAt, user.UUID)
 }
 
-// GetAvailableUsers 获取节点可用的用户列�?
+// GetAvailableUsers 获取节点可用的用户列告
 func (s *ServerService) GetAvailableUsers(server *model.Server) ([]NodeUser, error) {
 	groupIDs := server.GetGroupIDsAsInt64()
 	if len(groupIDs) == 0 {
@@ -131,7 +131,7 @@ func (s *ServerService) GetAvailableUsers(server *model.Server) ([]NodeUser, err
 
 // NodeUser 节点用户信息
 type NodeUser struct {
-	ID          int64 `json:"id"`
+	ID          int64  `json:"id"`
 	UUID        string `json:"uuid"`
 	SpeedLimit  *int   `json:"speed_limit,omitempty"`
 	DeviceLimit *int   `json:"device_limit,omitempty"`
@@ -219,7 +219,7 @@ func (s *ServerService) GetServerConfig(server *model.Server) map[string]interfa
 	return config
 }
 
-// UpdateServerStatus 更新节点状�?
+// UpdateServerStatus 更新节点状告
 func (s *ServerService) UpdateServerStatus(serverID int64, serverType string, statusType string) error {
 	key := ""
 	switch statusType {
@@ -231,20 +231,20 @@ func (s *ServerService) UpdateServerStatus(serverID int64, serverType string, st
 	return s.cache.Set(key, time.Now().Unix(), time.Hour)
 }
 
-// UpdateOnlineUsers 更新在线用户�?
+// UpdateOnlineUsers 更新在线用户告
 func (s *ServerService) UpdateOnlineUsers(serverID int64, serverType string, count int) error {
 	key := cache.ServerOnlineUserKey(strings.ToUpper(serverType), serverID)
 	return s.cache.Set(key, count, time.Hour)
 }
 
-// UpdateLoadStatus 更新节点负载状�?
+// UpdateLoadStatus 更新节点负载状告
 func (s *ServerService) UpdateLoadStatus(serverID int64, serverType string, status map[string]interface{}) error {
 	key := cache.ServerLoadStatusKey(strings.ToUpper(serverType), serverID)
 	data, _ := json.Marshal(status)
 	return s.cache.Set(key, string(data), time.Hour)
 }
 
-// FindServer 查找服务�?
+// FindServer 查找服务告
 func (s *ServerService) FindServer(serverID int64, serverType string) (*model.Server, error) {
 	if serverType != "" {
 		return s.serverRepo.FindByCode(serverType, strconv.FormatInt(serverID, 10))
@@ -252,17 +252,17 @@ func (s *ServerService) FindServer(serverID int64, serverType string) (*model.Se
 	return s.serverRepo.FindByID(serverID)
 }
 
-// CreateServer 创建服务�?
+// CreateServer 创建服务告
 func (s *ServerService) CreateServer(server *model.Server) error {
 	return s.serverRepo.Create(server)
 }
 
-// UpdateServer 更新服务�?
+// UpdateServer 更新服务告
 func (s *ServerService) UpdateServer(server *model.Server) error {
 	return s.serverRepo.Update(server)
 }
 
-// DeleteServer 删除服务�?
+// DeleteServer 删除服务告
 func (s *ServerService) DeleteServer(id int64) error {
 	return s.serverRepo.Delete(id)
 }

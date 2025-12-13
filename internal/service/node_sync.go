@@ -14,7 +14,7 @@ import (
 	"dashgo/internal/repository"
 )
 
-// NodeSyncService 节点同步服务 - �?sing-box SSMAPI 对接
+// NodeSyncService 节点同步服务 - 与 sing-box SSMAPI 对接
 type NodeSyncService struct {
 	serverRepo *repository.ServerRepository
 	userRepo   *repository.UserRepository
@@ -61,7 +61,7 @@ type SSMAPIStats struct {
 	Users           []*SSMAPIUser `json:"users"`
 }
 
-// SSMAPIServerInfo sing-box 服务器信�?
+// SSMAPIServerInfo sing-box 服务器信息
 type SSMAPIServerInfo struct {
 	Server     string `json:"server"`
 	APIVersion string `json:"apiVersion"`
@@ -74,7 +74,7 @@ type NodeEndpoint struct {
 	BearerToken string // 可选的认证令牌
 }
 
-// GetServerInfo 获取服务器信�?
+// GetServerInfo 获取服务器信息
 func (s *NodeSyncService) GetServerInfo(endpoint NodeEndpoint) (*SSMAPIServerInfo, error) {
 	url := fmt.Sprintf("%s/server/v1/", endpoint.BaseURL)
 
@@ -136,7 +136,7 @@ func (s *NodeSyncService) ListUsers(endpoint NodeEndpoint) ([]*SSMAPIUser, error
 	return result.Users, nil
 }
 
-// AddUser 添加用户到节�?
+// AddUser 添加用户到节点
 func (s *NodeSyncService) AddUser(endpoint NodeEndpoint, username, password string) error {
 	url := fmt.Sprintf("%s/server/v1/users", endpoint.BaseURL)
 
@@ -231,7 +231,7 @@ func (s *NodeSyncService) UpdateUser(endpoint NodeEndpoint, username, password s
 	return nil
 }
 
-// DeleteUser 从节点删除用�?
+// DeleteUser 从节点删除用户
 func (s *NodeSyncService) DeleteUser(endpoint NodeEndpoint, username string) error {
 	url := fmt.Sprintf("%s/server/v1/users/%s", endpoint.BaseURL, username)
 
@@ -289,7 +289,7 @@ func (s *NodeSyncService) GetStats(endpoint NodeEndpoint, clear bool) (*SSMAPISt
 	return &stats, nil
 }
 
-// SyncUsers 同步用户到节�?
+// SyncUsers 同步用户到节点
 func (s *NodeSyncService) SyncUsers(endpoint NodeEndpoint) error {
 	// 获取节点可用用户
 	groupIDs := endpoint.Server.GetGroupIDsAsInt64()
@@ -319,18 +319,18 @@ func (s *NodeSyncService) SyncUsers(endpoint NodeEndpoint) error {
 		expectedUserMap[users[i].UUID] = &users[i]
 	}
 
-	// 添加新用�?
+	// 添加新用户
 	for uuid, user := range expectedUserMap {
 		password := s.generatePassword(endpoint.Server, user)
 		if existing, exists := currentUserMap[uuid]; exists {
-			// 用户已存在，检查密码是否需要更�?
+			// 用户已存在，检查密码是否需要更新
 			if existing.Password != password {
 				if err := s.UpdateUser(endpoint, uuid, password); err != nil {
 					log.Printf("[NodeSync] Failed to update user %s: %v", uuid, err)
 				}
 			}
 		} else {
-			// 添加新用�?
+			// 添加新用户
 			if err := s.AddUser(endpoint, uuid, password); err != nil {
 				log.Printf("[NodeSync] Failed to add user %s: %v", uuid, err)
 			}
@@ -349,7 +349,7 @@ func (s *NodeSyncService) SyncUsers(endpoint NodeEndpoint) error {
 	return nil
 }
 
-// FetchAndProcessTraffic 获取并处理流量数�?
+// FetchAndProcessTraffic 获取并处理流量数据
 func (s *NodeSyncService) FetchAndProcessTraffic(endpoint NodeEndpoint) error {
 	stats, err := s.GetStats(endpoint, true)
 	if err != nil {
@@ -404,7 +404,7 @@ func (s *NodeSyncService) generatePassword(server *model.Server, user *model.Use
 	return user.UUID
 }
 
-// setAuthHeader 设置认证�?
+// setAuthHeader 设置认证头
 func (s *NodeSyncService) setAuthHeader(req *http.Request, endpoint NodeEndpoint) {
 	if endpoint.BearerToken != "" {
 		req.Header.Set("Authorization", "Bearer "+endpoint.BearerToken)
@@ -412,11 +412,11 @@ func (s *NodeSyncService) setAuthHeader(req *http.Request, endpoint NodeEndpoint
 }
 
 // StartSyncLoop 启动同步循环
-// 注意：此功能已禁用，因为新架构使�?Agent 模式
-// Agent 会主动向面板上报流量和用户同�?
+// 注意：此功能已禁用，因为新架构使用 Agent 模式
+// Agent 会主动向面板上报流量和用户同步
 // 如果你的节点支持 SSMAPI 并且需要面板主动同步，可以在配置中启用
 func (s *NodeSyncService) StartSyncLoop() {
-	// 检查是否启用节点同�?
+	// 检查是否启用节点同步
 	if !s.cfg.Node.EnableSync {
 		log.Println("[NodeSync] Node sync is disabled, using Agent mode instead")
 		return
@@ -439,7 +439,7 @@ func (s *NodeSyncService) StartSyncLoop() {
 	}()
 }
 
-// syncAllNodes 同步所有节�?
+// syncAllNodes 同步所有节点
 func (s *NodeSyncService) syncAllNodes() {
 	servers, err := s.serverRepo.GetAllServers()
 	if err != nil {
@@ -459,7 +459,7 @@ func (s *NodeSyncService) syncAllNodes() {
 	}
 }
 
-// fetchAllTraffic 获取所有节点流�?
+// fetchAllTraffic 获取所有节点流量
 func (s *NodeSyncService) fetchAllTraffic() {
 	servers, err := s.serverRepo.GetAllServers()
 	if err != nil {
@@ -485,7 +485,7 @@ func (s *NodeSyncService) buildEndpoint(server *model.Server) NodeEndpoint {
 		Server: server,
 	}
 
-	// �?protocol_settings 中获�?SSMAPI 配置
+	// 从 protocol_settings 中获取 SSMAPI 配置
 	if ps := server.ProtocolSettings; ps != nil {
 		if apiURL, ok := ps["ssmapi_url"].(string); ok {
 			endpoint.BaseURL = apiURL
@@ -495,7 +495,7 @@ func (s *NodeSyncService) buildEndpoint(server *model.Server) NodeEndpoint {
 		}
 	}
 
-	// 如果没有配置，使用默认�?
+	// 如果没有配置，使用默认值
 	if endpoint.BaseURL == "" {
 		// 默认使用 http://host:9000/协议类型
 		endpoint.BaseURL = fmt.Sprintf("http://%s:9000/%s", server.Host, server.Type)
@@ -504,10 +504,10 @@ func (s *NodeSyncService) buildEndpoint(server *model.Server) NodeEndpoint {
 	return endpoint
 }
 
-// GetNodeStatus 获取节点状�?
+// GetNodeStatus 获取节点状态
 func (s *NodeSyncService) GetNodeStatus(server *model.Server) (map[string]interface{}, error) {
-	// 简化实现：直接返回基本状态，不实际连接节�?
-	// 因为新架构使�?Agent 模式，节点状态由 Agent 心跳上报
+	// 简化实现：直接返回基本状态，不实际连接节点
+	// 因为新架构使用 Agent 模式，节点状态由 Agent 心跳上报
 	return map[string]interface{}{
 		"online": true,
 		"stats": map[string]interface{}{

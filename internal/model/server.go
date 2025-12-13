@@ -11,7 +11,7 @@ type Server struct {
 	Type             string    `gorm:"column:type" json:"type"`
 	Code             *string   `gorm:"column:code" json:"code"`
 	ParentID         *int64    `gorm:"column:parent_id" json:"parent_id"`
-	HostID           *int64    `gorm:"column:host_id;index" json:"host_id"` // 绑定的主机ID，用于自动部�?
+	HostID           *int64    `gorm:"column:host_id;index" json:"host_id"` // 绑定的主机ID，用于自动部署
 	GroupIDs         JSONArray `gorm:"column:group_ids;type:json" json:"group_ids"`
 	RouteIDs         JSONArray `gorm:"column:route_ids;type:json" json:"route_ids"`
 	Name             string    `gorm:"column:name" json:"name"`
@@ -102,7 +102,7 @@ func (j JSONMap) Value() (driver.Value, error) {
 	return json.Marshal(j)
 }
 
-// GetGroupIDsAsInt64 获取 group_ids �?int64 数组
+// GetGroupIDsAsInt64 获取 group_ids 为 int64 数组
 func (s *Server) GetGroupIDsAsInt64() []int64 {
 	result := make([]int64, 0)
 	for _, v := range s.GroupIDs {
@@ -110,13 +110,13 @@ func (s *Server) GetGroupIDsAsInt64() []int64 {
 		case float64:
 			result = append(result, int64(val))
 		case string:
-			// 尝试解析字符�?
+			// 尝试解析字符串
 		}
 	}
 	return result
 }
 
-// ServerGroup 节点�?
+// ServerGroup 节点组
 type ServerGroup struct {
 	ID        int64  `gorm:"primaryKey;column:id" json:"id"`
 	Name      string `gorm:"column:name" json:"name"`

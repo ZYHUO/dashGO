@@ -27,7 +27,7 @@ func TestNewUpdateNotifier(t *testing.T) {
 }
 
 func TestUpdateNotifier_NotifySuccess(t *testing.T) {
-	// 创建测试服务�?
+	// 创建测试服务告
 	var receivedNotification UpdateNotification
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// 验证请求方法
@@ -40,7 +40,7 @@ func TestUpdateNotifier_NotifySuccess(t *testing.T) {
 			t.Errorf("Path = %v, want /api/v1/agent/update-status", r.URL.Path)
 		}
 
-		// 验证请求�?
+		// 验证请求告
 		if r.Header.Get("Authorization") != "test-token" {
 			t.Errorf("Authorization = %v, want test-token", r.Header.Get("Authorization"))
 		}
@@ -48,7 +48,7 @@ func TestUpdateNotifier_NotifySuccess(t *testing.T) {
 			t.Errorf("Content-Type = %v, want application/json", r.Header.Get("Content-Type"))
 		}
 
-		// 解析请求�?
+		// 解析请求告
 		if err := json.NewDecoder(r.Body).Decode(&receivedNotification); err != nil {
 			t.Errorf("Failed to decode request body: %v", err)
 		}
@@ -61,7 +61,7 @@ func TestUpdateNotifier_NotifySuccess(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// 创建通知�?
+	// 创建通知告
 	notifier := NewUpdateNotifier(server.URL, "test-token")
 
 	// 发送成功通知
@@ -86,7 +86,7 @@ func TestUpdateNotifier_NotifySuccess(t *testing.T) {
 }
 
 func TestUpdateNotifier_NotifyFailure(t *testing.T) {
-	// 创建测试服务�?
+	// 创建测试服务告
 	var receivedNotification UpdateNotification
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&receivedNotification)
@@ -95,7 +95,7 @@ func TestUpdateNotifier_NotifyFailure(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// 创建通知�?
+	// 创建通知告
 	notifier := NewUpdateNotifier(server.URL, "test-token")
 
 	// 发送失败通知
@@ -121,7 +121,7 @@ func TestUpdateNotifier_NotifyFailure(t *testing.T) {
 }
 
 func TestUpdateNotifier_NotifyRollback(t *testing.T) {
-	// 创建测试服务�?
+	// 创建测试服务告
 	var receivedNotification UpdateNotification
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&receivedNotification)
@@ -130,7 +130,7 @@ func TestUpdateNotifier_NotifyRollback(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// 创建通知�?
+	// 创建通知告
 	notifier := NewUpdateNotifier(server.URL, "test-token")
 
 	// 发送回滚通知
@@ -159,7 +159,7 @@ func TestUpdateNotifier_ServerError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// 创建通知�?
+	// 创建通知告
 	notifier := NewUpdateNotifier(server.URL, "test-token")
 
 	// 发送通知应该返回错误
@@ -170,7 +170,7 @@ func TestUpdateNotifier_ServerError(t *testing.T) {
 }
 
 func TestUpdateNotifier_NetworkError(t *testing.T) {
-	// 使用无效�?URL
+	// 使用无效告URL
 	notifier := NewUpdateNotifier("http://invalid-url-that-does-not-exist.local", "test-token")
 
 	// 发送通知应该返回网络错误
@@ -181,7 +181,7 @@ func TestUpdateNotifier_NetworkError(t *testing.T) {
 }
 
 func TestUpdateNotification_Timestamp(t *testing.T) {
-	// 创建测试服务�?
+	// 创建测试服务告
 	var receivedNotification UpdateNotification
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&receivedNotification)
@@ -190,19 +190,19 @@ func TestUpdateNotification_Timestamp(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// 创建通知�?
+	// 创建通知告
 	notifier := NewUpdateNotifier(server.URL, "test-token")
 
-	// 记录发送前的时�?
+	// 记录发送前的时告
 	beforeSend := time.Now()
 
 	// 发送通知
 	notifier.NotifySuccess("v1.0.0", "v1.1.0")
 
-	// 记录发送后的时�?
+	// 记录发送后的时告
 	afterSend := time.Now()
 
-	// 验证时间戳在合理范围�?
+	// 验证时间戳在合理范围告
 	if receivedNotification.Timestamp.Before(beforeSend) || receivedNotification.Timestamp.After(afterSend) {
 		t.Errorf("Timestamp %v is not between %v and %v", 
 			receivedNotification.Timestamp, beforeSend, afterSend)
@@ -231,7 +231,7 @@ func TestUpdateStatus_Constants(t *testing.T) {
 }
 
 func TestUpdateNotifier_NotifyWithNilError(t *testing.T) {
-	// 创建测试服务�?
+	// 创建测试服务告
 	var receivedNotification UpdateNotification
 	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		json.NewDecoder(r.Body).Decode(&receivedNotification)
@@ -240,10 +240,10 @@ func TestUpdateNotifier_NotifyWithNilError(t *testing.T) {
 	}))
 	defer server.Close()
 
-	// 创建通知�?
+	// 创建通知告
 	notifier := NewUpdateNotifier(server.URL, "test-token")
 
-	// 发送失败通知，但错误�?nil
+	// 发送失败通知，但错误告nil
 	err := notifier.NotifyFailure("v1.0.0", "v1.1.0", nil)
 	if err != nil {
 		t.Errorf("NotifyFailure() error = %v", err)

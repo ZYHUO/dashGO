@@ -190,7 +190,7 @@ func (r *NoticeRepository) GetVisible() ([]model.Notice, error) {
 	return notices, err
 }
 
-// KnowledgeRepository 知识库仓�?
+// KnowledgeRepository 知识库仓库
 type KnowledgeRepository struct {
 	db *gorm.DB
 }
@@ -255,5 +255,3 @@ func (r *KnowledgeRepository) GetCategories(language string) ([]string, error) {
 	err := query.Distinct("category").Pluck("category", &categories).Error
 	return categories, err
 }
-
-

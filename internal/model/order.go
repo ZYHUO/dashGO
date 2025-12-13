@@ -51,19 +51,19 @@ const (
 
 // Payment 支付方式
 type Payment struct {
-	ID                 int64   `gorm:"primaryKey;column:id" json:"id"`
-	UUID               string  `gorm:"column:uuid;size:32" json:"uuid"`
-	Payment            string  `gorm:"column:payment;size:16" json:"payment"`
-	Name               string  `gorm:"column:name" json:"name"`
-	Icon               *string `gorm:"column:icon" json:"icon"`
-	Config             string  `gorm:"column:config;type:text" json:"config"`
-	NotifyDomain       *string `gorm:"column:notify_domain;size:128" json:"notify_domain"`
-	HandlingFeeFixed   *int64  `gorm:"column:handling_fee_fixed" json:"handling_fee_fixed"`
+	ID                 int64    `gorm:"primaryKey;column:id" json:"id"`
+	UUID               string   `gorm:"column:uuid;size:32" json:"uuid"`
+	Payment            string   `gorm:"column:payment;size:16" json:"payment"`
+	Name               string   `gorm:"column:name" json:"name"`
+	Icon               *string  `gorm:"column:icon" json:"icon"`
+	Config             string   `gorm:"column:config;type:text" json:"config"`
+	NotifyDomain       *string  `gorm:"column:notify_domain;size:128" json:"notify_domain"`
+	HandlingFeeFixed   *int64   `gorm:"column:handling_fee_fixed" json:"handling_fee_fixed"`
 	HandlingFeePercent *float64 `gorm:"column:handling_fee_percent;type:decimal(5,2)" json:"handling_fee_percent"`
-	Enable             bool    `gorm:"column:enable;default:false" json:"enable"`
-	Sort               *int    `gorm:"column:sort" json:"sort"`
-	CreatedAt          int64   `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt          int64   `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	Enable             bool     `gorm:"column:enable;default:false" json:"enable"`
+	Sort               *int     `gorm:"column:sort" json:"sort"`
+	CreatedAt          int64    `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+	UpdatedAt          int64    `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 }
 
 func (Payment) TableName() string {

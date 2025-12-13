@@ -22,7 +22,7 @@ func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Confi
 	if _, err := os.Stat(staticPath); err == nil {
 		r.Static("/assets", filepath.Join(staticPath, "assets"))
 		r.StaticFile("/favicon.ico", filepath.Join(staticPath, "favicon.ico"))
-		
+
 		// SPA 路由支持
 		r.NoRoute(func(c *gin.Context) {
 			// API 路由返回 404
@@ -264,12 +264,12 @@ func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Confi
 			admin.POST("/user-group", AdminCreateUserGroup(services))
 			admin.PUT("/user-group/:id", AdminUpdateUserGroup(services))
 			admin.DELETE("/user-group/:id", AdminDeleteUserGroup(services))
-			
+
 			// User Group - Server management (用户组节点管和
 			admin.POST("/user-group/:id/servers", AdminSetUserGroupServers(services))
 			admin.POST("/user-group/:id/server", AdminAddServerToUserGroup(services))
 			admin.DELETE("/user-group/:id/server/:server_id", AdminRemoveServerFromUserGroup(services))
-			
+
 			// User Group - Plan management (用户组套餐管和
 			admin.POST("/user-group/:id/plans", AdminSetUserGroupPlans(services))
 			admin.POST("/user-group/:id/plan", AdminAddPlanToUserGroup(services))

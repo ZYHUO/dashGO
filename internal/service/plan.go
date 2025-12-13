@@ -58,7 +58,7 @@ func (s *PlanService) Delete(id int64) error {
 // GetPlanInfo 获取套餐信息（包含价格列表）
 func (s *PlanService) GetPlanInfo(plan *model.Plan) map[string]interface{} {
 	prices := make(map[string]int64)
-	
+
 	if plan.MonthPrice != nil && *plan.MonthPrice > 0 {
 		prices[model.PeriodMonthly] = *plan.MonthPrice
 	}

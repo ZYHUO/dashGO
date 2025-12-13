@@ -24,33 +24,33 @@ func GuestRegister(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 检查是否需要邮箱验�?
+		// 检查是否需要邮箱验告
 		if services.Setting.GetBool(service.SettingMailVerify, false) {
 			if req.EmailCode == "" {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "请输入邮箱验证码"})
 				return
 			}
-			// 验证邮箱验证�?
+			// 验证邮箱验证码
 			if !services.User.VerifyEmailCode(req.Email, req.EmailCode) {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "验证码错误或已过�?})
+				c.JSON(http.StatusBadRequest, gin.H{"error": "验证码错误或已过期"})
 				return
 			}
 		}
 
-		// 检�?IP 注册限制
+		// 检查IP 注册限制
 		clientIP := c.ClientIP()
 		ipLimit := services.Setting.GetInt(service.SettingRegisterIPLimit, 0)
 		if ipLimit > 0 {
 			count, _ := services.User.CountByRegisterIP(clientIP)
 			if count >= int64(ipLimit) {
-				c.JSON(http.StatusBadRequest, gin.H{"error": "�?IP 注册次数已达上限"})
+				c.JSON(http.StatusBadRequest, gin.H{"error": "告IP 注册次数已达上限"})
 				return
 			}
 		}
 
-		// 检查是否仅限邀请注�?
+		// 检查是否仅限邀请注册
 		if services.Setting.GetBool(service.SettingRegisterInviteOnly, false) && req.InviteCode == "" {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "仅限邀请注�?})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "仅限邀请注册"})
 			return
 		}
 
@@ -71,7 +71,7 @@ func GuestRegister(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 标记邀请码已使�?
+		// 标记邀请码已使告
 		if req.InviteCode != "" {
 			services.Invite.UseInviteCode(req.InviteCode, user.ID)
 		}
@@ -102,9 +102,9 @@ func GuestSendEmailCode(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 检查邮件是否配�?
+		// 检查邮件是否配置
 		if !services.Mail.IsConfigured() {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "邮件服务未配�?})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "邮件服务未配置"})
 			return
 		}
 
@@ -115,25 +115,25 @@ func GuestSendEmailCode(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 检查冷却时�?
+		// 检查冷却时间
 		cooldown := services.User.GetEmailCodeCooldown(req.Email)
 		if cooldown > 0 {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "请稍后再�?, "cooldown": cooldown})
+			c.JSON(http.StatusBadRequest, gin.H{"error": "请稍后再试", "cooldown": cooldown})
 			return
 		}
 
-		// 生成验证�?
+		// 生成验证码
 		code := generateNumericCode(6)
 
-		// 存储验证�?
+		// 存储验证码
 		if err := services.User.SetEmailCode(req.Email, code); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "发送失�?})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "发送失败"})
 			return
 		}
 
-		// 发送邮�?
+		// 发送邮件
 		if err := services.Mail.SendVerifyCode(req.Email, code); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "发送失败，请稍后重�?})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "发送失败，请稍后重试"})
 			return
 		}
 
@@ -144,7 +144,7 @@ func GuestSendEmailCode(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// generateNumericCode 生成数字验证�?
+// generateNumericCode 生成数字验证告
 func generateNumericCode(length int) string {
 	const digits = "0123456789"
 	code := make([]byte, length)
@@ -189,7 +189,7 @@ func GuestLogin(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// GuestGetPlans 获取可购买套餐列�?
+// GuestGetPlans 获取可购买套餐列告
 func GuestGetPlans(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		plans, err := services.Plan.GetAvailable()
@@ -217,7 +217,6 @@ func PassportRegister(services *service.Services) gin.HandlerFunc {
 	return GuestRegister(services)
 }
 
-
 // GetNotices 获取公告列表
 func GetNotices(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -230,7 +229,7 @@ func GetNotices(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// GetKnowledge 获取知识库列�?
+// GetKnowledge 获取知识库列告
 func GetKnowledge(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		category := c.Query("category")
@@ -243,7 +242,7 @@ func GetKnowledge(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// GetKnowledgeCategories 获取知识库分�?
+// GetKnowledgeCategories 获取知识库分告
 func GetKnowledgeCategories(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		categories, err := services.Knowledge.GetCategories()
@@ -254,7 +253,6 @@ func GetKnowledgeCategories(services *service.Services) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"data": categories})
 	}
 }
-
 
 // GetPublicSettings 获取公开设置
 func GetPublicSettings(services *service.Services) gin.HandlerFunc {

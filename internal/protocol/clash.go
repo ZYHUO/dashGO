@@ -25,10 +25,10 @@ type ClashConfig struct {
 }
 
 type ClashDNS struct {
-	Enable       bool     `yaml:"enable"`
-	IPv6         bool     `yaml:"ipv6"`
-	NameServer   []string `yaml:"nameserver"`
-	Fallback     []string `yaml:"fallback,omitempty"`
+	Enable         bool                 `yaml:"enable"`
+	IPv6           bool                 `yaml:"ipv6"`
+	NameServer     []string             `yaml:"nameserver"`
+	Fallback       []string             `yaml:"fallback,omitempty"`
 	FallbackFilter *ClashFallbackFilter `yaml:"fallback-filter,omitempty"`
 }
 
@@ -48,7 +48,7 @@ type ClashProxyGroup struct {
 // GenerateClashConfig 生成 Clash 配置
 func GenerateClashConfig(servers []service.ServerInfo, user *model.User) string {
 	config := getDefaultClashConfig()
-	
+
 	proxyNames := []string{}
 	for _, server := range servers {
 		proxy := buildClashProxy(server, user)
@@ -63,10 +63,10 @@ func GenerateClashConfig(servers []service.ServerInfo, user *model.User) string 
 		groupName := config.ProxyGroups[i].Name
 		switch groupName {
 		case "🚀 节点选择":
-			// 节点选择组：添加所有节�?
+			// 节点选择组：添加所有节告
 			config.ProxyGroups[i].Proxies = append(config.ProxyGroups[i].Proxies, proxyNames...)
 		case "♻️ 自动选择", "🔯 故障转移", "🔮 负载均衡":
-			// 自动选择/故障转移/负载均衡：添加所有节�?
+			// 自动选择/故障转移/负载均衡：添加所有节告
 			config.ProxyGroups[i].Proxies = proxyNames
 		case "📲 电报消息", "🤖 OpenAI", "📹 YouTube", "🎬 Netflix", "🍎 苹果服务", "🎮 游戏平台", "🐟 漏网之鱼":
 			// 其他分组：添加所有节点到末尾
@@ -84,7 +84,7 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 
 	switch server.Type {
 	case model.ServerTypeShadowsocks:
-		// 获取加密方式，优先使�?method，其�?cipher
+		// 获取加密方式，优先使告method，其告cipher
 		cipher := "aes-256-gcm"
 		if m, ok := ps["method"].(string); ok && m != "" {
 			cipher = m
@@ -92,8 +92,8 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 			cipher = c
 		}
 
-		// 密码：对�?SS2022，使�?server.Password（已包含服务器密�?用户密钥格式�?
-		// 对于普�?SS，使用用�?UUID
+		// 密码：对告SS2022，使告server.Password（已包含服务器密告用户密钥格式告
+		// 对于普告SS，使用用告UUID
 		password := server.Password
 		if password == "" {
 			password = user.UUID
@@ -118,14 +118,14 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 
 	case model.ServerTypeVmess:
 		proxy := map[string]interface{}{
-			"name":     server.Name,
-			"type":     "vmess",
-			"server":   server.Host,
-			"port":     port,
-			"uuid":     user.UUID,
-			"alterId":  0,
-			"cipher":   "auto",
-			"udp":      true,
+			"name":    server.Name,
+			"type":    "vmess",
+			"server":  server.Host,
+			"port":    port,
+			"uuid":    user.UUID,
+			"alterId": 0,
+			"cipher":  "auto",
+			"udp":     true,
 		}
 		if tls, ok := ps["tls"].(float64); ok && tls > 0 {
 			proxy["tls"] = true
@@ -329,7 +329,7 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 		return proxy
 
 	case "shadowtls":
-		// ShadowTLS �?Clash Meta 中需要配�?SS 使用
+		// ShadowTLS 告Clash Meta 中需要配告SS 使用
 		proxy := map[string]interface{}{
 			"name":               server.Name,
 			"type":               "ss",
@@ -354,7 +354,7 @@ func buildClashProxy(server service.ServerInfo, user *model.User) map[string]int
 		return proxy
 
 	case "naive":
-		// NaiveProxy �?Clash Meta 中不直接支持，返�?nil
+		// NaiveProxy 告Clash Meta 中不直接支持，返告nil
 		return nil
 	}
 
@@ -414,7 +414,7 @@ func parsePluginOpts(opts string) map[string]interface{} {
 
 // parsePort 解析端口字符串，返回整数端口
 func parsePort(portStr string) int {
-	// 处理端口范围，取第一个端�?
+	// 处理端口范围，取第一个端告
 	if strings.Contains(portStr, "-") {
 		parts := strings.Split(portStr, "-")
 		portStr = parts[0]

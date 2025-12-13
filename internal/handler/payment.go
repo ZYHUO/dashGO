@@ -41,7 +41,7 @@ func CreatePayment(services *service.Services) gin.HandlerFunc {
 
 		var req struct {
 			TradeNo   string `json:"trade_no" binding:"required"`
-			PaymentID int64  `json:"payment_id"` // 移除 required�? 表示余额支付
+			PaymentID int64  `json:"payment_id"` // 移除 required告 表示余额支付
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -49,7 +49,7 @@ func CreatePayment(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果 payment_id �?0，使用余额支�?
+		// 如果 payment_id 告0，使用余额支告
 		if req.PaymentID == 0 {
 			err := services.Payment.PayWithBalance(req.TradeNo, user.ID)
 			if err != nil {
@@ -75,7 +75,7 @@ func PaymentNotify(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		paymentUUID := c.Param("uuid")
 
-		// 获取所有参�?
+		// 获取所有参告
 		params := make(map[string]string)
 
 		// GET 参数
@@ -102,7 +102,7 @@ func PaymentNotify(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// CheckPaymentStatus 检查支付状�?
+// CheckPaymentStatus 检查支付状告
 func CheckPaymentStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tradeNo := c.Query("trade_no")
@@ -147,7 +147,7 @@ func CheckCoupon(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 获取套餐价格来计算实际折�?
+		// 获取套餐价格来计算实际折告
 		plan, err := services.Plan.GetByID(req.PlanID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "plan not found"})
@@ -169,9 +169,7 @@ func CheckCoupon(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-
-
-// GetInviteInfo 获取邀请信�?
+// GetInviteInfo 获取邀请信告
 func GetInviteInfo(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUserFromContext(c)

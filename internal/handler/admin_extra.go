@@ -62,7 +62,7 @@ func AdminTrafficStats(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminServerRanking 服务器排�?
+// AdminServerRanking 服务器排告
 func AdminServerRanking(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		limit, _ := strconv.Atoi(c.DefaultQuery("limit", "10"))
@@ -162,7 +162,7 @@ func AdminDeleteNotice(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminListKnowledge 知识库列�?
+// AdminListKnowledge 知识库列告
 func AdminListKnowledge(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		items, err := services.Knowledge.GetAll()
@@ -175,7 +175,7 @@ func AdminListKnowledge(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCreateKnowledge 创建知识库文�?
+// AdminCreateKnowledge 创建知识库文告
 func AdminCreateKnowledge(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var knowledge model.Knowledge
@@ -193,7 +193,7 @@ func AdminCreateKnowledge(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateKnowledge 更新知识库文�?
+// AdminUpdateKnowledge 更新知识库文告
 func AdminUpdateKnowledge(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -218,7 +218,7 @@ func AdminUpdateKnowledge(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminDeleteKnowledge 删除知识库文�?
+// AdminDeleteKnowledge 删除知识库文告
 func AdminDeleteKnowledge(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -232,7 +232,7 @@ func AdminDeleteKnowledge(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminListCoupons 优惠券列�?
+// AdminListCoupons 优惠券列告
 func AdminListCoupons(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		coupons, err := services.Coupon.GetAll()
@@ -245,7 +245,7 @@ func AdminListCoupons(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCreateCoupon 创建优惠�?
+// AdminCreateCoupon 创建优惠告
 func AdminCreateCoupon(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var coupon model.Coupon
@@ -263,7 +263,7 @@ func AdminCreateCoupon(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateCoupon 更新优惠�?
+// AdminUpdateCoupon 更新优惠告
 func AdminUpdateCoupon(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -288,7 +288,7 @@ func AdminUpdateCoupon(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminDeleteCoupon 删除优惠�?
+// AdminDeleteCoupon 删除优惠告
 func AdminDeleteCoupon(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -331,10 +331,9 @@ func AdminUpdatePayment(services *service.Services) gin.HandlerFunc {
 	}
 }
 
+// ==================== 用户组管告====================
 
-// ==================== 用户组管�?====================
-
-// AdminListServerGroups 获取用户组列�?
+// AdminListServerGroups 获取用户组列告
 func AdminListServerGroups(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		groups, err := services.ServerGroup.GetAll()
@@ -346,7 +345,7 @@ func AdminListServerGroups(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCreateServerGroup 创建用户�?
+// AdminCreateServerGroup 创建用户告
 func AdminCreateServerGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -366,7 +365,7 @@ func AdminCreateServerGroup(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateServerGroup 更新用户�?
+// AdminUpdateServerGroup 更新用户告
 func AdminUpdateServerGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -386,7 +385,7 @@ func AdminUpdateServerGroup(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminDeleteServerGroup 删除用户�?
+// AdminDeleteServerGroup 删除用户告
 func AdminDeleteServerGroup(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)

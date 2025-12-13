@@ -91,30 +91,30 @@ const (
 	KeyUserOnline        = "USER_ONLINE_%d"
 
 	// Agent 缓存
-	KeyAgentConfig    = "AGENT_CONFIG_%d"        // 主机配置缓存
-	KeyAgentUsersHash = "AGENT_USERS_HASH_%d"    // 用户列表哈希
-	KeyNodeUsers      = "NODE_USERS_%d"          // 节点用户列表
-	KeyUserListVersion = "USER_LIST_VERSION"     // 用户列表版本�?
+	KeyAgentConfig     = "AGENT_CONFIG_%d"     // 主机配置缓存
+	KeyAgentUsersHash  = "AGENT_USERS_HASH_%d" // 用户列表哈希
+	KeyNodeUsers       = "NODE_USERS_%d"       // 节点用户列表
+	KeyUserListVersion = "USER_LIST_VERSION"   // 用户列表版本号
 
 	// 订阅缓存
-	KeySubscription     = "SUBSCRIPTION_%d_%s"   // 用户订阅缓存
-	KeySubscriptionHash = "SUB_HASH_%d"          // 用户订阅哈希
+	KeySubscription     = "SUBSCRIPTION_%d_%s" // 用户订阅缓存
+	KeySubscriptionHash = "SUB_HASH_%d"        // 用户订阅哈希
 
 	// 用户缓存
-	KeyUserInfo       = "USER_INFO_%d"           // 用户信息缓存
-	KeyUserList       = "USER_LIST_PAGE_%d_%d"   // 用户列表分页缓存
-	KeyUserListTotal  = "USER_LIST_TOTAL"        // 用户总数缓存
-	KeyUserChanges    = "USER_CHANGES"           // 用户变更列表
-	KeyUserChangeVer  = "USER_CHANGE_VERSION"    // 用户变更版本
+	KeyUserInfo      = "USER_INFO_%d"         // 用户信息缓存
+	KeyUserList      = "USER_LIST_PAGE_%d_%d" // 用户列表分页缓存
+	KeyUserListTotal = "USER_LIST_TOTAL"      // 用户总数缓存
+	KeyUserChanges   = "USER_CHANGES"         // 用户变更列表
+	KeyUserChangeVer = "USER_CHANGE_VERSION"  // 用户变更版本
 
 	// 节点用户缓存
-	KeyNodeUserList    = "NODE_USER_LIST_%d"     // 节点用户列表
-	KeyNodeUserHash    = "NODE_USER_HASH_%d"     // 节点用户哈希
-	KeyNodeUserVersion = "NODE_USER_VERSION_%d"  // 节点用户版本
+	KeyNodeUserList    = "NODE_USER_LIST_%d"    // 节点用户列表
+	KeyNodeUserHash    = "NODE_USER_HASH_%d"    // 节点用户哈希
+	KeyNodeUserVersion = "NODE_USER_VERSION_%d" // 节点用户版本
 
 	// 站点设置缓存
-	KeySiteSettings = "SITE_SETTINGS"            // 站点设置
-	KeySiteSetting  = "SITE_SETTING_%s"          // 单个设置
+	KeySiteSettings = "SITE_SETTINGS"   // 站点设置
+	KeySiteSetting  = "SITE_SETTING_%s" // 单个设置
 )
 
 func ServerLastCheckAtKey(serverType string, serverID int64) string {
@@ -177,7 +177,7 @@ func SiteSettingKey(key string) string {
 	return fmt.Sprintf(KeySiteSetting, key)
 }
 
-// SetJSON 设置 JSON �?
+// SetJSON 设置 JSON 值
 func (c *Client) SetJSON(key string, value interface{}, expiration time.Duration) error {
 	data, err := json.Marshal(value)
 	if err != nil {
@@ -186,7 +186,7 @@ func (c *Client) SetJSON(key string, value interface{}, expiration time.Duration
 	return c.Set(key, string(data), expiration)
 }
 
-// GetJSON 获取 JSON �?
+// GetJSON 获取 JSON 值
 func (c *Client) GetJSON(key string, dest interface{}) error {
 	val, err := c.Get(key)
 	if err != nil {
@@ -296,7 +296,7 @@ func (c *Client) SAdd(key string, members ...interface{}) error {
 	return c.rdb.SAdd(c.ctx, key, members...).Err()
 }
 
-// SMembers 获取集合所有成�?
+// SMembers 获取集合所有成员
 func (c *Client) SMembers(key string) ([]string, error) {
 	return c.rdb.SMembers(c.ctx, key).Result()
 }

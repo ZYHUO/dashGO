@@ -2,31 +2,31 @@ package model
 
 // Plan 套餐模型
 type Plan struct {
-	ID                 int64     `gorm:"primaryKey;column:id" json:"id"`
-	GroupID            *int64    `gorm:"column:group_id" json:"group_id"`
-	TransferEnable     int64     `gorm:"column:transfer_enable" json:"transfer_enable"`       // 流量配额（字节）
-	Name               string    `gorm:"column:name" json:"name"`
-	SpeedLimit         *int      `gorm:"column:speed_limit" json:"speed_limit"`               // 速度限制（Mbps）
-	DeviceLimit        *int      `gorm:"column:device_limit" json:"device_limit"`             // 设备数量限制
-	Show               bool      `gorm:"column:show;default:false" json:"show"`
-	Sell               bool      `gorm:"column:sell;default:true" json:"sell"`
-	Renew              bool      `gorm:"column:renew;default:true" json:"renew"`
-	Sort               int       `gorm:"column:sort" json:"sort"`
-	Content            string    `gorm:"column:content;type:text" json:"content"`
-	MonthPrice         *int64    `gorm:"column:month_price" json:"month_price"`
-	QuarterPrice       *int64    `gorm:"column:quarter_price" json:"quarter_price"`
-	HalfYearPrice      *int64    `gorm:"column:half_year_price" json:"half_year_price"`
-	YearPrice          *int64    `gorm:"column:year_price" json:"year_price"`
-	TwoYearPrice       *int64    `gorm:"column:two_year_price" json:"two_year_price"`
-	ThreeYearPrice     *int64    `gorm:"column:three_year_price" json:"three_year_price"`
-	OnetimePrice       *int64    `gorm:"column:onetime_price" json:"onetime_price"`
-	ResetPrice         *int64    `gorm:"column:reset_price" json:"reset_price"`
-	ResetTrafficMethod *int      `gorm:"column:reset_traffic_method" json:"reset_traffic_method"`
-	CapacityLimit      *int      `gorm:"column:capacity_limit" json:"capacity_limit"`         // 最大可售数量（null=不限制）
-	SoldCount          int       `gorm:"column:sold_count;default:0" json:"sold_count"`       // 已售出数量
-	UpgradeGroupID     *int64    `gorm:"column:upgrade_group_id" json:"upgrade_group_id"`     // 购买后升级到的用户组ID
-	CreatedAt          int64     `gorm:"column:created_at;autoCreateTime" json:"created_at"`
-	UpdatedAt          int64     `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
+	ID                 int64  `gorm:"primaryKey;column:id" json:"id"`
+	GroupID            *int64 `gorm:"column:group_id" json:"group_id"`
+	TransferEnable     int64  `gorm:"column:transfer_enable" json:"transfer_enable"` // 流量配额（字节）
+	Name               string `gorm:"column:name" json:"name"`
+	SpeedLimit         *int   `gorm:"column:speed_limit" json:"speed_limit"`   // 速度限制（Mbps）
+	DeviceLimit        *int   `gorm:"column:device_limit" json:"device_limit"` // 设备数量限制
+	Show               bool   `gorm:"column:show;default:false" json:"show"`
+	Sell               bool   `gorm:"column:sell;default:true" json:"sell"`
+	Renew              bool   `gorm:"column:renew;default:true" json:"renew"`
+	Sort               int    `gorm:"column:sort" json:"sort"`
+	Content            string `gorm:"column:content;type:text" json:"content"`
+	MonthPrice         *int64 `gorm:"column:month_price" json:"month_price"`
+	QuarterPrice       *int64 `gorm:"column:quarter_price" json:"quarter_price"`
+	HalfYearPrice      *int64 `gorm:"column:half_year_price" json:"half_year_price"`
+	YearPrice          *int64 `gorm:"column:year_price" json:"year_price"`
+	TwoYearPrice       *int64 `gorm:"column:two_year_price" json:"two_year_price"`
+	ThreeYearPrice     *int64 `gorm:"column:three_year_price" json:"three_year_price"`
+	OnetimePrice       *int64 `gorm:"column:onetime_price" json:"onetime_price"`
+	ResetPrice         *int64 `gorm:"column:reset_price" json:"reset_price"`
+	ResetTrafficMethod *int   `gorm:"column:reset_traffic_method" json:"reset_traffic_method"`
+	CapacityLimit      *int   `gorm:"column:capacity_limit" json:"capacity_limit"`     // 最大可售数量（null=不限制）
+	SoldCount          int    `gorm:"column:sold_count;default:0" json:"sold_count"`   // 已售出数量
+	UpgradeGroupID     *int64 `gorm:"column:upgrade_group_id" json:"upgrade_group_id"` // 购买后升级到的用户组ID
+	CreatedAt          int64  `gorm:"column:created_at;autoCreateTime" json:"created_at"`
+	UpdatedAt          int64  `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
 }
 
 func (Plan) TableName() string {
@@ -45,13 +45,13 @@ const (
 
 // 订阅周期
 const (
-	PeriodMonthly     = "monthly"
-	PeriodQuarterly   = "quarterly"
-	PeriodHalfYearly  = "half_yearly"
-	PeriodYearly      = "yearly"
-	PeriodTwoYearly   = "two_yearly"
-	PeriodThreeYearly = "three_yearly"
-	PeriodOnetime     = "onetime"
+	PeriodMonthly      = "monthly"
+	PeriodQuarterly    = "quarterly"
+	PeriodHalfYearly   = "half_yearly"
+	PeriodYearly       = "yearly"
+	PeriodTwoYearly    = "two_yearly"
+	PeriodThreeYearly  = "three_yearly"
+	PeriodOnetime      = "onetime"
 	PeriodResetTraffic = "reset_traffic"
 )
 
@@ -122,7 +122,7 @@ func (p *Plan) CanPurchase() bool {
 	if p.CapacityLimit == nil || *p.CapacityLimit <= 0 {
 		return true
 	}
-	
+
 	// 检查是否还有剩余
 	return p.SoldCount < *p.CapacityLimit
 }
@@ -133,7 +133,7 @@ func (p *Plan) GetRemainingCount() int {
 	if p.CapacityLimit == nil || *p.CapacityLimit <= 0 {
 		return -1
 	}
-	
+
 	remaining := *p.CapacityLimit - p.SoldCount
 	if remaining < 0 {
 		return 0

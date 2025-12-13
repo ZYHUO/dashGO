@@ -1,8 +1,8 @@
 package service
 
 import (
-	"fmt"
 	"dashgo/internal/model"
+	"fmt"
 
 	"gorm.io/gorm"
 )
@@ -73,14 +73,14 @@ func (s *AgentVersionService) List(page, pageSize int) ([]model.AgentVersion, in
 	var total int64
 
 	query := s.db.Model(&model.AgentVersion{})
-	
+
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
 
 	offset := (page - 1) * pageSize
 	err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&versions).Error
-	
+
 	return versions, total, err
 }
 
@@ -118,6 +118,6 @@ func (s *AgentVersionService) GetUpdateLogs(hostID int64, page, pageSize int) ([
 
 	offset := (page - 1) * pageSize
 	err := query.Order("created_at DESC").Offset(offset).Limit(pageSize).Find(&logs).Error
-	
+
 	return logs, total, err
 }

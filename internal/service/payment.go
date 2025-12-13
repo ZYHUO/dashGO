@@ -37,12 +37,12 @@ func NewPaymentService(
 
 // PaymentResult 支付结果
 type PaymentResult struct {
-	Type      string `json:"type"`       // redirect, qrcode
-	Data      string `json:"data"`       // URL or QR code content
+	Type      string `json:"type"` // redirect, qrcode
+	Data      string `json:"data"` // URL or QR code content
 	PaymentID int64  `json:"payment_id"`
 }
 
-// GetEnabledPayments 获取启用的支付方�?
+// GetEnabledPayments 获取启用的支付方告
 func (s *PaymentService) GetEnabledPayments() ([]model.Payment, error) {
 	return s.paymentRepo.GetEnabled()
 }
@@ -107,7 +107,7 @@ func (s *PaymentService) HandleCallback(paymentUUID string, params map[string]st
 		}
 	}
 
-	// 获取订单�?
+	// 获取订单告
 	tradeNo := params["out_trade_no"]
 	if tradeNo == "" {
 		return errors.New("trade_no not found")
@@ -118,7 +118,7 @@ func (s *PaymentService) HandleCallback(paymentUUID string, params map[string]st
 	return s.orderSvc.CompleteOrder(tradeNo, callbackNo)
 }
 
-// createEpayPayment 创建易支�?
+// createEpayPayment 创建易支告
 func (s *PaymentService) createEpayPayment(order *model.Order, payment *model.Payment, config map[string]string) (*PaymentResult, error) {
 	apiURL := config["url"]
 	pid := config["pid"]
@@ -159,15 +159,15 @@ func (s *PaymentService) createStripePayment(order *model.Order, payment *model.
 	return nil, errors.New("stripe payment not implemented")
 }
 
-// createAlipayPayment 创建支付宝支�?
+// createAlipayPayment 创建支付宝支告
 func (s *PaymentService) createAlipayPayment(order *model.Order, payment *model.Payment, config map[string]string) (*PaymentResult, error) {
-	// TODO: 实现支付宝支�?
+	// TODO: 实现支付宝支告
 	return nil, errors.New("alipay payment not implemented")
 }
 
-// generateEpaySign 生成易支付签�?
+// generateEpaySign 生成易支付签告
 func (s *PaymentService) generateEpaySign(params map[string]string, key string) string {
-	// �?key 排序
+	// 告key 排序
 	keys := make([]string, 0, len(params))
 	for k := range params {
 		if k != "sign" && k != "sign_type" && params[k] != "" {
@@ -176,7 +176,7 @@ func (s *PaymentService) generateEpaySign(params map[string]string, key string) 
 	}
 	sort.Strings(keys)
 
-	// 拼接字符�?
+	// 拼接字符告
 	var buf strings.Builder
 	for i, k := range keys {
 		if i > 0 {
@@ -193,7 +193,7 @@ func (s *PaymentService) generateEpaySign(params map[string]string, key string) 
 	return hex.EncodeToString(hash[:])
 }
 
-// verifyEpaySign 验证易支付签�?
+// verifyEpaySign 验证易支付签告
 func (s *PaymentService) verifyEpaySign(params map[string]string, key string) bool {
 	sign := params["sign"]
 	if sign == "" {
@@ -202,7 +202,7 @@ func (s *PaymentService) verifyEpaySign(params map[string]string, key string) bo
 	return s.generateEpaySign(params, key) == sign
 }
 
-// buildQuery 构建查询字符�?
+// buildQuery 构建查询字符告
 func (s *PaymentService) buildQuery(params map[string]string) string {
 	values := url.Values{}
 	for k, v := range params {
@@ -211,7 +211,7 @@ func (s *PaymentService) buildQuery(params map[string]string) string {
 	return values.Encode()
 }
 
-// CheckPaymentStatus 检查支付状态（主动查询�?
+// CheckPaymentStatus 检查支付状态（主动查询告
 func (s *PaymentService) CheckPaymentStatus(tradeNo string) (bool, error) {
 	order, err := s.orderRepo.FindByTradeNo(tradeNo)
 	if err != nil {
@@ -242,7 +242,7 @@ func (s *PaymentService) CheckPaymentStatus(tradeNo string) (bool, error) {
 	return false, nil
 }
 
-// queryEpayStatus 查询易支付状�?
+// queryEpayStatus 查询易支付状告
 func (s *PaymentService) queryEpayStatus(order *model.Order, config map[string]string) (bool, error) {
 	apiURL := config["url"] + "/api.php"
 	params := map[string]string{
@@ -263,7 +263,7 @@ func (s *PaymentService) queryEpayStatus(order *model.Order, config map[string]s
 	json.Unmarshal(body, &result)
 
 	if status, ok := result["status"].(float64); ok && status == 1 {
-		// 支付成功，完成订�?
+		// 支付成功，完成订告
 		callbackNo := ""
 		if tn, ok := result["trade_no"].(string); ok {
 			callbackNo = tn
@@ -296,7 +296,7 @@ func (s *PaymentService) PayWithBalance(tradeNo string, userID int64) error {
 		return errors.New("user not found")
 	}
 
-	// 检查余�?
+	// 检查余告
 	if user.Balance < order.TotalAmount {
 		return errors.New("insufficient balance")
 	}

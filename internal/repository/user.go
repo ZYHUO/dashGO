@@ -1,8 +1,8 @@
 package repository
 
 import (
-	"time"
 	"dashgo/internal/model"
+	"time"
 
 	"gorm.io/gorm"
 )
@@ -67,23 +67,23 @@ func (r *UserRepository) FindByUUID(uuid string) (*model.User, error) {
 func (r *UserRepository) GetAvailableUsers(groupIDs []int64) ([]model.User, error) {
 	var users []model.User
 	now := getCurrentTimestamp()
-	
+
 	query := r.db.Where("banned = ?", false)
-	
+
 	// 如果指定了用户组，则过滤
 	if len(groupIDs) > 0 {
 		query = query.Where("group_id IN ?", groupIDs)
 	}
-	
+
 	// 流控检查：
 	// 1. transfer_enable = 0 表示无限流量
 	// 2. u + d < transfer_enable 表示还有剩余流量
 	query = query.Where("(transfer_enable = 0 OR u + d < transfer_enable)")
-	
-	// 过期检�?
+
+	// 过期检查
 	query = query.Where("(expired_at IS NULL OR expired_at = 0 OR expired_at >= ?)", now)
-	
-	// 只选择必要的字�?
+
+	// 只选择必要的字段
 	err := query.Select("id", "uuid", "speed_limit", "device_limit", "u", "d", "transfer_enable").Find(&users).Error
 	return users, err
 }
@@ -94,7 +94,7 @@ func (r *UserRepository) GetAllAvailableUsers() ([]model.User, error) {
 	now := getCurrentTimestamp()
 	err := r.db.
 		Where("banned = ?", false).
-		Where("(transfer_enable = 0 OR u + d < transfer_enable)"). // 流量�?表示无限�?
+		Where("(transfer_enable = 0 OR u + d < transfer_enable)"). // 流量0表示无限制
 		Where("(expired_at IS NULL OR expired_at = 0 OR expired_at >= ?)", now).
 		Select("id", "uuid", "speed_limit", "device_limit", "u", "d", "transfer_enable").
 		Find(&users).Error
@@ -152,7 +152,7 @@ func (r *UserRepository) Count() (int64, error) {
 	return count, err
 }
 
-// CountActive 统计活跃用户�?
+// CountActive 统计活跃用户数
 func (r *UserRepository) CountActive() (int64, error) {
 	var count int64
 	now := time.Now().Unix()
@@ -164,7 +164,7 @@ func (r *UserRepository) CountActive() (int64, error) {
 	return count, err
 }
 
-// CountOnline 统计在线用户�?
+// CountOnline 统计在线用户告
 func (r *UserRepository) CountOnline(seconds int64) (int64, error) {
 	var count int64
 	threshold := time.Now().Unix() - seconds
@@ -204,7 +204,7 @@ func (r *UserRepository) GetUsersNeedTrafficReset() ([]model.User, error) {
 	return users, err
 }
 
-// GetUsersExpiringSoon 获取即将过期的用�?
+// GetUsersExpiringSoon 获取即将过期的用告
 func (r *UserRepository) GetUsersExpiringSoon(days int) ([]model.User, error) {
 	var users []model.User
 	now := time.Now().Unix()
@@ -216,7 +216,7 @@ func (r *UserRepository) GetUsersExpiringSoon(days int) ([]model.User, error) {
 	return users, err
 }
 
-// GetUsersWithHighTrafficUsage 获取流量使用率高的用�?
+// GetUsersWithHighTrafficUsage 获取流量使用率高的用告
 func (r *UserRepository) GetUsersWithHighTrafficUsage(percentage int) ([]model.User, error) {
 	var users []model.User
 	err := r.db.Where("transfer_enable > 0").
@@ -240,7 +240,6 @@ func getCurrentTimestamp() int64 {
 	return time.Now().Unix()
 }
 
-
 // FindByTelegramID 根据 Telegram ID 查找用户
 func (r *UserRepository) FindByTelegramID(telegramID int64) (*model.User, error) {
 	var user model.User
@@ -261,14 +260,12 @@ func (r *UserRepository) GetUsersPaginated(page, pageSize int) ([]model.User, in
 	return users, total, err
 }
 
-
 // CountByRegisterIP 统计 IP 注册数量
 func (r *UserRepository) CountByRegisterIP(ip string) (int64, error) {
 	var count int64
 	err := r.db.Model(&model.User{}).Where("register_ip = ?", ip).Count(&count).Error
 	return count, err
 }
-
 
 // FindByUUIDPrefix 根据 UUID 前缀查找用户
 func (r *UserRepository) FindByUUIDPrefix(prefix string) (*model.User, error) {

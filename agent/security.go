@@ -16,7 +16,7 @@ type SecurityValidator struct {
 // NewSecurityValidator creates a new SecurityValidator instance
 func NewSecurityValidator() *SecurityValidator {
 	return &SecurityValidator{
-		allowedDownloadHosts: []string{}, // 空列表表示允许所�?HTTPS 域名
+		allowedDownloadHosts: []string{}, // 空列表表示允许所告HTTPS 域名
 	}
 }
 
@@ -28,7 +28,7 @@ func NewSecurityValidatorWithWhitelist(allowedHosts []string) *SecurityValidator
 }
 
 // ValidateDownloadURL validates that the download URL is secure
-// Requirements: 5.1 - 验证下载 URL 必须�?HTTPS
+// Requirements: 5.1 - 验证下载 URL 必须告HTTPS
 func (sv *SecurityValidator) ValidateDownloadURL(downloadURL string) error {
 	if downloadURL == "" {
 		return fmt.Errorf("download URL cannot be empty")
@@ -68,7 +68,7 @@ func (sv *SecurityValidator) ValidateDownloadURL(downloadURL string) error {
 }
 
 // ValidateFilePath validates that the file path is safe and prevents path traversal
-// Requirements: 5.1 - 验证文件路径，防止路径遍�?
+// Requirements: 5.1 - 验证文件路径，防止路径遍告
 func (sv *SecurityValidator) ValidateFilePath(filePath string) error {
 	if filePath == "" {
 		return fmt.Errorf("file path cannot be empty")
@@ -121,7 +121,7 @@ func (sv *SecurityValidator) ValidateFilePermissions(filePath string) error {
 }
 
 // ValidateToken validates that the authentication token is present and valid
-// Requirements: 5.1 - 添加 Token 认证检�?
+// Requirements: 5.1 - 添加 Token 认证检告
 func (sv *SecurityValidator) ValidateToken(token string) error {
 	if token == "" {
 		return fmt.Errorf("authentication token cannot be empty")

@@ -61,7 +61,7 @@ func (s *HostService) GetByID(id int64) (*model.Host, error) {
 	return s.hostRepo.FindByID(id)
 }
 
-// GetAll 获取所有主�?
+// GetAll 获取所有主机
 func (s *HostService) GetAll() ([]model.Host, error) {
 	return s.hostRepo.GetAll()
 }
@@ -104,7 +104,7 @@ func (s *HostService) Delete(hostID int64) error {
 	if err := s.serverRepo.UnbindFromHost(hostID); err != nil {
 		return err
 	}
-	// 删除主机下的所�?ServerNode（如果有的话�?
+	// 删除主机下的所有ServerNode（如果有的话）
 	if err := s.nodeRepo.DeleteByHostID(hostID); err != nil {
 		return err
 	}
@@ -134,7 +134,7 @@ func (s *HostService) DeleteNode(nodeID int64) error {
 	return s.nodeRepo.Delete(nodeID)
 }
 
-// GetNodesByHostID 获取主机下的所有节�?
+// GetNodesByHostID 获取主机下的所有节点
 func (s *HostService) GetNodesByHostID(hostID int64) ([]model.ServerNode, error) {
 	return s.nodeRepo.FindByHostID(hostID)
 }
@@ -147,9 +147,9 @@ func (s *HostService) GetNodeByID(nodeID int64) (*model.ServerNode, error) {
 // GenerateSingBoxConfig 生成 sing-box 配置
 func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{}, error) {
 	inbounds := make([]map[string]interface{}, 0)
-	processedServerIDs := make(map[int64]bool) // 记录已处理的 Server ID，避免重�?
+	processedServerIDs := make(map[int64]bool) // 记录已处理的 Server ID，避免重复
 
-	// 1. 从绑定到主机�?Server 获取配置
+	// 1. 从绑定到主机的Server 获取配置
 	servers, err := s.serverRepo.GetByHostID(hostID)
 	if err == nil {
 		for _, server := range servers {
@@ -164,7 +164,7 @@ func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{
 		}
 	}
 
-	// 2. �?ServerNode 获取配置（兼容旧逻辑�?
+	// 2. 告ServerNode 获取配置（兼容旧逻辑告
 	nodes, err := s.nodeRepo.FindByHostID(hostID)
 	if err == nil {
 		for _, node := range nodes {
@@ -187,7 +187,7 @@ func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{
 		{"type": "block", "tag": "block"},
 	}
 
-	// 如果配置�?SOCKS 出口，添�?SOCKS outbound 并设置为默认出口
+	// 如果配置告SOCKS 出口，添告SOCKS outbound 并设置为默认出口
 	finalOutbound := "direct"
 	if host.SocksOutbound != nil && *host.SocksOutbound != "" {
 		socksOutbound := s.parseSocksOutbound(*host.SocksOutbound)
@@ -208,7 +208,7 @@ func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{
 			"rules": []map[string]interface{}{
 				{"ip_is_private": true, "outbound": "block"},
 			},
-			"final": finalOutbound, // 使用配置的默认出�?
+			"final": finalOutbound, // 使用配置的默认出告
 		},
 		"experimental": map[string]interface{}{
 			"clash_api": map[string]interface{}{
@@ -220,7 +220,7 @@ func (s *HostService) GenerateSingBoxConfig(hostID int64) (map[string]interface{
 	return config, nil
 }
 
-// buildInboundFromServer �?Server 构建 inbound 配置
+// buildInboundFromServer 告Server 构建 inbound 配置
 func (s *HostService) buildInboundFromServer(server *model.Server) map[string]interface{} {
 	tag := server.Type + "-in-" + fmt.Sprintf("%d", server.ID)
 
@@ -236,7 +236,7 @@ func (s *HostService) buildInboundFromServer(server *model.Server) map[string]in
 		if k == "tls_settings" || k == "network_settings" || k == "tls" {
 			continue
 		}
-		// sing-box 使用 method 而不�?cipher
+		// sing-box 使用 method 而不告cipher
 		if k == "cipher" {
 			inbound["method"] = v
 			continue
@@ -244,7 +244,7 @@ func (s *HostService) buildInboundFromServer(server *model.Server) map[string]in
 		inbound[k] = v
 	}
 
-	// Shadowsocks 需要特殊处�?
+	// Shadowsocks 需要特殊处告
 	if server.Type == model.ServerTypeShadowsocks {
 		// 获取加密方式
 		cipher := ""
@@ -253,12 +253,12 @@ func (s *HostService) buildInboundFromServer(server *model.Server) map[string]in
 		} else if c, ok := server.ProtocolSettings["cipher"].(string); ok {
 			cipher = c
 		}
-		
-		// 确保 method 字段存在，删�?cipher 字段
+
+		// 确保 method 字段存在，删告cipher 字段
 		inbound["method"] = cipher
 		delete(inbound, "cipher")
-		
-		// �?SS2022 生成服务器密�?
+
+		// 告SS2022 生成服务器密告
 		if strings.HasPrefix(cipher, "2022-") {
 			keySize := 16
 			if cipher == "2022-blake3-aes-256-gcm" || cipher == "2022-blake3-chacha20-poly1305" {
@@ -278,7 +278,7 @@ func (s *HostService) buildInboundFromServer(server *model.Server) map[string]in
 		inbound["transport"] = transport
 	}
 
-	// 用户列表初始化为�?
+	// 用户列表初始化为告
 	switch server.Type {
 	case model.ServerTypeVmess, model.ServerTypeVless, model.ServerTypeTrojan, model.ServerTypeHysteria, model.ServerTypeTuic:
 		inbound["users"] = []interface{}{}
@@ -291,7 +291,7 @@ func (s *HostService) buildInboundFromServer(server *model.Server) map[string]in
 
 // buildInbound 构建 inbound 配置
 func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{} {
-	// 使用节点自身的配�?
+	// 使用节点自身的配告
 	protocolSettings := node.ProtocolSettings
 	tlsSettings := node.TLSSettings
 	transportSettings := node.TransportSettings
@@ -313,7 +313,7 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 		if k == "tls_settings" || k == "network_settings" || k == "tls" {
 			continue
 		}
-		// sing-box 使用 method 而不�?cipher
+		// sing-box 使用 method 而不告cipher
 		if k == "cipher" {
 			inbound["method"] = v
 			continue
@@ -321,7 +321,7 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 		inbound[k] = v
 	}
 
-	// Shadowsocks 需要特殊处�?
+	// Shadowsocks 需要特殊处告
 	if nodeType == model.NodeTypeShadowsocks {
 		// 获取加密方式
 		cipher := ""
@@ -330,13 +330,13 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 		} else if c, ok := protocolSettings["cipher"].(string); ok {
 			cipher = c
 		}
-		
+
 		// 确保 method 字段存在
 		inbound["method"] = cipher
-		// 删除可能存在�?cipher 字段（sing-box 不认识）
+		// 删除可能存在告cipher 字段（sing-box 不认识）
 		delete(inbound, "cipher")
-		
-		// �?SS2022 生成服务器密�?
+
+		// 告SS2022 生成服务器密告
 		if strings.HasPrefix(cipher, "2022-") {
 			keySize := 16
 			if cipher == "2022-blake3-aes-256-gcm" || cipher == "2022-blake3-chacha20-poly1305" {
@@ -356,7 +356,7 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 		inbound["transport"] = transportSettings
 	}
 
-	// 用户列表初始化为�?
+	// 用户列表初始化为告
 	switch nodeType {
 	case model.NodeTypeVMess, model.NodeTypeVLESS, model.NodeTypeTrojan, model.NodeTypeHysteria2, model.NodeTypeTUIC:
 		inbound["users"] = []interface{}{}
@@ -365,7 +365,7 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 	case model.NodeTypeAnyTLS:
 		inbound["users"] = []interface{}{}
 	case model.NodeTypeShadowTLS:
-		// ShadowTLS 需要特殊处�?
+		// ShadowTLS 需要特殊处告
 		s.buildShadowTLSInbound(inbound, node)
 	case model.NodeTypeNaive:
 		inbound["users"] = []interface{}{}
@@ -377,15 +377,15 @@ func (s *HostService) buildInbound(node *model.ServerNode) map[string]interface{
 // buildShadowTLSInbound 构建 ShadowTLS inbound
 func (s *HostService) buildShadowTLSInbound(inbound map[string]interface{}, node *model.ServerNode) {
 	ps := node.ProtocolSettings
-	
+
 	// ShadowTLS v3 配置
 	version := 3
 	if v, ok := ps["version"].(float64); ok {
 		version = int(v)
 	}
 	inbound["version"] = version
-	
-	// 握手服务�?
+
+	// 握手服务告
 	handshakeServer := "addons.mozilla.org"
 	if hs, ok := ps["handshake_server"].(string); ok && hs != "" {
 		handshakeServer = hs
@@ -398,26 +398,26 @@ func (s *HostService) buildShadowTLSInbound(inbound map[string]interface{}, node
 		"server":      handshakeServer,
 		"server_port": handshakePort,
 	}
-	
+
 	// 严格模式
 	if strictMode, ok := ps["strict_mode"].(bool); ok {
 		inbound["strict_mode"] = strictMode
 	} else {
 		inbound["strict_mode"] = true
 	}
-	
+
 	// 用户列表
 	inbound["users"] = []interface{}{}
-	
+
 	// 删除不需要的字段
 	delete(inbound, "handshake_server")
 	delete(inbound, "handshake_port")
 	delete(inbound, "detour_method")
 }
 
-// GetUsersForNode 获取节点可用的用户列�?
+// GetUsersForNode 获取节点可用的用户列告
 func (s *HostService) GetUsersForNode(node *model.ServerNode) ([]map[string]interface{}, error) {
-	// 使用节点自身的配�?
+	// 使用节点自身的配告
 	groupIDs := node.GetGroupIDsAsInt64()
 	nodeType := node.Type
 	protocolSettings := node.ProtocolSettings
@@ -426,7 +426,7 @@ func (s *HostService) GetUsersForNode(node *model.ServerNode) ([]map[string]inte
 	var err error
 
 	if len(groupIDs) == 0 {
-		// 如果没有设置组，获取所有可用用�?
+		// 如果没有设置组，获取所有可用用告
 		users, err = s.userRepo.GetAllAvailableUsers()
 	} else {
 		users, err = s.userRepo.GetAvailableUsers(groupIDs)
@@ -441,10 +441,10 @@ func (s *HostService) GetUsersForNode(node *model.ServerNode) ([]map[string]inte
 		userConfig := map[string]interface{}{}
 
 		// 根据协议类型设置用户配置
-		// sing-box 不同协议的用户字段不�?
+		// sing-box 不同协议的用户字段不告
 		switch nodeType {
 		case model.NodeTypeShadowsocks:
-			// SS 用户只需�?name �?password
+			// SS 用户只需告name 告password
 			userConfig["name"] = user.UUID[:8]
 			userConfig["password"] = s.getSS2022UserKey(protocolSettings, &user)
 		case model.NodeTypeVMess, model.NodeTypeVLESS:
@@ -486,7 +486,7 @@ func (s *HostService) generateSS2022Password(node *model.ServerNode, user *model
 }
 
 // generateSS2022PasswordWithConfig 根据配置生成 SS2022 密码
-// 返回格式: serverKey:userKey (用于客户端订�?
+// 返回格式: serverKey:userKey (用于客户端订告
 func (s *HostService) generateSS2022PasswordWithConfig(ps model.JSONMap, createdAt int64, user *model.User) string {
 	cipher := ""
 	if c, ok := ps["method"].(string); ok {
@@ -498,7 +498,7 @@ func (s *HostService) generateSS2022PasswordWithConfig(ps model.JSONMap, created
 	return utils.GenerateSS2022Password(cipher, createdAt, user.UUID)
 }
 
-// getSS2022UserKey 获取 SS2022 用户密钥 (用于服务端用户列�?
+// getSS2022UserKey 获取 SS2022 用户密钥 (用于服务端用户列告
 func (s *HostService) getSS2022UserKey(ps model.JSONMap, user *model.User) string {
 	cipher := ""
 	if c, ok := ps["method"].(string); ok {
@@ -615,11 +615,11 @@ func (s *HostService) GetDefaultNodeConfig(nodeType string) map[string]interface
 			"name":        "ShadowTLS节点",
 			"listen_port": 443,
 			"protocol_settings": map[string]interface{}{
-				"version":           3,
-				"handshake_server":  "addons.mozilla.org",
-				"handshake_port":    443,
-				"strict_mode":       true,
-				"detour_method":     "2022-blake3-aes-128-gcm",
+				"version":          3,
+				"handshake_server": "addons.mozilla.org",
+				"handshake_port":   443,
+				"strict_mode":      true,
+				"detour_method":    "2022-blake3-aes-128-gcm",
 			},
 		}
 	case model.NodeTypeNaive:
@@ -639,24 +639,24 @@ func (s *HostService) GetDefaultNodeConfig(nodeType string) map[string]interface
 	}
 }
 
-// GetAllNodes 获取所有节�?
+// GetAllNodes 获取所有节告
 func (s *HostService) GetAllNodes() ([]model.ServerNode, error) {
 	return s.nodeRepo.GetAll()
 }
 
 // AgentConfig Agent 配置
 type AgentConfig struct {
-	SingBoxConfig map[string]interface{}   `json:"singbox_config"`
-	Nodes         []AgentNodeConfig        `json:"nodes"`
+	SingBoxConfig map[string]interface{} `json:"singbox_config"`
+	Nodes         []AgentNodeConfig      `json:"nodes"`
 }
 
 // AgentNodeConfig Agent 节点配置
 type AgentNodeConfig struct {
-	ID       int64                    `json:"id"`
-	Type     string                   `json:"type"`
-	Port     int                      `json:"port"`
-	Tag      string                   `json:"tag"`
-	Users    []map[string]interface{} `json:"users"`
+	ID    int64                    `json:"id"`
+	Type  string                   `json:"type"`
+	Port  int                      `json:"port"`
+	Tag   string                   `json:"tag"`
+	Users []map[string]interface{} `json:"users"`
 }
 
 // GetAgentConfig 获取 Agent 完整配置
@@ -667,9 +667,9 @@ func (s *HostService) GetAgentConfig(hostID int64) (*AgentConfig, error) {
 	}
 
 	nodeConfigs := make([]AgentNodeConfig, 0)
-	processedServerIDs := make(map[int64]bool) // 记录已处理的 Server ID，避免重�?
+	processedServerIDs := make(map[int64]bool) // 记录已处理的 Server ID，避免重告
 
-	// 1. 从绑定到主机�?Server 获取配置
+	// 1. 从绑定到主机告Server 获取配置
 	servers, err := s.serverRepo.GetByHostID(hostID)
 	if err == nil {
 		for _, server := range servers {
@@ -688,7 +688,7 @@ func (s *HostService) GetAgentConfig(hostID int64) (*AgentConfig, error) {
 		}
 	}
 
-	// 2. �?ServerNode 获取配置（兼容旧逻辑�?
+	// 2. 告ServerNode 获取配置（兼容旧逻辑告
 	nodes, err := s.nodeRepo.FindByHostID(hostID)
 	if err == nil {
 		for _, node := range nodes {
@@ -709,7 +709,7 @@ func (s *HostService) GetAgentConfig(hostID int64) (*AgentConfig, error) {
 	}, nil
 }
 
-// GetUsersForServer 获取 Server 可用的用户列�?
+// GetUsersForServer 获取 Server 可用的用户列告
 func (s *HostService) GetUsersForServer(server *model.Server) ([]map[string]interface{}, error) {
 	groupIDs := server.GetGroupIDsAsInt64()
 
@@ -730,7 +730,7 @@ func (s *HostService) GetUsersForServer(server *model.Server) ([]map[string]inte
 	for _, user := range users {
 		userConfig := map[string]interface{}{}
 
-		// sing-box 不同协议的用户字段不�?
+		// sing-box 不同协议的用户字段不告
 		switch server.Type {
 		case model.ServerTypeShadowsocks:
 			userConfig["name"] = user.UUID[:8]
@@ -752,7 +752,7 @@ func (s *HostService) GetUsersForServer(server *model.Server) ([]map[string]inte
 	return result, nil
 }
 
-// getSS2022UserKeyForServer 获取 Server �?SS2022 用户密钥 (仅用户密钥，用于服务�?
+// getSS2022UserKeyForServer 获取 Server 告SS2022 用户密钥 (仅用户密钥，用于服务告
 func (s *HostService) getSS2022UserKeyForServer(server *model.Server, user *model.User) string {
 	cipher := ""
 	if c, ok := server.ProtocolSettings["method"].(string); ok {
@@ -764,20 +764,20 @@ func (s *HostService) getSS2022UserKeyForServer(server *model.Server, user *mode
 	return utils.GetSS2022UserPassword(cipher, user.UUID)
 }
 
-// ToJSON 转换�?JSON
+// ToJSON 转换告JSON
 func (c *AgentConfig) ToJSON() string {
 	data, _ := json.MarshalIndent(c, "", "  ")
 	return string(data)
 }
 
 // parseSocksOutbound 解析 SOCKS 出口配置
-// 支持格式�?
+// 支持格式告
 //   - socks5://host:port
 //   - socks5://user:pass@host:port
 func (s *HostService) parseSocksOutbound(socksURL string) map[string]interface{} {
-	// 简单解�?SOCKS URL
+	// 简单解告SOCKS URL
 	// 格式：socks5://[user:pass@]host:port
-	
+
 	if socksURL == "" {
 		return nil
 	}
@@ -808,7 +808,7 @@ func (s *HostService) parseSocksOutbound(socksURL string) map[string]interface{}
 		server = socksURL
 	}
 
-	// 解析服务器地址和端�?
+	// 解析服务器地址和端告
 	if strings.Contains(server, ":") {
 		parts := strings.SplitN(server, ":", 2)
 		outbound["server"] = parts[0]

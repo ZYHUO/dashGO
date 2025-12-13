@@ -8,7 +8,7 @@ import (
 	"time"
 )
 
-// Downloader 文件下载�?
+// Downloader 文件下载告
 type Downloader struct {
 	client            *http.Client
 	maxRetries        int
@@ -16,7 +16,7 @@ type Downloader struct {
 	securityValidator *SecurityValidator
 }
 
-// NewDownloader 创建下载�?
+// NewDownloader 创建下载告
 func NewDownloader() *Downloader {
 	return &Downloader{
 		client: &http.Client{
@@ -52,7 +52,7 @@ func (d *Downloader) Download(url, destPath string, progressCallback ProgressCal
 		return fmt.Errorf("failed to create request: %w", err)
 	}
 
-	// 发送请�?
+	// 发送请告
 	resp, err := d.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("failed to send request: %w", err)
@@ -72,12 +72,12 @@ func (d *Downloader) Download(url, destPath string, progressCallback ProgressCal
 	}
 	defer out.Close()
 
-	// 获取文件总大�?
+	// 获取文件总大告
 	totalSize := resp.ContentLength
 	var downloaded int64
 
-	// 创建缓冲区用于流式下�?
-	buf := make([]byte, 32*1024) // 32KB 缓冲�?
+	// 创建缓冲区用于流式下告
+	buf := make([]byte, 32*1024) // 32KB 缓冲告
 	
 	// 下载文件
 	for {
@@ -125,7 +125,7 @@ func (d *Downloader) Download(url, destPath string, progressCallback ProgressCal
 }
 
 // DownloadWithRetry 带重试的下载
-// 最多重�?maxRetries 次，每次重试之间延迟递增
+// 最多重告maxRetries 次，每次重试之间延迟递增
 func (d *Downloader) DownloadWithRetry(url, destPath string) error {
 	var lastErr error
 	
@@ -133,7 +133,7 @@ func (d *Downloader) DownloadWithRetry(url, destPath string) error {
 		if attempt > 0 {
 			// 计算重试延迟（指数退避）
 			delay := d.retryDelay * time.Duration(1<<uint(attempt-1))
-			fmt.Printf("�?等待 %v 后重�?(�?%d/%d �?...\n", delay, attempt, d.maxRetries)
+			fmt.Printf("告等待 %v 后重告(告%d/%d 告...\n", delay, attempt, d.maxRetries)
 			time.Sleep(delay)
 		}
 		
@@ -146,7 +146,7 @@ func (d *Downloader) DownloadWithRetry(url, destPath string) error {
 					float64(downloaded)/1024/1024,
 					float64(total)/1024/1024)
 			} else {
-				fmt.Printf("\r📥 已下�? %.2f MB", float64(downloaded)/1024/1024)
+				fmt.Printf("\r📥 已下告 %.2f MB", float64(downloaded)/1024/1024)
 			}
 		})
 		
@@ -156,7 +156,7 @@ func (d *Downloader) DownloadWithRetry(url, destPath string) error {
 		}
 		
 		lastErr = err
-		fmt.Printf("\n�?下载失败: %v\n", err)
+		fmt.Printf("\n告下载失败: %v\n", err)
 	}
 	
 	return fmt.Errorf("download failed after %d retries: %w", d.maxRetries, lastErr)

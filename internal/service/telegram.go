@@ -94,7 +94,6 @@ type InlineKeyboardButton struct {
 	URL          string `json:"url,omitempty"`
 }
 
-
 // SendMessage 发送消和
 func (s *TelegramService) SendMessage(chatID int64, text string, parseMode string) error {
 	if s.botToken == "" {
@@ -253,40 +252,40 @@ func (s *TelegramService) cmdBind(msg *TelegramMessage, email string) error {
 func (s *TelegramService) cmdUnbind(msg *TelegramMessage) error {
 	user, err := s.userRepo.FindByTelegramID(msg.From.ID)
 	if err != nil {
-		return s.SendMarkdown(msg.Chat.ID, "和未绑定账和)
+		return s.SendMarkdown(msg.Chat.ID, "您未绑定账户")
 	}
 	keyboard := &InlineKeyboard{
 		InlineKeyboard: [][]InlineKeyboardButton{
 			{{Text: "和确认解绑", CallbackData: "unbind:confirm"}, {Text: "和取消", CallbackData: "cancel"}},
 		},
 	}
-	return s.SendMessageWithKeyboard(msg.Chat.ID, fmt.Sprintf("⚠️ 确定解绑 `%s`和, user.Email), keyboard)
+	return s.SendMessageWithKeyboard(msg.Chat.ID, fmt.Sprintf("⚠️ 确定解绑 `%s`？", user.Email), keyboard)
 }
 
 func (s *TelegramService) doUnbind(telegramID int64, chatID int64) error {
 	user, err := s.userRepo.FindByTelegramID(telegramID)
 	if err != nil {
-		return s.SendMarkdown(chatID, "和未绑定账和)
+		return s.SendMarkdown(chatID, "您未绑定账户")
 	}
 	user.TelegramID = nil
 	if err := s.userRepo.Update(user); err != nil {
-		return s.SendMarkdown(chatID, "和解绑失败")
+		return s.SendMarkdown(chatID, "解绑失败")
 	}
-	return s.SendMarkdown(chatID, "和解绑成功和)
+	return s.SendMarkdown(chatID, "解绑成功")
 }
 
 func (s *TelegramService) cmdInfo(msg *TelegramMessage) error {
 	user, err := s.userRepo.FindByTelegramID(msg.From.ID)
 	if err != nil {
-		return s.SendMarkdown(msg.Chat.ID, "和请先 /bind <邮箱> 绑定")
+		return s.SendMarkdown(msg.Chat.ID, "请先 /bind <邮箱> 绑定")
 	}
-	status := "和正常"
+	status := "✅ 正常"
 	if user.Banned {
 		status = "🚫 封禁"
 	} else if !user.IsActive() {
 		status = "⏸️ 过期"
 	}
-	planName := "无套和
+	planName := "无套餐"
 	if user.Plan != nil {
 		planName = user.Plan.Name
 	}
@@ -294,7 +293,7 @@ func (s *TelegramService) cmdInfo(msg *TelegramMessage) error {
 	if user.ExpiredAt != nil {
 		expireStr = time.Unix(*user.ExpiredAt, 0).Format("2006-01-02")
 	}
-	text := fmt.Sprintf("👤 *账户信息*\n\n📧 `%s`\n📊 %s\n💎 %s\n📅 %s\n\n📈 已用和s\n📦 总量和s\n💰 余额和.2f和,
+	text := fmt.Sprintf("👤 *账户信息*\n\n📧 `%s`\n📊 %s\n💎 %s\n📅 %s\n\n📈 已用：%s\n📦 总量：%s\n💰 余额：%.2f元",
 		user.Email, status, planName, expireStr, FormatBytes(user.U+user.D), FormatBytes(user.TransferEnable), float64(user.Balance)/100)
 	return s.SendMarkdown(msg.Chat.ID, text)
 }
@@ -310,7 +309,7 @@ func (s *TelegramService) cmdTraffic(msg *TelegramMessage) error {
 	if total > 0 {
 		percent = float64(used) / float64(total) * 100
 	}
-	text := fmt.Sprintf("📊 *流量*\n\n⬆️ 上传和s\n⬇️ 下载和s\n📈 已用和s (%.1f%%)\n📦 总量和s",
+	text := fmt.Sprintf("📊 *流量*\n\n⬆️ 上传：%s\n⬇️ 下载：%s\n📈 已用：%s (%.1f%%)\n📦 总量：%s",
 		FormatBytes(user.U), FormatBytes(user.D), FormatBytes(used), percent, FormatBytes(total))
 	return s.SendMarkdown(msg.Chat.ID, text)
 }
@@ -336,7 +335,7 @@ func (s *TelegramService) cmdCheckin(msg *TelegramMessage) error {
 		lastCheckin = time.Unix(*user.LastCheckinAt, 0).Format("2006-01-02")
 	}
 	if lastCheckin == today {
-		return s.SendMarkdown(msg.Chat.ID, "⚠️ 今天已签到，明天再来和)
+		return s.SendMarkdown(msg.Chat.ID, "⚠️ 今天已签到，明天再来吧！")
 	}
 	reward := int64(100+time.Now().UnixNano()%400) * 1024 * 1024
 	now := time.Now().Unix()
@@ -402,7 +401,7 @@ func (s *TelegramService) NotifyExpire(user *model.User, daysLeft int) error {
 	if user.TelegramID == nil || *user.TelegramID == 0 {
 		return nil
 	}
-	text := fmt.Sprintf("和*订阅到期提醒*\n\n您的订阅将在 *%d 和后到和, daysLeft)
+	text := fmt.Sprintf("⏰ *订阅到期提醒*\n\n您的订阅将在 *%d 天*后到期，请及时续费！", daysLeft)
 	return s.SendMarkdown(*user.TelegramID, text)
 }
 
@@ -424,7 +423,7 @@ func (s *TelegramService) NotifyNewTicket(subject, userEmail string) error {
 	if chatID == 0 {
 		return nil
 	}
-	text := fmt.Sprintf("🎫 *新工和\n\n用户和s\n主题和s", userEmail, subject)
+	text := fmt.Sprintf("🎫 *新工单*\n\n用户：%s\n主题：%s", userEmail, subject)
 	return s.SendMarkdown(chatID, text)
 }
 

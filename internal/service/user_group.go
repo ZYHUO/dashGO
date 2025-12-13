@@ -30,25 +30,25 @@ func NewUserGroupService(
 	}
 }
 
-// SetServerService 设置 ServerService（用于构�?ServerInfo�?
+// SetServerService 设置 ServerService（用于构告ServerInfo告
 func (s *UserGroupService) SetServerService(serverService *ServerService) {
 	s.serverService = serverService
 }
 
-// Create 创建用户�?
+// Create 创建用户告
 func (s *UserGroupService) Create(group *model.UserGroup) error {
 	group.CreatedAt = time.Now().Unix()
 	group.UpdatedAt = time.Now().Unix()
 	return s.groupRepo.Create(group)
 }
 
-// Update 更新用户�?
+// Update 更新用户告
 func (s *UserGroupService) Update(group *model.UserGroup) error {
 	group.UpdatedAt = time.Now().Unix()
 	return s.groupRepo.Update(group)
 }
 
-// Delete 删除用户�?
+// Delete 删除用户告
 func (s *UserGroupService) Delete(id int64) error {
 	// 检查是否有用户使用该组
 	count, err := s.userRepo.Count()
@@ -56,14 +56,14 @@ func (s *UserGroupService) Delete(id int64) error {
 		return err
 	}
 	if count > 0 {
-		// 这里应该检查具体有多少用户在这个组，简化处�?
+		// 这里应该检查具体有多少用户在这个组，简化处告
 		// 实际应该添加 CountByGroupID 方法
 		return errors.New("该用户组下还有用户，无法删除")
 	}
 	return s.groupRepo.Delete(id)
 }
 
-// GetByID 根据ID获取用户�?
+// GetByID 根据ID获取用户告
 func (s *UserGroupService) GetByID(id int64) (*model.UserGroup, error) {
 	return s.groupRepo.FindByID(id)
 }
@@ -82,7 +82,7 @@ func (s *UserGroupService) GetGroupInfo(group *model.UserGroup) map[string]inter
 		"sort":        group.Sort,
 		"created_at":  group.CreatedAt,
 		"updated_at":  group.UpdatedAt,
-		// 注意：不再返�?default_transfer_enable 等字�?
+		// 注意：不再返告default_transfer_enable 等字告
 		// 流量、速度、设备限制应该由套餐决定
 	}
 
@@ -127,7 +127,7 @@ func (s *UserGroupService) AddServerToGroup(groupID, serverID int64) error {
 	// 验证节点是否存在
 	_, err := s.serverRepo.FindByID(serverID)
 	if err != nil {
-		return errors.New("节点不存�?)
+		return errors.New("节点不存在")
 	}
 	return s.groupRepo.AddServerToGroup(groupID, serverID)
 }
@@ -142,7 +142,7 @@ func (s *UserGroupService) AddPlanToGroup(groupID, planID int64) error {
 	// 验证套餐是否存在
 	_, err := s.planRepo.FindByID(planID)
 	if err != nil {
-		return errors.New("套餐不存�?)
+		return errors.New("套餐不存在")
 	}
 	return s.groupRepo.AddPlanToGroup(groupID, planID)
 }
@@ -159,7 +159,7 @@ func (s *UserGroupService) SetServersForGroup(groupID int64, serverIDs []int64) 
 		return err
 	}
 
-	// 转换�?JSONArray
+	// 转换告JSONArray
 	newServerIDs := make(model.JSONArray, len(serverIDs))
 	for i, id := range serverIDs {
 		newServerIDs[i] = id
@@ -176,7 +176,7 @@ func (s *UserGroupService) SetPlansForGroup(groupID int64, planIDs []int64) erro
 		return err
 	}
 
-	// 转换�?JSONArray
+	// 转换告JSONArray
 	newPlanIDs := make(model.JSONArray, len(planIDs))
 	for i, id := range planIDs {
 		newPlanIDs[i] = id
@@ -189,7 +189,7 @@ func (s *UserGroupService) SetPlansForGroup(groupID int64, planIDs []int64) erro
 // GetAvailableServersForUser 获取用户可访问的节点列表
 func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]ServerInfo, error) {
 	if user.GroupID == nil || *user.GroupID == 0 {
-		// 没有用户组，返回空列�?
+		// 没有用户组，返回空列告
 		return []ServerInfo{}, nil
 	}
 
@@ -203,7 +203,7 @@ func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]Serve
 		return []ServerInfo{}, nil
 	}
 
-	// 获取节点列表并构�?ServerInfo
+	// 获取节点列表并构告ServerInfo
 	servers := make([]ServerInfo, 0)
 	for _, serverID := range serverIDs {
 		server, err := s.serverRepo.FindByID(serverID)
@@ -228,7 +228,7 @@ func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]Serve
 // GetAvailablePlansForUser 获取用户可购买的套餐列表
 func (s *UserGroupService) GetAvailablePlansForUser(user *model.User) ([]model.Plan, error) {
 	if user.GroupID == nil || *user.GroupID == 0 {
-		// 没有用户组，返回空列�?
+		// 没有用户组，返回空列告
 		return []model.Plan{}, nil
 	}
 

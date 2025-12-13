@@ -10,11 +10,11 @@ import (
 
 // SingBoxConfig sing-box 配置结构
 type SingBoxConfig struct {
-	Log       *LogConfig       `json:"log,omitempty"`
-	DNS       *DNSConfig       `json:"dns,omitempty"`
-	Inbounds  []Inbound        `json:"inbounds,omitempty"`
-	Outbounds []Outbound       `json:"outbounds"`
-	Route     *RouteConfig     `json:"route,omitempty"`
+	Log       *LogConfig   `json:"log,omitempty"`
+	DNS       *DNSConfig   `json:"dns,omitempty"`
+	Inbounds  []Inbound    `json:"inbounds,omitempty"`
+	Outbounds []Outbound   `json:"outbounds"`
+	Route     *RouteConfig `json:"route,omitempty"`
 }
 
 type LogConfig struct {
@@ -39,24 +39,24 @@ type Inbound struct {
 }
 
 type Outbound struct {
-	Type           string                 `json:"type"`
-	Tag            string                 `json:"tag"`
-	Server         string                 `json:"server,omitempty"`
-	ServerPort     int                    `json:"server_port,omitempty"`
-	UUID           string                 `json:"uuid,omitempty"`
-	Password       string                 `json:"password,omitempty"`
-	Method         string                 `json:"method,omitempty"`
-	TLS            *TLSConfig             `json:"tls,omitempty"`
-	Transport      map[string]interface{} `json:"transport,omitempty"`
-	Flow           string                 `json:"flow,omitempty"`
-	Outbounds      []string               `json:"outbounds,omitempty"`
+	Type       string                 `json:"type"`
+	Tag        string                 `json:"tag"`
+	Server     string                 `json:"server,omitempty"`
+	ServerPort int                    `json:"server_port,omitempty"`
+	UUID       string                 `json:"uuid,omitempty"`
+	Password   string                 `json:"password,omitempty"`
+	Method     string                 `json:"method,omitempty"`
+	TLS        *TLSConfig             `json:"tls,omitempty"`
+	Transport  map[string]interface{} `json:"transport,omitempty"`
+	Flow       string                 `json:"flow,omitempty"`
+	Outbounds  []string               `json:"outbounds,omitempty"`
 	// Hysteria specific
-	UpMbps         int                    `json:"up_mbps,omitempty"`
-	DownMbps       int                    `json:"down_mbps,omitempty"`
-	Obfs           interface{}            `json:"obfs,omitempty"`
+	UpMbps   int         `json:"up_mbps,omitempty"`
+	DownMbps int         `json:"down_mbps,omitempty"`
+	Obfs     interface{} `json:"obfs,omitempty"`
 	// TUIC specific
-	CongestionControl string               `json:"congestion_control,omitempty"`
-	UDPRelayMode      string               `json:"udp_relay_mode,omitempty"`
+	CongestionControl string `json:"congestion_control,omitempty"`
+	UDPRelayMode      string `json:"udp_relay_mode,omitempty"`
 }
 
 type TLSConfig struct {
@@ -80,9 +80,9 @@ type Reality struct {
 }
 
 type RouteConfig struct {
-	Rules        []RouteRule `json:"rules,omitempty"`
-	Final        string      `json:"final,omitempty"`
-	AutoDetect   bool        `json:"auto_detect_interface,omitempty"`
+	Rules      []RouteRule `json:"rules,omitempty"`
+	Final      string      `json:"final,omitempty"`
+	AutoDetect bool        `json:"auto_detect_interface,omitempty"`
 }
 
 type RouteRule struct {
@@ -93,7 +93,7 @@ type RouteRule struct {
 // GenerateSingBoxConfig 生成 sing-box 配置
 func GenerateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[string]interface{} {
 	config := getDefaultSingBoxConfig()
-	
+
 	outbounds := config["outbounds"].([]interface{})
 	proxyTags := []string{}
 
@@ -105,15 +105,15 @@ func GenerateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[s
 		}
 	}
 
-	// 更新各个分组�?outbounds
+	// 更新各个分组告outbounds
 	for i, ob := range outbounds {
 		if m, ok := ob.(map[string]interface{}); ok {
 			tag, _ := m["tag"].(string)
 			outType, _ := m["type"].(string)
-			
+
 			switch tag {
 			case "🚀 节点选择":
-				// 节点选择：添加所有节�?
+				// 节点选择：添加所有节告
 				if existing, ok := m["outbounds"].([]string); ok {
 					m["outbounds"] = append(existing, proxyTags...)
 				}
@@ -121,7 +121,7 @@ func GenerateSingBoxConfig(servers []service.ServerInfo, user *model.User) map[s
 				// 自动选择/故障转移：只包含节点
 				m["outbounds"] = proxyTags
 			case "📲 电报消息", "🤖 OpenAI", "📹 YouTube", "🎬 Netflix", "🍎 苹果服务", "🐟 漏网之鱼":
-				// 其他分组：添加所有节�?
+				// 其他分组：添加所有节告
 				if existing, ok := m["outbounds"].([]string); ok {
 					m["outbounds"] = append(existing, proxyTags...)
 				}
@@ -179,7 +179,7 @@ func buildShadowTLS(server service.ServerInfo, user *model.User) map[string]inte
 	ps := server.ProtocolSettings
 	port := parsePort(server.Port)
 
-	// ShadowTLS 需要配�?Shadowsocks 使用
+	// ShadowTLS 需要配告Shadowsocks 使用
 	out := map[string]interface{}{
 		"type":        "shadowtls",
 		"tag":         server.Name,
@@ -197,7 +197,7 @@ func buildShadowTLS(server service.ServerInfo, user *model.User) map[string]inte
 		},
 	}
 
-	// 握手服务�?
+	// 握手服务告
 	if hs, ok := ps["handshake_server"].(string); ok && hs != "" {
 		out["tls"].(map[string]interface{})["server_name"] = hs
 	}
@@ -326,7 +326,7 @@ func buildShadowsocks(server service.ServerInfo, user *model.User) map[string]in
 	ps := server.ProtocolSettings
 	port := parsePort(server.Port)
 
-	// 获取加密方式，优先使�?cipher，其�?method，默�?aes-256-gcm
+	// 获取加密方式，优先使告cipher，其告method，默告aes-256-gcm
 	cipher := "aes-256-gcm"
 	if c, ok := ps["cipher"].(string); ok && c != "" {
 		cipher = c
@@ -334,8 +334,8 @@ func buildShadowsocks(server service.ServerInfo, user *model.User) map[string]in
 		cipher = m
 	}
 
-	// 密码：对�?SS2022，使�?server.Password（已包含服务器密�?用户密钥格式�?
-	// 对于普�?SS，使用用�?UUID
+	// 密码：对告SS2022，使告server.Password（已包含服务器密告用户密钥格式告
+	// 对于普告SS，使用用告UUID
 	password := server.Password
 	if password == "" {
 		password = user.UUID
@@ -566,16 +566,16 @@ func buildTuic(server service.ServerInfo, user *model.User) map[string]interface
 	port := parsePort(server.Port)
 
 	out := map[string]interface{}{
-		"type":                "tuic",
-		"tag":                 server.Name,
-		"server":              server.Host,
-		"server_port":         port,
-		"uuid":                user.UUID,
-		"password":            user.UUID,
-		"congestion_control":  "cubic",
-		"udp_relay_mode":      "native",
-		"zero_rtt_handshake":  true,
-		"heartbeat":           "10s",
+		"type":               "tuic",
+		"tag":                server.Name,
+		"server":             server.Host,
+		"server_port":        port,
+		"uuid":               user.UUID,
+		"password":           user.UUID,
+		"congestion_control": "cubic",
+		"udp_relay_mode":     "native",
+		"zero_rtt_handshake": true,
+		"heartbeat":          "10s",
 		"tls": map[string]interface{}{
 			"enabled": true,
 			"alpn":    []string{"h3"},
@@ -604,9 +604,9 @@ func buildTransport(network string, ps model.JSONMap) map[string]interface{} {
 	switch network {
 	case "ws":
 		transport := map[string]interface{}{
-			"type":                    "ws",
-			"max_early_data":          2048,
-			"early_data_header_name":  "Sec-WebSocket-Protocol",
+			"type":                   "ws",
+			"max_early_data":         2048,
+			"early_data_header_name": "Sec-WebSocket-Protocol",
 		}
 		if path, ok := ns["path"].(string); ok {
 			transport["path"] = path
@@ -747,7 +747,7 @@ func getDefaultSingBoxConfig() map[string]interface{} {
 	}
 }
 
-// ToJSON 转换�?JSON 字符�?
+// ToJSON 转换告JSON 字符告
 func ToJSON(config map[string]interface{}) string {
 	data, _ := json.MarshalIndent(config, "", "  ")
 	return string(data)

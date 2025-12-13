@@ -157,8 +157,8 @@ func ServerStatus(services *service.Services) gin.HandlerFunc {
 		}
 
 		var status struct {
-			CPU  float64 `json:"cpu"`
-			Mem  struct {
+			CPU float64 `json:"cpu"`
+			Mem struct {
 				Total int64 `json:"total"`
 				Used  int64 `json:"used"`
 			} `json:"mem"`

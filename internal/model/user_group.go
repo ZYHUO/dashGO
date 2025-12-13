@@ -12,7 +12,7 @@ type UserGroup struct {
 	Sort        int       `gorm:"column:sort;default:0" json:"sort"`
 	CreatedAt   int64     `gorm:"column:created_at;autoCreateTime" json:"created_at"`
 	UpdatedAt   int64     `gorm:"column:updated_at;autoUpdateTime" json:"updated_at"`
-	
+
 	// 保留这些字段用于向后兼容，但标记为废弃
 	// Deprecated: 流量应该由套餐决定，不应该在用户组中设置
 	DefaultTransferEnable int64 `gorm:"column:default_transfer_enable;default:0" json:"default_transfer_enable,omitempty"`

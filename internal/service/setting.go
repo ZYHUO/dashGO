@@ -87,16 +87,16 @@ const (
 	SettingSubscribeURL       = "subscribe_url"
 
 	// 站点设置
-	SettingSiteName        = "site_name"
-	SettingSiteLogo        = "site_logo"
-	SettingSiteDescription = "site_description"
-	SettingSiteKeywords    = "site_keywords"
-	SettingSiteTheme       = "site_theme"
+	SettingSiteName         = "site_name"
+	SettingSiteLogo         = "site_logo"
+	SettingSiteDescription  = "site_description"
+	SettingSiteKeywords     = "site_keywords"
+	SettingSiteTheme        = "site_theme"
 	SettingSitePrimaryColor = "site_primary_color"
-	SettingSiteFavicon     = "site_favicon"
-	SettingSiteFooter      = "site_footer"
-	SettingSiteTOS         = "site_tos"
-	SettingSitePrivacy     = "site_privacy"
+	SettingSiteFavicon      = "site_favicon"
+	SettingSiteFooter       = "site_footer"
+	SettingSiteTOS          = "site_tos"
+	SettingSitePrivacy      = "site_privacy"
 
 	// 注册设置
 	SettingRegisterEnable       = "register_enable"
@@ -122,17 +122,17 @@ const (
 
 // SiteSettings 站点设置结构
 type SiteSettings struct {
-	Name         string `json:"name"`
-	Logo         string `json:"logo"`
-	Description  string `json:"description"`
-	Keywords     string `json:"keywords"`
-	Theme        string `json:"theme"`
-	PrimaryColor string `json:"primary_color"`
-	Favicon      string `json:"favicon"`
-	Footer       string `json:"footer"`
-	TOS          string `json:"tos"`
-	Privacy      string `json:"privacy"`
-	Currency     string `json:"currency"`
+	Name           string `json:"name"`
+	Logo           string `json:"logo"`
+	Description    string `json:"description"`
+	Keywords       string `json:"keywords"`
+	Theme          string `json:"theme"`
+	PrimaryColor   string `json:"primary_color"`
+	Favicon        string `json:"favicon"`
+	Footer         string `json:"footer"`
+	TOS            string `json:"tos"`
+	Privacy        string `json:"privacy"`
+	Currency       string `json:"currency"`
 	CurrencySymbol string `json:"currency_symbol"`
 }
 
@@ -149,17 +149,17 @@ func (s *SettingService) GetSiteSettings() (*SiteSettings, error) {
 
 	// 从数据库获取
 	settings = SiteSettings{
-		Name:         s.GetString(SettingSiteName, "dashGO"),
-		Logo:         s.GetString(SettingSiteLogo, ""),
-		Description:  s.GetString(SettingSiteDescription, ""),
-		Keywords:     s.GetString(SettingSiteKeywords, ""),
-		Theme:        s.GetString(SettingSiteTheme, "default"),
-		PrimaryColor: s.GetString(SettingSitePrimaryColor, "#6366f1"),
-		Favicon:      s.GetString(SettingSiteFavicon, ""),
-		Footer:       s.GetString(SettingSiteFooter, ""),
-		TOS:          s.GetString(SettingSiteTOS, ""),
-		Privacy:      s.GetString(SettingSitePrivacy, ""),
-		Currency:     s.GetString(SettingPaymentCurrency, "CNY"),
+		Name:           s.GetString(SettingSiteName, "dashGO"),
+		Logo:           s.GetString(SettingSiteLogo, ""),
+		Description:    s.GetString(SettingSiteDescription, ""),
+		Keywords:       s.GetString(SettingSiteKeywords, ""),
+		Theme:          s.GetString(SettingSiteTheme, "default"),
+		PrimaryColor:   s.GetString(SettingSitePrimaryColor, "#6366f1"),
+		Favicon:        s.GetString(SettingSiteFavicon, ""),
+		Footer:         s.GetString(SettingSiteFooter, ""),
+		TOS:            s.GetString(SettingSiteTOS, ""),
+		Privacy:        s.GetString(SettingSitePrivacy, ""),
+		Currency:       s.GetString(SettingPaymentCurrency, "CNY"),
 		CurrencySymbol: s.GetString(SettingPaymentSymbol, "¥"),
 	}
 
@@ -173,18 +173,18 @@ func (s *SettingService) GetSiteSettings() (*SiteSettings, error) {
 // SetSiteSettings 设置站点设置
 func (s *SettingService) SetSiteSettings(settings *SiteSettings) error {
 	pairs := map[string]string{
-		SettingSiteName:        settings.Name,
-		SettingSiteLogo:        settings.Logo,
-		SettingSiteDescription: settings.Description,
-		SettingSiteKeywords:    settings.Keywords,
-		SettingSiteTheme:       settings.Theme,
+		SettingSiteName:         settings.Name,
+		SettingSiteLogo:         settings.Logo,
+		SettingSiteDescription:  settings.Description,
+		SettingSiteKeywords:     settings.Keywords,
+		SettingSiteTheme:        settings.Theme,
 		SettingSitePrimaryColor: settings.PrimaryColor,
-		SettingSiteFavicon:     settings.Favicon,
-		SettingSiteFooter:      settings.Footer,
-		SettingSiteTOS:         settings.TOS,
-		SettingSitePrivacy:     settings.Privacy,
-		SettingPaymentCurrency: settings.Currency,
-		SettingPaymentSymbol:   settings.CurrencySymbol,
+		SettingSiteFavicon:      settings.Favicon,
+		SettingSiteFooter:       settings.Footer,
+		SettingSiteTOS:          settings.TOS,
+		SettingSitePrivacy:      settings.Privacy,
+		SettingPaymentCurrency:  settings.Currency,
+		SettingPaymentSymbol:    settings.CurrencySymbol,
 	}
 
 	for key, value := range pairs {

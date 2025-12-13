@@ -19,7 +19,7 @@ func (r *SettingRepository) Get(key string) (string, error) {
 	err := r.db.Where("`key` = ?", key).First(&setting).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
-			return "", nil // 设置项不存在时返回空字符串，不报�?
+			return "", nil // 设置项不存在时返回空字符串，不报错
 		}
 		return "", err
 	}

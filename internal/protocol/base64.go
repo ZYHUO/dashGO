@@ -50,7 +50,7 @@ func generateLink(server service.ServerInfo, user *model.User) string {
 // ss://method:password@host:port#name
 func generateSSLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	// 获取加密方式，默认 aes-256-gcm
 	cipher := "aes-256-gcm"
 	if c, ok := ps["cipher"].(string); ok && c != "" {
@@ -58,19 +58,19 @@ func generateSSLink(server service.ServerInfo, user *model.User) string {
 	} else if m, ok := ps["method"].(string); ok && m != "" {
 		cipher = m
 	}
-	
+
 	// 密码：对于 SS2022，使用 server.Password（已包含服务器密钥+用户密钥格式）
 	// 对于普通 SS，使用用户 UUID
 	password := server.Password
 	if password == "" {
 		password = user.UUID
 	}
-	
+
 	// Base64 encode method:password
 	userInfo := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", cipher, password)))
-	
+
 	link := fmt.Sprintf("ss://%s@%s:%s", userInfo, server.Host, server.Port)
-	
+
 	// Add plugin if exists
 	if plugin, ok := ps["plugin"].(string); ok && plugin != "" {
 		params := url.Values{}
@@ -80,7 +80,7 @@ func generateSSLink(server service.ServerInfo, user *model.User) string {
 		}
 		link += "?" + params.Encode()
 	}
-	
+
 	link += "#" + url.QueryEscape(server.Name)
 	return link
 }
@@ -88,7 +88,7 @@ func generateSSLink(server service.ServerInfo, user *model.User) string {
 // vmess://base64(json)
 func generateVmessLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	vmess := map[string]interface{}{
 		"v":    "2",
 		"ps":   server.Name,
@@ -135,7 +135,7 @@ func generateVmessLink(server service.ServerInfo, user *model.User) string {
 // vless://uuid@host:port?params#name
 func generateVlessLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	params := url.Values{}
 	params.Set("encryption", "none")
 
@@ -205,9 +205,9 @@ func generateVlessLink(server service.ServerInfo, user *model.User) string {
 // trojan://password@host:port?params#name
 func generateTrojanLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	params := url.Values{}
-	
+
 	if sn, ok := ps["server_name"].(string); ok && sn != "" {
 		params.Set("sni", sn)
 	}
@@ -239,7 +239,7 @@ func generateTrojanLink(server service.ServerInfo, user *model.User) string {
 // hysteria2://password@host:port?params#name
 func generateHysteriaLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	version := 2
 	if v, ok := ps["version"].(float64); ok {
 		version = int(v)
@@ -289,7 +289,7 @@ func generateHysteriaLink(server service.ServerInfo, user *model.User) string {
 // tuic://uuid:password@host:port?params#name
 func generateTuicLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	params := url.Values{}
 	params.Set("congestion_control", "cubic")
 	params.Set("udp_relay_mode", "native")
@@ -315,7 +315,7 @@ func generateTuicLink(server service.ServerInfo, user *model.User) string {
 // anytls://password@host:port?params#name
 func generateAnyTLSLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	params := url.Values{}
 
 	if tls, ok := ps["tls"].(map[string]interface{}); ok {
@@ -338,26 +338,26 @@ func generateAnyTLSLink(server service.ServerInfo, user *model.User) string {
 // ShadowTLS 使用 ss:// 格式，带 shadow-tls 插件
 func generateShadowTLSLink(server service.ServerInfo, user *model.User) string {
 	ps := server.ProtocolSettings
-	
+
 	// 获取加密方式
 	cipher := "2022-blake3-aes-128-gcm"
 	if method, ok := ps["detour_method"].(string); ok && method != "" {
 		cipher = method
 	}
-	
+
 	// 握手服务器
 	handshakeServer := "addons.mozilla.org"
 	if hs, ok := ps["handshake_server"].(string); ok && hs != "" {
 		handshakeServer = hs
 	}
-	
+
 	// Base64 encode method:password
 	userInfo := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", cipher, user.UUID)))
-	
+
 	params := url.Values{}
 	params.Set("plugin", "shadow-tls")
 	params.Set("plugin-opts", fmt.Sprintf("host=%s;password=%s;version=3", handshakeServer, user.UUID))
-	
+
 	link := fmt.Sprintf("ss://%s@%s:%s?%s#%s",
 		userInfo, server.Host, server.Port, params.Encode(), url.QueryEscape(server.Name))
 	return link

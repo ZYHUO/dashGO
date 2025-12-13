@@ -61,15 +61,15 @@ func AdminUpdateUser(services *service.Services) gin.HandlerFunc {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
 
 		var req struct {
-			Email          string  `json:"email"`
-			Balance        *int64  `json:"balance"`
-			PlanID         *int64  `json:"plan_id"`
-			TransferEnable *int64  `json:"transfer_enable"`
-			ExpiredAt      *int64  `json:"expired_at"`
-			Banned         *bool   `json:"banned"`
-			IsAdmin        *bool   `json:"is_admin"`
-			IsStaff        *bool   `json:"is_staff"`
-			Password       string  `json:"password"`
+			Email          string `json:"email"`
+			Balance        *int64 `json:"balance"`
+			PlanID         *int64 `json:"plan_id"`
+			TransferEnable *int64 `json:"transfer_enable"`
+			ExpiredAt      *int64 `json:"expired_at"`
+			Banned         *bool  `json:"banned"`
+			IsAdmin        *bool  `json:"is_admin"`
+			IsStaff        *bool  `json:"is_staff"`
+			Password       string `json:"password"`
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -116,7 +116,7 @@ func AdminResetUserTraffic(services *service.Services) gin.HandlerFunc {
 
 // ==================== 节点管理 ====================
 
-// AdminListServers 获取服务器列�?
+// AdminListServers 获取服务器列告
 func AdminListServers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		servers, err := services.Server.GetAllServers()
@@ -132,7 +132,7 @@ func AdminListServers(services *service.Services) gin.HandlerFunc {
 			hostMap[host.ID] = host.Name
 		}
 
-		// 构建响应，添加主机名�?
+		// 构建响应，添加主机名告
 		type ServerResponse struct {
 			*model.Server
 			HostName string `json:"host_name,omitempty"`
@@ -153,7 +153,7 @@ func AdminListServers(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCreateServer 创建服务�?
+// AdminCreateServer 创建服务告
 func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
@@ -174,7 +174,7 @@ func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果设置�?host_id，验证主机是否存�?
+		// 如果设置告host_id，验证主机是否存告
 		if req.HostID != nil {
 			if _, err := services.Host.GetByID(*req.HostID); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "host not found"})
@@ -182,13 +182,13 @@ func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 			}
 		}
 
-		// 转换 Tags �?JSONArray
+		// 转换 Tags 告JSONArray
 		tags := make(model.JSONArray, len(req.Tags))
 		for i, t := range req.Tags {
 			tags[i] = t
 		}
 
-		// 转换 GroupID �?JSONArray
+		// 转换 GroupID 告JSONArray
 		groupIDs := make(model.JSONArray, len(req.GroupID))
 		for i, g := range req.GroupID {
 			groupIDs[i] = g
@@ -222,7 +222,7 @@ func AdminCreateServer(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateServer 更新服务�?
+// AdminUpdateServer 更新服务告
 func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -251,7 +251,7 @@ func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果设置�?host_id，验证主机是否存�?
+		// 如果设置告host_id，验证主机是否存告
 		if req.HostID != nil {
 			if _, err := services.Host.GetByID(*req.HostID); err != nil {
 				c.JSON(http.StatusBadRequest, gin.H{"error": "host not found"})
@@ -259,13 +259,13 @@ func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 			}
 		}
 
-		// 转换 Tags �?JSONArray
+		// 转换 Tags 告JSONArray
 		tags := make(model.JSONArray, len(req.Tags))
 		for i, t := range req.Tags {
 			tags[i] = t
 		}
 
-		// 转换 GroupID �?JSONArray
+		// 转换 GroupID 告JSONArray
 		groupIDs := make(model.JSONArray, len(req.GroupID))
 		for i, g := range req.GroupID {
 			groupIDs[i] = g
@@ -292,7 +292,7 @@ func AdminUpdateServer(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminDeleteServer 删除服务�?
+// AdminDeleteServer 删除服务告
 func AdminDeleteServer(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -306,7 +306,7 @@ func AdminDeleteServer(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminGetServerStatus 获取服务器状�?
+// AdminGetServerStatus 获取服务器状告
 func AdminGetServerStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 直接返回在线状态，实际状态由 Agent 心跳管理
@@ -325,10 +325,10 @@ func AdminGetServerStatus(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminSyncServerUsers 手动同步服务器用�?
+// AdminSyncServerUsers 手动同步服务器用告
 func AdminSyncServerUsers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Agent 模式下，用户同步�?Agent 自动处理
+		// Agent 模式下，用户同步告Agent 自动处理
 		// 这里直接返回成功
 		c.JSON(http.StatusOK, gin.H{"data": true})
 	}
@@ -358,17 +358,17 @@ func AdminListPlans(services *service.Services) gin.HandlerFunc {
 func AdminCreatePlan(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var req struct {
-			Name           string            `json:"name" binding:"required"`
-			TransferEnable int64             `json:"transfer_enable"`
-			SpeedLimit     *int              `json:"speed_limit"`
-			DeviceLimit    *int              `json:"device_limit"`
-			Prices         map[string]int64  `json:"prices"`
-			Show           bool              `json:"show"`
-			Sell           bool              `json:"sell"`
-			GroupID        *int64            `json:"group_id"`
-			UpgradeGroupID *int64            `json:"upgrade_group_id"`
-			Sort           int               `json:"sort"`
-			Content        string            `json:"content"`
+			Name           string           `json:"name" binding:"required"`
+			TransferEnable int64            `json:"transfer_enable"`
+			SpeedLimit     *int             `json:"speed_limit"`
+			DeviceLimit    *int             `json:"device_limit"`
+			Prices         map[string]int64 `json:"prices"`
+			Show           bool             `json:"show"`
+			Sell           bool             `json:"sell"`
+			GroupID        *int64           `json:"group_id"`
+			UpgradeGroupID *int64           `json:"upgrade_group_id"`
+			Sort           int              `json:"sort"`
+			Content        string           `json:"content"`
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -440,17 +440,17 @@ func AdminUpdatePlan(services *service.Services) gin.HandlerFunc {
 		}
 
 		var req struct {
-			Name           string            `json:"name"`
-			TransferEnable int64             `json:"transfer_enable"`
-			SpeedLimit     *int              `json:"speed_limit"`
-			DeviceLimit    *int              `json:"device_limit"`
-			Prices         map[string]int64  `json:"prices"`
-			Show           bool              `json:"show"`
-			Sell           bool              `json:"sell"`
-			GroupID        *int64            `json:"group_id"`
-			UpgradeGroupID *int64            `json:"upgrade_group_id"`
-			Sort           int               `json:"sort"`
-			Content        string            `json:"content"`
+			Name           string           `json:"name"`
+			TransferEnable int64            `json:"transfer_enable"`
+			SpeedLimit     *int             `json:"speed_limit"`
+			DeviceLimit    *int             `json:"device_limit"`
+			Prices         map[string]int64 `json:"prices"`
+			Show           bool             `json:"show"`
+			Sell           bool             `json:"sell"`
+			GroupID        *int64           `json:"group_id"`
+			UpgradeGroupID *int64           `json:"upgrade_group_id"`
+			Sort           int              `json:"sort"`
+			Content        string           `json:"content"`
 		}
 
 		if err := c.ShouldBindJSON(&req); err != nil {
@@ -561,7 +561,7 @@ func AdminGetOrder(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminUpdateOrderStatus 更新订单状�?
+// AdminUpdateOrderStatus 更新订单状告
 func AdminUpdateOrderStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		id, _ := strconv.ParseInt(c.Param("id"), 10, 64)
@@ -581,7 +581,7 @@ func AdminUpdateOrderStatus(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 如果要激活订单（状态改为已完成�?
+		// 如果要激活订单（状态改为已完成告
 		if req.Status == 3 && order.Status == 0 {
 			// 调用完成订单逻辑
 			if err := services.Order.CompleteOrder(order.TradeNo, "admin_manual"); err != nil {
@@ -589,7 +589,7 @@ func AdminUpdateOrderStatus(services *service.Services) gin.HandlerFunc {
 				return
 			}
 		} else {
-			// 其他状态更�?
+			// 其他状态更告
 			if err := services.Stats.UpdateOrderStatus(id, req.Status); err != nil {
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				return
@@ -640,7 +640,7 @@ func AdminTicketDetail(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminReplyTicket 管理员回复工�?
+// AdminReplyTicket 管理员回复工告
 func AdminReplyTicket(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUserFromContext(c)
@@ -665,7 +665,7 @@ func AdminReplyTicket(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AdminCloseTicket 管理员关闭工�?
+// AdminCloseTicket 管理员关闭工告
 func AdminCloseTicket(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := getUserFromContext(c)
@@ -713,7 +713,6 @@ func AdminUpdateSettings(services *service.Services) gin.HandlerFunc {
 		c.JSON(http.StatusOK, gin.H{"data": true})
 	}
 }
-
 
 // ==================== 站点设置 ====================
 

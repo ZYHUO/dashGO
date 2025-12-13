@@ -56,20 +56,20 @@ func (s *OrderService) CreateOrderWithCoupon(userID, planID int64, period string
 		}
 	}
 
-	// 处理优惠�?
+	// 处理优惠告
 	var discountAmount int64
 	var couponID *int64
 	if couponCode != "" && s.couponRepo != nil {
 		coupon, err := s.couponRepo.FindByCode(couponCode)
 		if err == nil {
-			// 验证优惠�?
+			// 验证优惠告
 			now := time.Now().Unix()
 			if coupon.StartedAt <= now && coupon.EndedAt >= now {
 				// 计算折扣
 				switch coupon.Type {
 				case 1: // 固定金额
 					discountAmount = coupon.Value
-				case 2: // 百分�?
+				case 2: // 百分告
 					discountAmount = price * coupon.Value / 100
 				}
 				if discountAmount > price {
@@ -103,7 +103,7 @@ func (s *OrderService) CreateOrderWithCoupon(userID, planID int64, period string
 		return nil, err
 	}
 
-	// 记录优惠券使�?
+	// 记录优惠券使告
 	if couponID != nil && s.couponRepo != nil {
 		s.couponRepo.RecordUsage(*couponID, order.ID, userID)
 	}
@@ -170,7 +170,7 @@ func (s *OrderService) GetByID(id int64) (*model.Order, error) {
 	return s.orderRepo.FindByID(id)
 }
 
-// GetByTradeNo 根据交易号获取订�?
+// GetByTradeNo 根据交易号获取订告
 func (s *OrderService) GetByTradeNo(tradeNo string) (*model.Order, error) {
 	return s.orderRepo.FindByTradeNo(tradeNo)
 }
@@ -199,7 +199,7 @@ func (s *OrderService) CancelOrder(orderID int64, userID int64) error {
 	return s.orderRepo.Update(order)
 }
 
-// CompleteOrder 完成订单（支付成功后调用�?
+// CompleteOrder 完成订单（支付成功后调用告
 func (s *OrderService) CompleteOrder(tradeNo string, callbackNo string) error {
 	order, err := s.orderRepo.FindByTradeNo(tradeNo)
 	if err != nil {
@@ -235,14 +235,14 @@ func (s *OrderService) CompleteOrder(tradeNo string, callbackNo string) error {
 
 	// 更新用户
 	user.PlanID = &order.PlanID
-	
-	// 如果套餐配置了升级组，则升级用户�?
+
+	// 如果套餐配置了升级组，则升级用户告
 	if plan.UpgradeGroupID != nil && *plan.UpgradeGroupID > 0 {
 		user.GroupID = plan.UpgradeGroupID
 	} else {
 		user.GroupID = plan.GroupID
 	}
-	
+
 	user.TransferEnable = plan.TransferEnable * 1024 * 1024 * 1024 // GB to Bytes
 	if days > 0 {
 		user.ExpiredAt = &expiredAt
@@ -254,7 +254,7 @@ func (s *OrderService) CompleteOrder(tradeNo string, callbackNo string) error {
 		user.DeviceLimit = plan.DeviceLimit
 	}
 
-	// 重置流量（新购或升级�?
+	// 重置流量（新购或升级告
 	if order.Type == model.OrderTypeNewPurchase || order.Type == model.OrderTypeUpgrade {
 		user.U = 0
 		user.D = 0
@@ -264,7 +264,7 @@ func (s *OrderService) CompleteOrder(tradeNo string, callbackNo string) error {
 		return err
 	}
 
-	// 更新订单状�?
+	// 更新订单状告
 	now := time.Now().Unix()
 	order.Status = model.OrderStatusCompleted
 	order.PaidAt = &now
