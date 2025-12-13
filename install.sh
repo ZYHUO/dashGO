@@ -304,6 +304,15 @@ install_docker_compose() {
 install_panel() {
     log_info "开始安装 dashGO 面板..."
     
+    # 询问数据库类型
+    echo ""
+    echo "请选择数据库类型:"
+    echo "  1) SQLite (推荐，轻量级，无需额外容器)"
+    echo "  2) MySQL (需要更多资源，适合生产环境)"
+    echo ""
+    read -p "请选择 [1-2]: " db_type
+    db_type=${db_type:-1}
+    
     # 询问安装方式
     echo ""
     echo "请选择安装方式:"
@@ -456,14 +465,22 @@ install_panel() {
     mkdir -p web/dist
     mkdir -p configs
     
+    # 根据数据库类型设置参数
+    local use_mysql="false"
+    if [ "$db_type" = "2" ]; then
+        use_mysql="true"
+    fi
+    
     # 创建配置文件（总是创建，确保存在）
-    create_panel_config
+    create_panel_config "$use_mysql"
     
     # 创建 Docker Compose 文件
-    create_docker_compose
+    create_docker_compose "$use_mysql"
     
-    # 创建初始化 SQL
-    create_init_sql
+    # 仅 MySQL 需要初始化 SQL
+    if [ "$use_mysql" = "true" ]; then
+        create_init_sql
+    fi
     
     # 创建 Nginx 配置
     create_nginx_config
@@ -490,6 +507,8 @@ install_panel() {
 
 # 创建面板配置
 create_panel_config() {
+    local use_mysql=${1:-false}
+    
     log_info "创建配置文件..."
     
     # 生成随机密码
@@ -501,8 +520,10 @@ create_panel_config() {
     # 创建 configs 目录
     mkdir -p configs
     
-    cat > configs/config.yaml << EOF
-# dashGO Configuration for Docker
+    if [ "$use_mysql" = "true" ]; then
+        # MySQL 配置
+        cat > configs/config.yaml << EOF
+# dashGO Configuration for Docker (MySQL)
 app:
   name: "dashGO"
   mode: "release"
@@ -549,24 +570,86 @@ admin:
   email: "admin@example.com"
   password: "admin123456"
 EOF
+    else
+        # SQLite 配置 (默认)
+        cat > configs/config.yaml << EOF
+# dashGO Configuration for Docker (SQLite)
+app:
+  name: "dashGO"
+  mode: "release"
+  listen: ":8080"
+
+database:
+  driver: "sqlite"
+  dsn: "data/dashgo.db"
+
+redis:
+  host: "redis"
+  port: 6379
+  password: "${REDIS_PASS}"
+  db: 0
+
+jwt:
+  secret: "${JWT_SECRET}"
+  expire_hour: 24
+
+node:
+  token: "${NODE_TOKEN}"
+  push_interval: 60
+  pull_interval: 60
+  enable_sync: false
+
+mail:
+  host: "smtp.example.com"
+  port: 587
+  username: ""
+  password: ""
+  from_name: "dashGO"
+  from_addr: "noreply@example.com"
+  encryption: "tls"
+
+telegram:
+  bot_token: ""
+  chat_id: ""
+
+admin:
+  email: "admin@example.com"
+  password: "admin123456"
+EOF
+    fi
     
     # 保存密码到环境文件
-    cat > .env << EOF
+    if [ "$use_mysql" = "true" ]; then
+        cat > .env << EOF
 MYSQL_ROOT_PASSWORD=${DB_PASS}
 MYSQL_DATABASE=dashgo
 REDIS_PASSWORD=${REDIS_PASS}
 JWT_SECRET=${JWT_SECRET}
 NODE_TOKEN=${NODE_TOKEN}
 EOF
+    else
+        cat > .env << EOF
+REDIS_PASSWORD=${REDIS_PASS}
+JWT_SECRET=${JWT_SECRET}
+NODE_TOKEN=${NODE_TOKEN}
+EOF
+    fi
     
     log_info "配置文件已创建: configs/config.yaml"
-    log_hint "数据库密码: ${DB_PASS}"
+    if [ "$use_mysql" = "true" ]; then
+        log_hint "数据库类型: MySQL"
+        log_hint "数据库密码: ${DB_PASS}"
+    else
+        log_hint "数据库类型: SQLite (data/dashgo.db)"
+    fi
     log_hint "Redis 密码: ${REDIS_PASS}"
     log_hint "节点 Token: ${NODE_TOKEN}"
 }
 
 # 创建 Docker Compose 文件
 create_docker_compose() {
+    local use_mysql=${1:-false}
+    
     # 检查是否存在预编译二进制文件
     if [ -f "dashgo-server" ]; then
         # 为预编译版本创建简单的 Dockerfile
@@ -589,7 +672,9 @@ CMD ["/app/dashgo-server"]
 EOF
     fi
 
-    cat > docker-compose.yaml << 'EOF'
+    if [ "$use_mysql" = "true" ]; then
+        # MySQL 版本的 Docker Compose
+        cat > docker-compose.yaml << 'EOF'
 services:
   dashgo:
     build: .
@@ -666,6 +751,62 @@ networks:
   dashgo-net:
     driver: bridge
 EOF
+    else
+        # SQLite 版本的 Docker Compose (默认，更简单)
+        cat > docker-compose.yaml << 'EOF'
+services:
+  dashgo:
+    build: .
+    container_name: dashgo
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./configs/config.yaml:/app/config.yaml
+      - ./data:/app/data
+      - ./web/dist:/app/web/dist
+    depends_on:
+      - redis
+    restart: unless-stopped
+    environment:
+      - TZ=Asia/Shanghai
+    networks:
+      - dashgo-net
+
+  redis:
+    image: redis:7-alpine
+    container_name: dashgo-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-}
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    restart: unless-stopped
+    networks:
+      - dashgo-net
+
+  nginx:
+    image: nginx:alpine
+    container_name: dashgo-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/etc/nginx/ssl
+    depends_on:
+      - dashgo
+    restart: unless-stopped
+    networks:
+      - dashgo-net
+
+volumes:
+  redis_data:
+
+networks:
+  dashgo-net:
+    driver: bridge
+EOF
+    fi
 }
 
 # 创建初始化 SQL
