@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// CORS 跨域中间�?
+// CORS 跨域中间件
 func CORS() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		c.Header("Access-Control-Allow-Origin", "*")
@@ -27,7 +27,7 @@ func CORS() gin.HandlerFunc {
 	}
 }
 
-// JWTAuth JWT 认证中间�?
+// JWTAuth JWT 认证中间件
 func JWTAuth(authService *service.AuthService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
@@ -67,7 +67,7 @@ func AdminAuth() gin.HandlerFunc {
 			return
 		}
 
-		// 使用类型断言检�?IsAdmin 字段
+		// 使用类型断言检查 IsAdmin 字段
 		type userWithAdmin interface {
 			GetIsAdmin() bool
 		}
@@ -89,10 +89,10 @@ func AdminAuth() gin.HandlerFunc {
 	}
 }
 
-// NodeAuth 节点认证中间�?
+// NodeAuth 节点认证中间件
 func NodeAuth(token string) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// �?Header �?Query 获取 token
+		// 从 Header 或 Query 获取 token
 		nodeToken := c.GetHeader("X-Node-Token")
 		if nodeToken == "" {
 			nodeToken = c.Query("token")
@@ -122,7 +122,7 @@ func NodeAuth(token string) gin.HandlerFunc {
 	}
 }
 
-// RateLimit 速率限制中间�?
+// RateLimit 速率限制中间件
 func RateLimit(limit int) gin.HandlerFunc {
 	// TODO: 实现速率限制
 	return func(c *gin.Context) {

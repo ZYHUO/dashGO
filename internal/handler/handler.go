@@ -13,11 +13,11 @@ import (
 )
 
 func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Config) {
-	// 公共中间�?
+	// 公共中间件
 	r.Use(gin.Recovery())
 	r.Use(middleware.CORS())
 
-	// 静态文件服�?
+	// 静态文件服务
 	staticPath := "web/dist"
 	if _, err := os.Stat(staticPath); err == nil {
 		r.Static("/assets", filepath.Join(staticPath, "assets"))
@@ -52,7 +52,7 @@ func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Confi
 			passport.POST("/auth/register", PassportRegister(services))
 		}
 
-		// User routes (需要用户认�?
+		// User routes (需要用户认�?
 		user := v1.Group("/user")
 		user.Use(middleware.JWTAuth(services.Auth))
 		{
@@ -214,7 +214,7 @@ func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Confi
 			admin.POST("/payment", AdminCreatePayment(services))
 			admin.PUT("/payment/:id", AdminUpdatePayment(services))
 
-			// Server Group management (用户组管�?
+			// Server Group management (用户组管�?
 			admin.GET("/server_groups", AdminListServerGroups(services))
 			admin.POST("/server_group", AdminCreateServerGroup(services))
 			admin.PUT("/server_group/:id", AdminUpdateServerGroup(services))
@@ -258,24 +258,24 @@ func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Confi
 			admin.GET("/traffic/daily", AdminDailyTrafficStats(services))
 			admin.GET("/traffic/user/:id", AdminUserTrafficDetail(services))
 
-			// User Group management (用户组管�?- 新架�?
+			// User Group management (用户组管�?- 新架�?
 			admin.GET("/user-groups", AdminListUserGroups(services))
 			admin.GET("/user-group/:id", AdminGetUserGroup(services))
 			admin.POST("/user-group", AdminCreateUserGroup(services))
 			admin.PUT("/user-group/:id", AdminUpdateUserGroup(services))
 			admin.DELETE("/user-group/:id", AdminDeleteUserGroup(services))
 			
-			// User Group - Server management (用户组节点管�?
+			// User Group - Server management (用户组节点管�?
 			admin.POST("/user-group/:id/servers", AdminSetUserGroupServers(services))
 			admin.POST("/user-group/:id/server", AdminAddServerToUserGroup(services))
 			admin.DELETE("/user-group/:id/server/:server_id", AdminRemoveServerFromUserGroup(services))
 			
-			// User Group - Plan management (用户组套餐管�?
+			// User Group - Plan management (用户组套餐管�?
 			admin.POST("/user-group/:id/plans", AdminSetUserGroupPlans(services))
 			admin.POST("/user-group/:id/plan", AdminAddPlanToUserGroup(services))
 			admin.DELETE("/user-group/:id/plan/:plan_id", AdminRemovePlanFromUserGroup(services))
 
-			// Traffic management (流量管理 - 新功�?
+			// Traffic management (流量管理 - 新功�?
 			admin.GET("/traffic/stats", AdminGetTrafficStats(services))
 			admin.GET("/traffic/warnings", AdminGetTrafficWarnings(services))
 			admin.POST("/traffic/reset/:id", AdminResetTraffic(services))

@@ -84,7 +84,7 @@ func AgentGetConfig(services *service.Services) gin.HandlerFunc {
 }
 
 // AgentGetUsers 获取节点用户（支持增量同步）
-// 注意：此接口返回的是 sing-box 格式的用户配置，包含 name �?password
+// 注意：此接口返回的是 sing-box 格式的用户配置，包含 name 和 password
 func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		host := getHostFromContext(c)
@@ -94,7 +94,7 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 		}
 
 		nodeID, _ := strconv.ParseInt(c.Query("node_id"), 10, 64)
-		nodeType := c.Query("type") // server �?node
+		nodeType := c.Query("type") // server 或 node
 		lastHash := c.Query("hash")
 
 		if nodeID == 0 {
@@ -106,13 +106,13 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 
 		// 根据类型获取用户
 		if nodeType == "server" {
-			// �?Server 获取用户
+			// 从 Server 获取用户
 			server, err := services.Server.FindServer(nodeID, "")
 			if err != nil {
 				c.JSON(http.StatusNotFound, gin.H{"error": "server not found"})
 				return
 			}
-			// 验证 Server 属于该主�?
+			// 验证 Server 属于该主机
 			if server.HostID == nil || *server.HostID != host.ID {
 				c.JSON(http.StatusForbidden, gin.H{"error": "server not belong to this host"})
 				return
@@ -124,13 +124,13 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 				return
 			}
 		} else {
-			// �?ServerNode 获取用户
+			// 从 ServerNode 获取用户
 			node, nodeErr := services.Host.GetNodeByID(nodeID)
 			if nodeErr != nil {
 				c.JSON(http.StatusNotFound, gin.H{"error": "node not found"})
 				return
 			}
-			// 验证节点属于该主�?
+			// 验证节点属于该主机
 			if node.HostID != host.ID {
 				c.JSON(http.StatusForbidden, gin.H{"error": "node not belong to this host"})
 				return
@@ -168,7 +168,7 @@ func AgentGetUsers(services *service.Services) gin.HandlerFunc {
 	}
 }
 
-// AgentSyncStatus Agent 同步状�?
+// AgentSyncStatus Agent 同步状态
 func AgentSyncStatus(services *service.Services) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		host := getHostFromContext(c)
@@ -194,7 +194,7 @@ func AgentSyncStatus(services *service.Services) gin.HandlerFunc {
 			return
 		}
 
-		// 更新节点状�?
+		// 更新节点状态
 		for _, nodeData := range req.Nodes {
 			services.Server.UpdateOnlineUsers(nodeData.ID, "", nodeData.OnlineUsers)
 			services.Server.UpdateLoadStatus(nodeData.ID, "", map[string]interface{}{
