@@ -323,7 +323,7 @@ install_panel() {
     if [ "$install_type" = "1" ]; then
         # 使用预编译版本
         log_info "下载预编译面板..."
-        local PANEL_URL="https://download.sharon.wiki/server/dashgo-server-linux-${ARCH}"
+        local PANEL_URL="https://download.sharon.wiki/server/xboard-server-linux-${ARCH}"
         
         if ! wget -q --show-progress -O "$INSTALL_DIR/dashgo-server" "$PANEL_URL"; then
             log_warn "下载预编译版本失败，切换到源码构建..."
@@ -822,7 +822,7 @@ install_agent() {
     cd "$TEMP_DIR"
     
     # 下载 Agent (使用新的下载地址)
-    local AGENT_URL="https://download.sharon.wiki/agent/dashgo-agent-linux-${ARCH}"
+    local AGENT_URL="https://download.sharon.wiki/agent/xboard-agent-linux-${ARCH}"
     
     log_info "下载 Agent..."
     if ! wget -q --show-progress -O "$AGENT_DIR/dashgo-agent" "$AGENT_URL"; then
@@ -1041,7 +1041,7 @@ update_panel() {
         mkdir -p "$TEMP_DIR"
         cd "$TEMP_DIR"
         
-        local PANEL_URL="https://download.sharon.wiki/server/dashgo-server-linux-${ARCH}"
+        local PANEL_URL="https://download.sharon.wiki/server/xboard-server-linux-${ARCH}"
         
         if wget -q --show-progress -O dashgo-server "$PANEL_URL"; then
             # 备份旧版本
@@ -1140,7 +1140,7 @@ update_agent() {
     mkdir -p "$TEMP_DIR"
     cd "$TEMP_DIR"
     
-    local AGENT_URL="https://download.sharon.wiki/agent/dashgo-agent-linux-${ARCH}"
+    local AGENT_URL="https://download.sharon.wiki/agent/xboard-agent-linux-${ARCH}"
     
     if wget -q --show-progress -O "$AGENT_DIR/dashgo-agent.new" "$AGENT_URL"; then
         mv "$AGENT_DIR/dashgo-agent.new" "$AGENT_DIR/dashgo-agent"
