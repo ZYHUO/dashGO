@@ -3,11 +3,11 @@ package service
 import (
 	"time"
 
-	"dashgo/internal/model"
-	"dashgo/internal/repository"
+	"xboard/internal/model"
+	"xboard/internal/repository"
 )
 
-// ServerGroupService 用户组服�?
+// ServerGroupService 服务器组服务
 type ServerGroupService struct {
 	groupRepo *repository.ServerGroupRepository
 }
@@ -18,17 +18,17 @@ func NewServerGroupService(groupRepo *repository.ServerGroupRepository) *ServerG
 	}
 }
 
-// GetAll 获取所有用户组
+// GetAll 获取所有服务器组
 func (s *ServerGroupService) GetAll() ([]model.ServerGroup, error) {
 	return s.groupRepo.GetAll()
 }
 
-// GetByID 根据 ID 获取用户�?
+// GetByID 根据 ID 获取服务器组
 func (s *ServerGroupService) GetByID(id int64) (*model.ServerGroup, error) {
 	return s.groupRepo.FindByID(id)
 }
 
-// Create 创建用户�?
+// Create 创建服务器组
 func (s *ServerGroupService) Create(name string) (*model.ServerGroup, error) {
 	group := &model.ServerGroup{
 		Name:      name,
@@ -41,7 +41,7 @@ func (s *ServerGroupService) Create(name string) (*model.ServerGroup, error) {
 	return group, nil
 }
 
-// Update 更新用户�?
+// Update 更新服务器组
 func (s *ServerGroupService) Update(id int64, name string) error {
 	group, err := s.groupRepo.FindByID(id)
 	if err != nil {
@@ -52,7 +52,7 @@ func (s *ServerGroupService) Update(id int64, name string) error {
 	return s.groupRepo.Update(group)
 }
 
-// Delete 删除用户�?
+// Delete 删除服务器组
 func (s *ServerGroupService) Delete(id int64) error {
 	return s.groupRepo.Delete(id)
 }
