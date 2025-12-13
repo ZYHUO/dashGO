@@ -694,7 +694,8 @@ RUN apk --no-cache add ca-certificates tzdata
 
 WORKDIR /app
 
-COPY dashgo-server /app/dashgo-server
+# 复制预编译二进制文件
+COPY ./dashgo-server /app/dashgo-server
 RUN chmod +x /app/dashgo-server
 
 # 创建必要的目录
@@ -704,6 +705,7 @@ EXPOSE 8080
 
 CMD ["/app/dashgo-server", "-config", "/app/configs/config.yaml"]
 EOF
+        log_info "已创建预编译版本的 Dockerfile"
     fi
 
     if [ "$use_mysql" = "true" ]; then
