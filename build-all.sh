@@ -62,18 +62,18 @@ build_frontend() {
 
 # 构建 Server (Dashboard)
 build_server() {
-    echo -e "${YELLOW}开始构建 Server...${NC}"
+    echo -e "${YELLOW}开始构建 Server (支持 SQLite，需要 CGO)...${NC}"
     
-    # 构建 Linux amd64
-    echo -e "${YELLOW}构建 Server (Linux amd64)...${NC}"
-    CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build \
+    # 构建 Linux amd64 (启用 CGO 以支持 SQLite)
+    echo -e "${YELLOW}构建 Server (Linux amd64 with SQLite)...${NC}"
+    CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
         -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-amd64 \
         ./cmd/server
     
-    # 构建 Linux arm64
-    echo -e "${YELLOW}构建 Server (Linux arm64)...${NC}"
-    CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build \
+    # 构建 Linux arm64 (启用 CGO 以支持 SQLite)
+    echo -e "${YELLOW}构建 Server (Linux arm64 with SQLite)...${NC}"
+    CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build \
         -ldflags="-s -w -X main.Version=${VERSION} -X main.BuildTime=${BUILD_TIME} -X main.GitCommit=${GIT_COMMIT}" \
         -o ${SERVER_OUTPUT_DIR}/dashgo-server-linux-arm64 \
         ./cmd/server

@@ -3,8 +3,8 @@ FROM golang:1.22-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies
-RUN apk add --no-cache git
+# Install build dependencies (gcc, musl-dev for CGO/SQLite support)
+RUN apk add --no-cache git gcc musl-dev
 
 # Copy go mod files
 COPY go.mod go.sum ./
@@ -13,8 +13,8 @@ RUN go mod download
 # Copy source code
 COPY . .
 
-# Build
-RUN CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -o dashgo ./cmd/server
+# Build with CGO enabled for SQLite support
+RUN CGO_ENABLED=1 GOOS=linux go build -a -o dashgo ./cmd/server
 
 # Runtime stage
 FROM alpine:latest

@@ -322,6 +322,37 @@ install_panel() {
     read -p "请选择 [1-2]: " install_type
     install_type=${install_type:-1}
     
+    # 警告：预编译版本不支持 SQLite
+    if [ "$install_type" = "1" ] && [ "$db_type" = "1" ]; then
+        echo ""
+        log_warn "注意：当前预编译版本不支持 SQLite (需要 CGO 支持)"
+        echo ""
+        echo "建议选择："
+        echo "  1) 改用 MySQL 数据库"
+        echo "  2) 改用源码构建 (支持 SQLite)"
+        echo "  3) 继续 (将自动切换到源码构建)"
+        echo ""
+        read -p "请选择 [1-3]: " fix_choice
+        case $fix_choice in
+            1)
+                log_info "切换到 MySQL 数据库..."
+                db_type="2"
+                ;;
+            2)
+                log_info "切换到源码构建..."
+                install_type="2"
+                ;;
+            3)
+                log_info "自动切换到源码构建..."
+                install_type="2"
+                ;;
+            *)
+                log_info "自动切换到源码构建..."
+                install_type="2"
+                ;;
+        esac
+    fi
+    
     install_docker
     install_docker_compose
     
