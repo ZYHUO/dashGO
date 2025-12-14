@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHistory, type RouteLocationNormalized, type NavigationGuardNext } from 'vue-router'
 import { useUserStore } from '@/stores/user'
 
 const router = createRouter({
@@ -149,25 +149,38 @@ const router = createRouter({
   ]
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to: RouteLocationNormalized, _from: RouteLocationNormalized, next: NavigationGuardNext) => {
   const userStore = useUserStore()
+  
+  // 如果访问登录或注册页，且已登录，重定向到首页
+  if ((to.path === '/login' || to.path === '/register') && userStore.isLoggedIn) {
+    next('/')
+    return
+  }
   
   // 如果有 token 但没有用户信息，先获取用户信息
   if (userStore.token && !userStore.user) {
     try {
       await userStore.fetchUser()
     } catch (e) {
-      // 获取失败，清除 token
+      // 获取失败，清除 token（已在 fetchUser 中处理）
+      console.error('Failed to fetch user:', e)
     }
   }
   
+  // 需要认证的页面
   if (to.meta.requiresAuth && !userStore.isLoggedIn) {
-    next('/login')
-  } else if (to.meta.requiresAdmin && !userStore.isAdmin) {
-    next('/')
-  } else {
-    next()
+    next({ path: '/login', query: { redirect: to.fullPath } })
+    return
   }
+  
+  // 需要管理员权限的页面
+  if (to.meta.requiresAdmin && !userStore.isAdmin) {
+    next('/')
+    return
+  }
+  
+  next()
 })
 
 export default router

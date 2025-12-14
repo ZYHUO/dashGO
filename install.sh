@@ -346,10 +346,27 @@ install_panel() {
     read -p "请选择 [1-2]: " install_type
     install_type=${install_type:-1}
     
-    # 询问 Web 端口
+    # 询问 Web 端口和 SSL
     echo ""
-    read -p "请输入 Web 访问端口 [默认: 80]: " web_port
-    web_port=${web_port:-80}
+    read -p "是否启用 HTTPS (443端口)? [y/N]: " enable_ssl
+    enable_ssl=${enable_ssl:-N}
+    
+    if [ "$enable_ssl" = "y" ] || [ "$enable_ssl" = "Y" ]; then
+        web_port=443
+        use_ssl="true"
+        
+        echo ""
+        echo "请选择证书类型:"
+        echo "  1) 使用 Cloudflare Origin Certificate (推荐)"
+        echo "  2) 使用自签名证书 (测试用)"
+        echo "  3) 我已有证书文件"
+        read -p "请选择 [1-3]: " cert_type
+        cert_type=${cert_type:-1}
+    else
+        read -p "请输入 Web 访问端口 [默认: 80]: " web_port
+        web_port=${web_port:-80}
+        use_ssl="false"
+    fi
     
     # 询问管理员账号
     echo ""
@@ -548,8 +565,13 @@ install_panel() {
     # 创建 Docker Compose 文件
     create_docker_compose "$use_mysql" "$web_port"
     
+    # 处理 SSL 证书
+    if [ "$use_ssl" = "true" ]; then
+        setup_ssl_certificate
+    fi
+    
     # 创建 Nginx 配置
-    create_nginx_config
+    create_nginx_config "$use_ssl"
     
     # 修复 Redis 内存警告
     log_info "优化系统配置..."
@@ -899,9 +921,196 @@ SET FOREIGN_KEY_CHECKS = 1;
 EOF
 }
 
+# 设置 SSL 证书
+setup_ssl_certificate() {
+    mkdir -p ssl
+    
+    case $cert_type in
+        1)
+            # Cloudflare Origin Certificate
+            log_info "请按以下步骤获取 Cloudflare Origin Certificate:"
+            echo ""
+            echo "1. 登录 Cloudflare 控制台"
+            echo "2. 选择你的域名"
+            echo "3. 进入 SSL/TLS → Origin Server"
+            echo "4. 点击 'Create Certificate'"
+            echo "5. 保持默认设置，点击 'Create'"
+            echo "6. 复制证书内容"
+            echo ""
+            
+            read -p "按回车继续，准备粘贴证书..."
+            echo ""
+            echo "请粘贴 Origin Certificate (以 -----BEGIN CERTIFICATE----- 开头):"
+            echo "粘贴完成后按 Ctrl+D:"
+            cat > ssl/cert.pem
+            
+            echo ""
+            echo "请粘贴 Private Key (以 -----BEGIN PRIVATE KEY----- 开头):"
+            echo "粘贴完成后按 Ctrl+D:"
+            cat > ssl/key.pem
+            
+            log_success "Cloudflare Origin Certificate 已保存"
+            log_hint "请在 Cloudflare 设置 SSL/TLS 模式为 'Full (strict)'"
+            ;;
+        2)
+            # 自签名证书
+            log_info "生成自签名证书..."
+            read -p "请输入域名: " domain_name
+            openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+                -keyout ssl/key.pem \
+                -out ssl/cert.pem \
+                -subj "/CN=${domain_name}" 2>/dev/null
+            log_success "自签名证书已生成"
+            log_warn "浏览器会显示不安全警告，仅用于测试"
+            log_hint "请在 Cloudflare 设置 SSL/TLS 模式为 'Full' (不是 strict)"
+            ;;
+        3)
+            # 已有证书
+            log_info "请将证书文件放置到以下位置:"
+            echo "  证书文件: $INSTALL_DIR/ssl/cert.pem"
+            echo "  私钥文件: $INSTALL_DIR/ssl/key.pem"
+            read -p "文件已放置好？按回车继续..."
+            
+            if [ ! -f "ssl/cert.pem" ] || [ ! -f "ssl/key.pem" ]; then
+                log_error "未找到证书文件"
+                exit 1
+            fi
+            log_success "证书文件已确认"
+            ;;
+    esac
+    
+    # 设置权限
+    chmod 600 ssl/key.pem
+    chmod 644 ssl/cert.pem
+}
+
 # 创建 Nginx 配置
 create_nginx_config() {
-    cat > nginx.conf << 'EOF'
+    local use_ssl=${1:-false}
+    
+    if [ "$use_ssl" = "true" ]; then
+        # HTTPS 配置
+        cat > nginx.conf << 'EOF'
+events {
+    worker_connections 1024;
+}
+
+http {
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+    
+    # 日志格式（包含真实 IP）
+    log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                    '$status $body_bytes_sent "$http_referer" '
+                    '"$http_user_agent" "$http_x_forwarded_for"';
+    
+    access_log /var/log/nginx/access.log main;
+    error_log /var/log/nginx/error.log warn;
+    
+    # 真实 IP 设置（支持 CDN）
+    set_real_ip_from 0.0.0.0/0;
+    real_ip_header X-Forwarded-For;
+    real_ip_recursive on;
+    
+    sendfile        on;
+    keepalive_timeout  65;
+    client_max_body_size 50m;
+    
+    # Gzip
+    gzip on;
+    gzip_vary on;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
+
+    upstream dashgo {
+        server dashgo:8080;
+    }
+
+    # HTTP 重定向到 HTTPS
+    server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        server_name _;
+        return 301 https://$host$request_uri;
+    }
+
+    # HTTPS 服务器
+    server {
+        listen 443 ssl http2 default_server;
+        listen [::]:443 ssl http2 default_server;
+        server_name _;
+        
+        # SSL 证书
+        ssl_certificate /etc/nginx/ssl/cert.pem;
+        ssl_certificate_key /etc/nginx/ssl/key.pem;
+        
+        # SSL 配置
+        ssl_protocols TLSv1.2 TLSv1.3;
+        ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
+        ssl_prefer_server_ciphers off;
+        ssl_session_cache shared:SSL:10m;
+        ssl_session_timeout 10m;
+        
+        # 增加缓冲区大小
+        client_header_buffer_size 4k;
+        large_client_header_buffers 4 16k;
+        
+        # 错误页面
+        error_page 502 503 504 /50x.html;
+        location = /50x.html {
+            return 503 '{"error": "Service temporarily unavailable"}';
+            add_header Content-Type application/json;
+        }
+        
+        location / {
+            proxy_pass http://dashgo;
+            proxy_http_version 1.1;
+            
+            # WebSocket 支持
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection "upgrade";
+            
+            # 正确传递请求头（支持 CDN）
+            proxy_set_header Host $http_host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Port $server_port;
+            
+            # 传递 CDN 相关头（如 Cloudflare）
+            proxy_set_header CF-Connecting-IP $http_cf_connecting_ip;
+            proxy_set_header CF-Ray $http_cf_ray;
+            proxy_set_header CF-Visitor $http_cf_visitor;
+            
+            # 超时设置
+            proxy_connect_timeout 60s;
+            proxy_send_timeout 60s;
+            proxy_read_timeout 60s;
+            
+            # 缓冲设置
+            proxy_buffering on;
+            proxy_buffer_size 4k;
+            proxy_buffers 8 4k;
+            proxy_busy_buffers_size 8k;
+            
+            # 错误处理
+            proxy_next_upstream error timeout invalid_header http_502 http_503 http_504;
+            proxy_next_upstream_tries 1;
+        }
+        
+        # 健康检查
+        location /health {
+            access_log off;
+            return 200 "healthy\n";
+            add_header Content-Type text/plain;
+        }
+    }
+}
+EOF
+    else
+        # HTTP 配置
+        cat > nginx.conf << 'EOF'
 events {
     worker_connections 1024;
 }
@@ -998,52 +1207,9 @@ http {
         }
     }
     
-    # HTTPS 配置 (取消注释并配置证书后使用)
-    # server {
-    #     listen 443 ssl http2 default_server;
-    #     listen [::]:443 ssl http2 default_server;
-    #     server_name _;
-    #     
-    #     ssl_certificate /etc/nginx/ssl/cert.pem;
-    #     ssl_certificate_key /etc/nginx/ssl/key.pem;
-    #     ssl_protocols TLSv1.2 TLSv1.3;
-    #     ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-GCM-SHA384;
-    #     ssl_prefer_server_ciphers off;
-    #     
-    #     # 增加缓冲区大小
-    #     client_header_buffer_size 4k;
-    #     large_client_header_buffers 4 16k;
-    #     
-    #     location / {
-    #         proxy_pass http://dashgo;
-    #         proxy_http_version 1.1;
-    #         
-    #         # WebSocket 支持
-    #         proxy_set_header Upgrade $http_upgrade;
-    #         proxy_set_header Connection "upgrade";
-    #         
-    #         # 正确传递请求头
-    #         proxy_set_header Host $host;
-    #         proxy_set_header X-Real-IP $remote_addr;
-    #         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    #         proxy_set_header X-Forwarded-Proto $scheme;
-    #         proxy_set_header X-Forwarded-Host $host;
-    #         proxy_set_header X-Forwarded-Port $server_port;
-    #         
-    #         # 超时设置
-    #         proxy_connect_timeout 60s;
-    #         proxy_send_timeout 60s;
-    #         proxy_read_timeout 60s;
-    #         
-    #         # 缓冲设置
-    #         proxy_buffering on;
-    #         proxy_buffer_size 4k;
-    #         proxy_buffers 8 4k;
-    #         proxy_busy_buffers_size 8k;
-    #     }
-    # }
 }
 EOF
+    fi
 }
 
 # 显示面板信息
