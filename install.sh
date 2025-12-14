@@ -686,11 +686,14 @@ create_docker_compose() {
     
     # 检查是否存在预编译二进制文件
     if [ -f "dashgo-server" ]; then
-        # 为预编译版本创建简单的 Dockerfile
+        # 为预编译版本创建简单的 Dockerfile（使用 Debian 基础镜像支持 glibc）
         cat > Dockerfile << 'EOF'
-FROM alpine:latest
+FROM debian:bookworm-slim
 
-RUN apk --no-cache add ca-certificates tzdata
+# 安装必要的运行时依赖
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends ca-certificates tzdata && \
+    rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
@@ -701,11 +704,14 @@ RUN chmod +x /app/dashgo-server
 # 创建必要的目录
 RUN mkdir -p /app/configs /app/web/dist /app/data
 
+# 设置时区
+ENV TZ=Asia/Shanghai
+
 EXPOSE 8080
 
 CMD ["/app/dashgo-server", "-config", "/app/configs/config.yaml"]
 EOF
-        log_info "已创建预编译版本的 Dockerfile"
+        log_info "已创建预编译版本的 Dockerfile (Debian 基础镜像)"
     fi
 
     if [ "$use_mysql" = "true" ]; then
