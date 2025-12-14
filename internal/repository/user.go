@@ -31,6 +31,9 @@ func (r *UserRepository) FindByID(id int64) (*model.User, error) {
 	var user model.User
 	err := r.db.Preload("Plan").First(&user, id).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil // 返回 nil 而不是错误，让调用方处理
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -49,6 +52,9 @@ func (r *UserRepository) FindByToken(token string) (*model.User, error) {
 	var user model.User
 	err := r.db.Preload("Plan").Where("token = ?", token).First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil // 返回 nil 而不是错误，让调用方处理
+		}
 		return nil, err
 	}
 	return &user, nil
@@ -245,6 +251,9 @@ func (r *UserRepository) FindByTelegramID(telegramID int64) (*model.User, error)
 	var user model.User
 	err := r.db.Preload("Plan").Where("telegram_id = ?", telegramID).First(&user).Error
 	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, nil // 返回 nil 而不是错误，让调用方处理
+		}
 		return nil, err
 	}
 	return &user, nil
