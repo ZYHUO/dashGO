@@ -16,6 +16,8 @@ func RegisterRoutes(r *gin.Engine, services *service.Services, cfg *config.Confi
 	// 公共中间件
 	r.Use(gin.Recovery())
 	r.Use(middleware.CORS())
+	r.Use(middleware.SecurityHeaders())      // 安全响应头
+	r.Use(middleware.InputSanitization())    // 输入清理（防 XSS）
 
 	// 静态文件服务
 	staticPath := "web/dist"

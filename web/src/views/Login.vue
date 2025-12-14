@@ -29,7 +29,12 @@ const handleLogin = async () => {
   error.value = ''
   try {
     await userStore.login(email.value, password.value)
-    router.push('/')
+    // 根据用户角色跳转
+    if (userStore.isAdmin) {
+      router.push('/admin')
+    } else {
+      router.push('/')
+    }
   } catch (e: any) {
     error.value = e.response?.data?.error || '登录失败'
   } finally {
