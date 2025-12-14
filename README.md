@@ -2,6 +2,10 @@
 
 一个现代化的代理面板管理系统，基于 Go + Vue 3 构建。
 
+[測試站点](https://misaka.cfd/) 
+帐密
+admin@example.com
+admin123456
 ## 特性
 
 - 🚀 **高性能**：Go 后端，Vue 3 前端
@@ -16,19 +20,8 @@
 ### 安装
 
 ```bash
-# 下载安装脚本
-wget https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh
-# 或使用 curl
-# curl -fsSL https://raw.githubusercontent.com/ZYHUO/dashGO/main/install.sh -o install.sh
-
-# 添加执行权限
-chmod +x install.sh
-
-# 运行安装
-./install.sh
+ curl -sSL https://raw.githubusercontent.com/ZYHUO/dashGO/refs/heads/main/install.sh -o install.sh && bash install.sh
 ```
-
-**⚠️ 注意：不要使用管道方式 `curl | bash`，因为安装脚本需要交互式输入！**
 
 ### 安装选项
 
