@@ -32,7 +32,7 @@ chmod +x install.sh
 安装时会提示选择：
 
 1. **数据库类型**
-   - SQLite（推荐，轻量级）
+   - SQLite（推荐,轻量级,linux arm64不支持,请不要选择此项
    - MySQL（外部数据库）
 
 2. **安装方式**
