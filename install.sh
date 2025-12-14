@@ -384,10 +384,37 @@ install_panel() {
         fi
         
         if [ "$install_type" = "1" ]; then
-            # 下载配置模板和静态文件
+            # 下载前端文件
+            log_info "下载前端文件..."
+            mkdir -p "$INSTALL_DIR/web/dist"
             cd "$TEMP_DIR"
-            local REPO_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/archive/refs/heads/main.zip"
+            
+            # 下载 index.html
+            if wget --show-progress -O "$INSTALL_DIR/web/dist/index.html" "https://download.sharon.wiki/web/dist/index.html" 2>&1; then
+                log_success "前端 index.html 下载完成"
+            else
+                log_warn "前端 index.html 下载失败"
+            fi
+            
+            # 下载 assets 目录（打包为 tar.gz）
+            if wget --show-progress -O assets.tar.gz "https://download.sharon.wiki/web/dist/assets.tar.gz" 2>&1; then
+                tar -xzf assets.tar.gz -C "$INSTALL_DIR/web/dist/" 2>/dev/null && log_success "前端 assets 下载完成" || {
+                    log_warn "assets 解压失败，尝试直接下载..."
+                    # 如果 tar.gz 不存在，尝试下载整个 dist 目录的 zip
+                    rm -f assets.tar.gz
+                    if wget --show-progress -O dist.zip "https://download.sharon.wiki/web/dist.zip" 2>&1; then
+                        unzip -q dist.zip -d "$INSTALL_DIR/web/" && log_success "前端文件下载完成" || log_warn "前端文件解压失败"
+                    else
+                        log_warn "前端文件下载失败，将使用空前端"
+                    fi
+                }
+            else
+                log_warn "前端 assets 下载失败"
+            fi
+            
+            # 下载配置模板
             log_info "下载配置模板..."
+            local REPO_URL="${GH_PROXY}https://github.com/${GITHUB_REPO}/archive/refs/heads/main.zip"
             
             # 尝试使用代理下载
             if ! wget --show-progress -O dashgo.zip "$REPO_URL" 2>&1; then
@@ -398,7 +425,6 @@ install_panel() {
                     wget --show-progress -O dashgo.zip "$REPO_URL" 2>&1 || {
                         log_warn "配置模板下载失败，将使用默认配置"
                         mkdir -p "$INSTALL_DIR/configs"
-                        mkdir -p "$INSTALL_DIR/web/dist"
                         continue_without_template=true
                     }
                 fi
@@ -414,7 +440,6 @@ install_panel() {
                 fi
                 if [ -n "$extracted_dir" ] && [ -d "$extracted_dir" ]; then
                     cp -r "$extracted_dir/configs" "$INSTALL_DIR/" 2>/dev/null || mkdir -p "$INSTALL_DIR/configs"
-                    cp -r "$extracted_dir/web/dist" "$INSTALL_DIR/web/" 2>/dev/null || mkdir -p "$INSTALL_DIR/web/dist"
                     cp "$extracted_dir/docker-compose.yaml" "$INSTALL_DIR/" 2>/dev/null || true
                     cp "$extracted_dir/Dockerfile" "$INSTALL_DIR/" 2>/dev/null || true
                     log_success "配置模板下载完成 (从 $extracted_dir)"
