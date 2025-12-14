@@ -35,7 +35,7 @@ chmod +x install.sh
 安装时会提示选择：
 
 1. **数据库类型**
-   - SQLite（推荐，轻量级）
+   - SQLite（推荐,轻量级,linux arm64不支持,请不要选择此项
    - MySQL（外部数据库）
 
 2. **安装方式**
@@ -216,8 +216,8 @@ MIT License
 ## 支持
 
 - **问题反馈**：[GitHub Issues](https://github.com/ZYHUO/dashGO/issues)
-- **文档**：[Wiki](https://github.com/ZYHUO/dashGO/wiki)
-
 ---
 
 **⭐ 如果这个项目对你有帮助，请给个 Star！**
+**Give me a cup of coffee** 0x728426bb2d4121da5316f795017cbf068e0db0d0 polygon
+0x728426bb2d4121da5316f795017cbf068e0db0d0 xlayer
