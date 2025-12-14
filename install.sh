@@ -526,6 +526,18 @@ install_panel() {
     # 创建 Nginx 配置
     create_nginx_config
     
+    # 修复 Redis 内存警告
+    log_info "优化系统配置..."
+    if ! grep -q "vm.overcommit_memory" /etc/sysctl.conf 2>/dev/null; then
+        echo "vm.overcommit_memory = 1" | tee -a /etc/sysctl.conf >/dev/null
+        sysctl vm.overcommit_memory=1 >/dev/null 2>&1
+        log_info "已启用内存 overcommit"
+    fi
+    
+    # 清理旧容器（如果存在）
+    log_info "清理旧容器..."
+    docker compose down --remove-orphans >/dev/null 2>&1 || true
+    
     # 启动服务
     log_info "启动面板服务..."
     docker compose up -d --build
@@ -533,6 +545,25 @@ install_panel() {
     # 等待服务启动
     log_info "等待服务启动..."
     sleep 10
+    
+    # 初始化数据库（确保表已创建）
+    log_info "初始化数据库..."
+    if [ "$db_type" = "1" ]; then
+        # SQLite: 确保数据目录权限正确
+        chmod 755 data 2>/dev/null || true
+        chmod 644 data/dashgo.db 2>/dev/null || true
+    fi
+    
+    # 等待数据库初始化完成
+    sleep 5
+    
+    # 检查数据库表是否创建
+    log_info "检查数据库状态..."
+    if docker compose logs dashgo 2>&1 | grep -q "no such table"; then
+        log_warn "检测到数据库表未创建，尝试重启服务..."
+        docker compose restart dashgo
+        sleep 10
+    fi
     
     # 检查服务状态
     if docker compose ps | grep -q "Up"; then
