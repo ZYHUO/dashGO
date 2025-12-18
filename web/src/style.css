@@ -185,3 +185,160 @@ body {
   @apply bg-gray-900 text-white p-4 overflow-x-auto mb-3 border border-gray-800;
   border-radius: var(--radius-md);
 }
+/* Theme Transition Styles */
+.theme-transitioning,
+.theme-transitioning *,
+.theme-transitioning *:before,
+.theme-transitioning *:after {
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition-delay: 0ms !important;
+}
+
+/* Modern Surface Styles */
+.surface-background {
+  background-color: var(--surface-background);
+}
+
+.surface-primary {
+  background-color: var(--surface-primary);
+}
+
+.surface-secondary {
+  background-color: var(--surface-secondary);
+}
+
+.surface-tertiary {
+  background-color: var(--surface-tertiary);
+}
+
+.surface-elevated {
+  background-color: var(--surface-elevated);
+}
+
+/* Modern Text Styles */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-disabled {
+  color: var(--text-disabled);
+}
+
+.text-inverse {
+  color: var(--text-inverse);
+}
+
+.text-on-primary {
+  color: var(--text-on-primary);
+}
+
+.text-on-secondary {
+  color: var(--text-on-secondary);
+}
+
+/* Modern Border Styles */
+.border-primary {
+  border-color: var(--border-primary);
+}
+
+.border-secondary {
+  border-color: var(--border-secondary);
+}
+
+.border-tertiary {
+  border-color: var(--border-tertiary);
+}
+
+.border-focus {
+  border-color: var(--border-focus);
+}
+
+.border-error {
+  border-color: var(--border-error);
+}
+
+/* Interactive Elements */
+.interactive {
+  transition: all var(--transition-base);
+  cursor: pointer;
+}
+
+.interactive:hover {
+  transform: translateY(-1px);
+}
+
+.interactive:active {
+  transform: translateY(0);
+}
+
+/* Focus Styles */
+.focus-ring {
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+}
+
+.focus-ring:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+}
+
+/* Gradient Backgrounds */
+.gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary-500) 0%, var(--color-primary-600) 100%);
+}
+
+.gradient-secondary {
+  background: linear-gradient(135deg, var(--color-secondary-500) 0%, var(--color-secondary-600) 100%);
+}
+
+.gradient-surface {
+  background: linear-gradient(135deg, var(--surface-primary) 0%, var(--surface-secondary) 100%);
+}
+
+/* Glass Effect */
+.glass {
+  background: var(--surface-overlay);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Modern Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--surface-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-secondary);
+}
+
+/* Selection Styles */
+::selection {
+  background: var(--color-primary-200);
+  color: var(--color-primary-900);
+}
+
+[data-theme="dark"] ::selection {
+  background: var(--color-primary-800);
+  color: var(--color-primary-100);
+}

@@ -1,42 +1,113 @@
-/* Design Tokens - Flat Design & Monochrome Theme */
+/* Modern Design Tokens - Enhanced Visual Hierarchy */
 
 :root {
-  /* Colors - Monochrome Palette */
-  --color-black: #000000;
-  --color-white: #FFFFFF;
+  /* Primary Color Scale - Modern Blue */
+  --color-primary-50: #EFF6FF;
+  --color-primary-100: #DBEAFE;
+  --color-primary-200: #BFDBFE;
+  --color-primary-300: #93C5FD;
+  --color-primary-400: #60A5FA;
+  --color-primary-500: #3B82F6;
+  --color-primary-600: #2563EB;
+  --color-primary-700: #1D4ED8;
+  --color-primary-800: #1E40AF;
+  --color-primary-900: #1E3A8A;
+  --color-primary-950: #172554;
   
-  /* Grayscale */
-  --color-gray-50: #F8F9FA;
-  --color-gray-100: #E9ECEF;
-  --color-gray-200: #DEE2E6;
-  --color-gray-300: #CED4DA;
-  --color-gray-400: #ADB5BD;
-  --color-gray-500: #6C757D;
-  --color-gray-600: #495057;
-  --color-gray-700: #343A40;
-  --color-gray-800: #212529;
+  /* Secondary Color Scale - Modern Purple */
+  --color-secondary-50: #FAF5FF;
+  --color-secondary-100: #F3E8FF;
+  --color-secondary-200: #E9D5FF;
+  --color-secondary-300: #D8B4FE;
+  --color-secondary-400: #C084FC;
+  --color-secondary-500: #A855F7;
+  --color-secondary-600: #9333EA;
+  --color-secondary-700: #7C3AED;
+  --color-secondary-800: #6B21A8;
+  --color-secondary-900: #581C87;
+  --color-secondary-950: #3B0764;
   
-  /* Semantic Colors - Functional Only */
-  --color-success: #28A745;
-  --color-warning: #FFC107;
-  --color-error: #DC3545;
-  --color-info: #17A2B8;
+  /* Neutral Color Scale - Warm Grays */
+  --color-neutral-50: #FAFAF9;
+  --color-neutral-100: #F5F5F4;
+  --color-neutral-200: #E7E5E4;
+  --color-neutral-300: #D6D3D1;
+  --color-neutral-400: #A8A29E;
+  --color-neutral-500: #78716C;
+  --color-neutral-600: #57534E;
+  --color-neutral-700: #44403C;
+  --color-neutral-800: #292524;
+  --color-neutral-900: #1C1917;
+  --color-neutral-950: #0C0A09;
   
-  /* Background Colors */
-  --bg-primary: var(--color-white);
-  --bg-secondary: var(--color-gray-50);
-  --bg-tertiary: var(--color-gray-100);
+  /* Semantic Colors - Enhanced */
+  --color-success-50: #F0FDF4;
+  --color-success-100: #DCFCE7;
+  --color-success-200: #BBF7D0;
+  --color-success-300: #86EFAC;
+  --color-success-400: #4ADE80;
+  --color-success-500: #22C55E;
+  --color-success-600: #16A34A;
+  --color-success-700: #15803D;
+  --color-success-800: #166534;
+  --color-success-900: #14532D;
   
-  /* Text Colors */
-  --text-primary: var(--color-black);
-  --text-secondary: var(--color-gray-500);
-  --text-disabled: var(--color-gray-400);
-  --text-inverse: var(--color-white);
+  --color-warning-50: #FFFBEB;
+  --color-warning-100: #FEF3C7;
+  --color-warning-200: #FDE68A;
+  --color-warning-300: #FCD34D;
+  --color-warning-400: #FBBF24;
+  --color-warning-500: #F59E0B;
+  --color-warning-600: #D97706;
+  --color-warning-700: #B45309;
+  --color-warning-800: #92400E;
+  --color-warning-900: #78350F;
   
-  /* Border Colors */
-  --border-primary: var(--color-gray-200);
-  --border-secondary: var(--color-gray-300);
-  --border-focus: var(--color-black);
+  --color-error-50: #FEF2F2;
+  --color-error-100: #FEE2E2;
+  --color-error-200: #FECACA;
+  --color-error-300: #FCA5A5;
+  --color-error-400: #F87171;
+  --color-error-500: #EF4444;
+  --color-error-600: #DC2626;
+  --color-error-700: #B91C1C;
+  --color-error-800: #991B1B;
+  --color-error-900: #7F1D1D;
+  
+  --color-info-50: #F0F9FF;
+  --color-info-100: #E0F2FE;
+  --color-info-200: #BAE6FD;
+  --color-info-300: #7DD3FC;
+  --color-info-400: #38BDF8;
+  --color-info-500: #0EA5E9;
+  --color-info-600: #0284C7;
+  --color-info-700: #0369A1;
+  --color-info-800: #075985;
+  --color-info-900: #0C4A6E;
+  
+  /* Surface Colors - Light Theme */
+  --surface-background: var(--color-neutral-50);
+  --surface-primary: #FFFFFF;
+  --surface-secondary: var(--color-neutral-100);
+  --surface-tertiary: var(--color-neutral-200);
+  --surface-elevated: #FFFFFF;
+  --surface-overlay: rgba(255, 255, 255, 0.95);
+  
+  /* Text Colors - Light Theme */
+  --text-primary: var(--color-neutral-900);
+  --text-secondary: var(--color-neutral-600);
+  --text-tertiary: var(--color-neutral-500);
+  --text-disabled: var(--color-neutral-400);
+  --text-inverse: #FFFFFF;
+  --text-on-primary: #FFFFFF;
+  --text-on-secondary: #FFFFFF;
+  
+  /* Border Colors - Light Theme */
+  --border-primary: var(--color-neutral-200);
+  --border-secondary: var(--color-neutral-300);
+  --border-tertiary: var(--color-neutral-400);
+  --border-focus: var(--color-primary-500);
+  --border-error: var(--color-error-500);
   
   /* Spacing Scale */
   --spacing-xs: 0.25rem;   /* 4px */
@@ -78,15 +149,42 @@
   --line-height-normal: 1.5;
   --line-height-relaxed: 1.75;
   
-  /* Shadows - Minimal */
-  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  /* Elevation Shadows - Modern Depth */
   --shadow-none: none;
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
   
-  /* Transitions - Simple */
-  --transition-fast: 150ms ease;
-  --transition-base: 200ms ease;
-  --transition-slow: 300ms ease;
+  /* Colored Shadows for Interactive Elements */
+  --shadow-primary: 0 4px 14px 0 rgba(59, 130, 246, 0.15);
+  --shadow-secondary: 0 4px 14px 0 rgba(168, 85, 247, 0.15);
+  --shadow-success: 0 4px 14px 0 rgba(34, 197, 94, 0.15);
+  --shadow-warning: 0 4px 14px 0 rgba(245, 158, 11, 0.15);
+  --shadow-error: 0 4px 14px 0 rgba(239, 68, 68, 0.15);
+  
+  /* Animation & Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-bounce: 400ms cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  
+  /* Animation Durations */
+  --duration-instant: 0ms;
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  --duration-slower: 500ms;
+  
+  /* Animation Easing */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  --ease-elastic: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   
   /* Z-Index Scale */
   --z-dropdown: 1000;
@@ -112,4 +210,107 @@
   
   /* Touch Targets */
   --touch-target-min: 44px;
+}
+
+/* Dark Theme Overrides */
+[data-theme="dark"] {
+  /* Surface Colors - Dark Theme */
+  --surface-background: var(--color-neutral-950);
+  --surface-primary: var(--color-neutral-900);
+  --surface-secondary: var(--color-neutral-800);
+  --surface-tertiary: var(--color-neutral-700);
+  --surface-elevated: var(--color-neutral-800);
+  --surface-overlay: rgba(28, 25, 23, 0.95);
+  
+  /* Text Colors - Dark Theme */
+  --text-primary: var(--color-neutral-50);
+  --text-secondary: var(--color-neutral-300);
+  --text-tertiary: var(--color-neutral-400);
+  --text-disabled: var(--color-neutral-600);
+  --text-inverse: var(--color-neutral-900);
+  --text-on-primary: #FFFFFF;
+  --text-on-secondary: #FFFFFF;
+  
+  /* Border Colors - Dark Theme */
+  --border-primary: var(--color-neutral-700);
+  --border-secondary: var(--color-neutral-600);
+  --border-tertiary: var(--color-neutral-500);
+  --border-focus: var(--color-primary-400);
+  --border-error: var(--color-error-400);
+  
+  /* Enhanced Shadows for Dark Theme */
+  --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+  --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+  --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+}
+
+/* Auto Theme - Respects System Preference */
+@media (prefers-color-scheme: dark) {
+  [data-theme="auto"] {
+    /* Surface Colors - Auto Dark */
+    --surface-background: var(--color-neutral-950);
+    --surface-primary: var(--color-neutral-900);
+    --surface-secondary: var(--color-neutral-800);
+    --surface-tertiary: var(--color-neutral-700);
+    --surface-elevated: var(--color-neutral-800);
+    --surface-overlay: rgba(28, 25, 23, 0.95);
+    
+    /* Text Colors - Auto Dark */
+    --text-primary: var(--color-neutral-50);
+    --text-secondary: var(--color-neutral-300);
+    --text-tertiary: var(--color-neutral-400);
+    --text-disabled: var(--color-neutral-600);
+    --text-inverse: var(--color-neutral-900);
+    --text-on-primary: #FFFFFF;
+    --text-on-secondary: #FFFFFF;
+    
+    /* Border Colors - Auto Dark */
+    --border-primary: var(--color-neutral-700);
+    --border-secondary: var(--color-neutral-600);
+    --border-tertiary: var(--color-neutral-500);
+    --border-focus: var(--color-primary-400);
+    --border-error: var(--color-error-400);
+    
+    /* Enhanced Shadows for Auto Dark */
+    --shadow-xs: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    --shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.4), 0 1px 2px -1px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+    --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Elevation System Classes */
+.elevation-0 { box-shadow: var(--shadow-none); }
+.elevation-1 { box-shadow: var(--shadow-xs); }
+.elevation-2 { box-shadow: var(--shadow-sm); }
+.elevation-3 { box-shadow: var(--shadow-md); }
+.elevation-4 { box-shadow: var(--shadow-lg); }
+.elevation-5 { box-shadow: var(--shadow-xl); }
+.elevation-6 { box-shadow: var(--shadow-2xl); }
+
+/* Interactive Elevation Classes */
+.elevation-interactive {
+  transition: box-shadow var(--transition-base);
+}
+
+.elevation-interactive:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.elevation-interactive:active {
+  box-shadow: var(--shadow-sm);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
