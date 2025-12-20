@@ -126,9 +126,9 @@ func (ns *NodeService) CreateNode(req *NodeCreateRequest) (*NodeResponse, error)
 	server := &model.Server{
 		Name:     req.Name,
 		Type:     req.Protocol,
-		Host:     req.Host,
-		Port:     fmt.Sprintf("%d", req.Port),
-		Settings: convertedParams,
+		Host:             req.Host,
+		Port:             fmt.Sprintf("%d", req.Port),
+		ProtocolSettings: convertedParams,
 	}
 
 	// 保存到数据库
@@ -190,8 +190,8 @@ func (ns *NodeService) CreateNode(req *NodeCreateRequest) (*NodeResponse, error)
 		LocalPort: localPort,
 		Params:    convertedParams,
 		Config:    configJSON,
-		CreatedAt: server.CreatedAt,
-		UpdatedAt: server.UpdatedAt,
+		CreatedAt: time.Unix(server.CreatedAt, 0),
+		UpdatedAt: time.Unix(server.UpdatedAt, 0),
 	}, nil
 }
 
@@ -204,7 +204,7 @@ func (ns *NodeService) UpdateNode(nodeID int64, req *NodeUpdateRequest) (*NodeRe
 	}
 
 	// 备份原始配置
-	oldConfigData, _ := json.Marshal(server.Settings)
+	oldConfigData, _ := json.Marshal(server.ProtocolSettings)
 	oldConfig := string(oldConfigData)
 
 	// 更新字段
@@ -276,7 +276,7 @@ func (ns *NodeService) UpdateNode(nodeID int64, req *NodeUpdateRequest) (*NodeRe
 			return nil, fmt.Errorf("failed to convert protocol parameters: %w", err)
 		}
 
-		server.Settings = convertedParams
+		server.ProtocolSettings = convertedParams
 		updated = true
 	}
 
@@ -296,7 +296,7 @@ func (ns *NodeService) UpdateNode(nodeID int64, req *NodeUpdateRequest) (*NodeRe
 		Protocol: server.Type,
 		Host:     server.Host,
 		Port:     newPort,
-		Params:   server.Settings,
+		Params:   server.ProtocolSettings,
 	}
 
 	singboxConfig, err := ns.configGenerator.GenerateConfig([]config.NodeInfo{nodeConfig}, &config.GenerateOptions{
@@ -326,10 +326,10 @@ func (ns *NodeService) UpdateNode(nodeID int64, req *NodeUpdateRequest) (*NodeRe
 		Host:      server.Host,
 		Port:      newPort,
 		LocalPort: newLocalPort,
-		Params:    server.Settings,
+		Params:    server.ProtocolSettings,
 		Config:    configJSON,
-		CreatedAt: server.CreatedAt,
-		UpdatedAt: server.UpdatedAt,
+		CreatedAt: time.Unix(server.CreatedAt, 0),
+		UpdatedAt: time.Unix(server.UpdatedAt, 0),
 	}, nil
 }
 
@@ -342,7 +342,7 @@ func (ns *NodeService) DeleteNode(nodeID int64) error {
 	}
 
 	// 备份配置用于历史记录
-	configData, _ := json.Marshal(server.Settings)
+	configData, _ := json.Marshal(server.ProtocolSettings)
 	oldConfig := string(configData)
 
 	// 释放所有相关端口
@@ -394,7 +394,7 @@ func (ns *NodeService) ListNodes() ([]*NodeResponse, error) {
 			localPort = ports[0]
 		}
 
-		response, err := ns.getNodeResponse(server, localPort)
+		response, err := ns.getNodeResponse(&server, localPort)
 		if err != nil {
 			continue // 跳过错误的节点
 		}
@@ -423,7 +423,7 @@ func (ns *NodeService) GenerateNodeConfig(nodeID int64) (string, error) {
 		Protocol: server.Type,
 		Host:     server.Host,
 		Port:     parsePort(server.Port),
-		Params:   server.Settings,
+		Params:   server.ProtocolSettings,
 	}
 
 	singboxConfig, err := ns.configGenerator.GenerateConfig([]config.NodeInfo{nodeConfig}, &config.GenerateOptions{
@@ -454,7 +454,7 @@ func (ns *NodeService) getNodeResponse(server *model.Server, localPort int) (*No
 		Protocol: server.Type,
 		Host:     server.Host,
 		Port:     parsePort(server.Port),
-		Params:   server.Settings,
+		Params:   server.ProtocolSettings,
 	}
 
 	singboxConfig, err := ns.configGenerator.GenerateConfig([]config.NodeInfo{nodeConfig}, &config.GenerateOptions{
@@ -479,10 +479,10 @@ func (ns *NodeService) getNodeResponse(server *model.Server, localPort int) (*No
 		Host:      server.Host,
 		Port:      parsePort(server.Port),
 		LocalPort: localPort,
-		Params:    server.Settings,
+		Params:    server.ProtocolSettings,
 		Config:    configJSON,
-		CreatedAt: server.CreatedAt,
-		UpdatedAt: server.UpdatedAt,
+		CreatedAt: time.Unix(server.CreatedAt, 0),
+		UpdatedAt: time.Unix(server.UpdatedAt, 0),
 	}, nil
 }
 

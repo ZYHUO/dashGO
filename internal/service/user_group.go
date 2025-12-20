@@ -187,10 +187,10 @@ func (s *UserGroupService) SetPlansForGroup(groupID int64, planIDs []int64) erro
 }
 
 // GetAvailableServersForUser 获取用户可访问的节点列表
-func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]ServerInfo, error) {
+func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]model.ServerInfo, error) {
 	if user.GroupID == nil || *user.GroupID == 0 {
 		// 没有用户组，返回空列告
-		return []ServerInfo{}, nil
+		return []model.ServerInfo{}, nil
 	}
 
 	group, err := s.groupRepo.FindByID(*user.GroupID)
@@ -200,11 +200,11 @@ func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]Serve
 
 	serverIDs := group.GetServerIDsAsInt64()
 	if len(serverIDs) == 0 {
-		return []ServerInfo{}, nil
+		return []model.ServerInfo{}, nil
 	}
 
 	// 获取节点列表并构告ServerInfo
-	servers := make([]ServerInfo, 0)
+	servers := make([]model.ServerInfo, 0)
 	for _, serverID := range serverIDs {
 		server, err := s.serverRepo.FindByID(serverID)
 		if err == nil && server.Show {
@@ -214,7 +214,7 @@ func (s *UserGroupService) GetAvailableServersForUser(user *model.User) ([]Serve
 				servers = append(servers, serverInfo)
 			} else {
 				// 如果没有 ServerService，创建基本的 ServerInfo
-				servers = append(servers, ServerInfo{
+				servers = append(servers, model.ServerInfo{
 					Server:   *server,
 					Password: user.UUID,
 				})

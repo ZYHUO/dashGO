@@ -1,16 +1,17 @@
 package service
 
 import (
-	"dashgo/internal/model"
-	"dashgo/internal/port"
-	"dashgo/internal/repository"
 	"fmt"
 	"time"
+
+	"dashgo/internal/model"
+	portpkg "dashgo/internal/port"
+	"dashgo/internal/repository"
 )
 
 // PortService 端口管理服务
 type PortService struct {
-	manager    *port.PortManager
+	manager    *portpkg.PortManager
 	repository *repository.PortRepository
 }
 
@@ -20,7 +21,7 @@ func NewPortService(portRange model.PortRange, repo *repository.PortRepository) 
 		return nil, fmt.Errorf("invalid port range: %w", err)
 	}
 
-	manager := port.NewPortManager(port.PortRange{
+	manager := portpkg.NewPortManager(portpkg.PortRange{
 		Start: portRange.Start,
 		End:   portRange.End,
 	})
@@ -126,7 +127,7 @@ func (s *PortService) GetUsedPorts() []int {
 }
 
 // GetPortAllocation 获取端口分配信息
-func (s *PortService) GetPortAllocation(port int) (*port.PortAllocation, error) {
+func (s *PortService) GetPortAllocation(port int) (*portpkg.PortAllocation, error) {
 	// 先从内存中获取
 	if allocation := s.manager.GetPortAllocation(port); allocation != nil {
 		return allocation, nil
@@ -139,14 +140,19 @@ func (s *PortService) GetPortAllocation(port int) (*port.PortAllocation, error) 
 	}
 
 	// 转换为内存模型
-	return &port.PortAllocation{
+	var releasedAt *time.Time
+	if dbAllocation.ReleasedAt != nil {
+		releasedAt = dbAllocation.ReleasedAt
+	}
+	
+	return &portpkg.PortAllocation{
 		ID:          dbAllocation.ID,
 		Port:        dbAllocation.Port,
 		NodeID:      dbAllocation.NodeID,
 		Purpose:     dbAllocation.Purpose,
 		Status:      dbAllocation.Status,
 		AllocatedAt: dbAllocation.AllocatedAt,
-		ReleasedAt:  dbAllocation.ReleasedAt,
+		ReleasedAt:  releasedAt,
 	}, nil
 }
 
@@ -156,7 +162,7 @@ func (s *PortService) GetNodePorts(nodeID int64) []int {
 }
 
 // GetMetrics 获取端口使用统计
-func (s *PortService) GetMetrics() (*port.PortUsageMetrics, error) {
+func (s *PortService) GetMetrics() (*portpkg.PortUsageMetrics, error) {
 	return s.manager.GetMetrics(), nil
 }
 

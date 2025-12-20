@@ -50,7 +50,7 @@ func (s *ServerService) GetAvailableServers(user *model.User) ([]model.ServerInf
 		return nil, err
 	}
 
-	result := make([]ServerInfo, 0, len(servers))
+	result := make([]model.ServerInfo, 0, len(servers))
 	for _, server := range servers {
 		info := s.BuildServerInfo(&server, user)
 		result = append(result, info)

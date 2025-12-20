@@ -30,12 +30,12 @@ type IntegrationConfig struct {
 }
 
 // NewIntegrationService 创建集成服务
-func NewIntegrationService(db *gorm.DB, config IntegrationConfig) (*IntegrationService, error) {
+func NewIntegrationService(db *gorm.DB, cfg IntegrationConfig) (*IntegrationService, error) {
 	// 初始化仓库
 	repositories := repository.NewRepositories(db)
 
 	// 初始化端口服务
-	portService, err := NewPortService(config.PortRange, repositories.Port)
+	portService, err := NewPortService(cfg.PortRange, repositories.Port)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create port service: %w", err)
 	}
