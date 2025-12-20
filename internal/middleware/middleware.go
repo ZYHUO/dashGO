@@ -5,10 +5,14 @@ import (
 	"strings"
 
 	"dashgo/internal/model"
-	"dashgo/internal/service"
 
 	"github.com/gin-gonic/gin"
 )
+
+// AuthProvider 认证提供者接口
+type AuthProvider interface {
+	GetUserFromToken(token string) (*model.User, error)
+}
 
 // CORS 跨域中间件
 func CORS() gin.HandlerFunc {
@@ -28,7 +32,7 @@ func CORS() gin.HandlerFunc {
 }
 
 // JWTAuth JWT 认证中间件
-func JWTAuth(authService *service.AuthService) gin.HandlerFunc {
+func JWTAuth(authProvider AuthProvider) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -45,7 +49,7 @@ func JWTAuth(authService *service.AuthService) gin.HandlerFunc {
 			return
 		}
 
-		user, err := authService.GetUserFromToken(parts[1])
+		user, err := authProvider.GetUserFromToken(parts[1])
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
 			c.Abort()
