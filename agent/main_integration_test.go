@@ -58,10 +58,10 @@ func TestAgent_UpdateMutex(t *testing.T) {
 		t.Error("Expected error due to concurrent update, but got nil")
 	}
 	
-	if err.Error() != "更新已在进行告 {
-		t.Errorf("Expected '更新已在进行告 error, got: %v", err)
+	if err.Error() != "更新已在进行中" {
+		t.Errorf("Expected '更新已在进行中' error, got: %v", err)
 	} else {
-		t.Logf("告Concurrent update correctly blocked: %v", err)
+		t.Logf("Concurrent update correctly blocked: %v", err)
 	}
 }
 

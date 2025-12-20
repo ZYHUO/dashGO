@@ -1,3 +1,6 @@
+//go:build !debug
+// +build !debug
+
 package main
 
 import (
@@ -264,8 +267,8 @@ func (a *Agent) handleUpdateInfo(updateInfo *UpdateInfo) {
 		return
 	}
 	
-	// 检测到新版告
-	fmt.Printf("🔔 检测到新版告 %s (当前版本: %s)\n", 
+	// 检测到新版本
+	fmt.Printf("🔔 检测到新版本 %s (当前版本: %s)\n", 
 		updateInfo.LatestVersion, 
 		a.versionManager.GetCurrentVersion())
 	
@@ -278,7 +281,7 @@ func (a *Agent) handleUpdateInfo(updateInfo *UpdateInfo) {
 		fmt.Println("🚀 自动更新策略已启用，准备更新...")
 		if err := a.performUpdate(updateInfo); err != nil {
 			// 错误已在 performUpdate 中处理和记录
-			fmt.Printf("告自动更新失败: %v\n", err)
+			fmt.Printf("⚠️ 自动更新失败: %v\n", err)
 		}
 	} else {
 		// 手动更新策略
@@ -318,7 +321,7 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 	currentVersion := a.versionManager.GetCurrentVersion()
 	targetVersion := updateInfo.LatestVersion
 	
-	fmt.Printf("🚀 开始更新流告 %s -> %s\n", currentVersion, targetVersion)
+	fmt.Printf("🚀 开始更新流程 %s -> %s\n", currentVersion, targetVersion)
 	fmt.Println("📥 开始下载新版本...")
 	
 	// 创建更新告
@@ -335,7 +338,7 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 	
 	// 下载新版本到临时文件
 	newPath := updater.GetNewPath()
-	fmt.Printf("   下载告 %s\n", newPath)
+	fmt.Printf("   下载到: %s\n", newPath)
 	
 	if err := downloader.DownloadWithRetry(updateInfo.DownloadURL, newPath); err != nil {
 		updateErr := NewNetworkError("下载失败", err)
@@ -399,13 +402,13 @@ func (a *Agent) performUpdate(updateInfo *UpdateInfo) error {
 	// 发送更新成功通知（在重启前发送，因为重启会退出进程）
 	fmt.Println("📤 发送更新成功通知...")
 	if err := a.updateNotifier.NotifySuccess(currentVersion, targetVersion); err != nil {
-		// 通知失败不影响更新流告
-		fmt.Printf("告发送成功通知失败: %v\n", err)
+		// 通知失败不影响更新流程
+		fmt.Printf("⚠️ 发送成功通知失败: %v\n", err)
 	}
 	
-	// 重启 Agent（新进程会接告sing-box 管理告
+	// 重启 Agent（新进程会接管sing-box 管理）
 	fmt.Println("🔄 重启 Agent...")
-	fmt.Printf("告更新成功！正在启动新版本 %s\n", targetVersion)
+	fmt.Printf("✅ 更新成功！正在启动新版本 %s\n", targetVersion)
 	
 	// 重启会导致当前进程退告
 	if err := updater.Restart(); err != nil {
@@ -621,9 +624,9 @@ func (a *Agent) reportTraffic() error {
 	return a.reportTrafficByPort()
 }
 
-// reportUserTraffic 上报用户级流量（精确统计告
+// reportUserTraffic 上报用户级流量（精确统计）
 func (a *Agent) reportUserTraffic(traffic map[string]TrafficData) error {
-	fmt.Printf("📊 获取告%d 个用户的流量数据\n", len(traffic))
+	fmt.Printf("📊 获取到 %d 个用户的流量数据\n", len(traffic))
 
 	// 计算增量流量
 	trafficReport := make([]map[string]interface{}, 0)
@@ -639,7 +642,7 @@ func (a *Agent) reportUserTraffic(traffic map[string]TrafficData) error {
 				"upload":   uploadDelta,
 				"download": downloadDelta,
 			})
-			fmt.Printf("  用户 %s: 告.2f MB 告.2f MB\n", user, float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
+			fmt.Printf("  用户 %s: ↑%.2f MB ↓%.2f MB\n", user, float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
 		}
 		a.lastTraffic[user] = data
 	}
@@ -661,9 +664,9 @@ func (a *Agent) reportUserTraffic(traffic map[string]TrafficData) error {
 		"nodes": nodes,
 	})
 	if err != nil {
-		fmt.Printf("告流量上报失败: %v\n", err)
+		fmt.Printf("⚠️ 流量上报失败: %v\n", err)
 	} else {
-		fmt.Printf("告已上告%d 个用户的流量\n", len(trafficReport))
+		fmt.Printf("✅ 已上报 %d 个用户的流量\n", len(trafficReport))
 	}
 	return err
 }
@@ -707,7 +710,7 @@ func (a *Agent) reportTrafficByPort() error {
 		Download: result.Down,
 	}
 
-	fmt.Printf("📊 总流量（平均分配模式告 告.2f MB 告.2f MB\n", float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
+	fmt.Printf("📊 总流量（平均分配模式）: ↑%.2f MB ↓%.2f MB\n", float64(uploadDelta)/1024/1024, float64(downloadDelta)/1024/1024)
 
 	// 统计所有用户数
 	totalUsers := 0
@@ -750,7 +753,7 @@ func (a *Agent) reportTrafficByPort() error {
 			"users": trafficReport,
 		})
 
-		fmt.Printf("  节点 %d: 告%d 个用户分配流量（平均 告.2f MB 告.2f MB/人）\n", 
+		fmt.Printf("  节点 %d: 为%d 个用户分配流量（平均 ↑%.2f MB ↓%.2f MB/人）\n", 
 			node.ID, len(users), 
 			float64(avgUpload)/1024/1024, 
 			float64(avgDownload)/1024/1024)
@@ -764,9 +767,9 @@ func (a *Agent) reportTrafficByPort() error {
 		"nodes": nodes,
 	})
 	if err != nil {
-		fmt.Printf("告流量上报失败: %v\n", err)
+		fmt.Printf("⚠️ 流量上报失败: %v\n", err)
 	} else {
-		fmt.Printf("告已上报流量（平均分配模式）\n")
+		fmt.Printf("✅ 已上报流量（平均分配模式）\n")
 	}
 	return err
 }
@@ -789,25 +792,25 @@ func (a *Agent) Run() {
 	// 首次获取配置并启动
 	config, err := a.getConfig()
 	if err != nil {
-		fmt.Printf("告获取配置失败: %v\n", err)
+		fmt.Printf("⚠️ 获取配置失败: %v\n", err)
 		os.Exit(1)
 	}
 
 	if _, err := a.updateConfig(config); err != nil {
-		fmt.Printf("告更新配置失败: %v\n", err)
+		fmt.Printf("⚠️ 更新配置失败: %v\n", err)
 		os.Exit(1)
 	}
 
 	if err := a.startSingbox(); err != nil {
-		fmt.Printf("告启动 sing-box 失败: %v\n", err)
+		fmt.Printf("⚠️ 启动 sing-box 失败: %v\n", err)
 		os.Exit(1)
 	}
 
-	// 发送首次心跳（包含版本信息告
+	// 发送首次心跳（包含版本信息）
 	if err := a.sendHeartbeat(); err != nil {
-		fmt.Printf("告心跳发送失告 %v\n", err)
+		fmt.Printf("⚠️ 心跳发送失败: %v\n", err)
 	} else {
-		fmt.Println("告已连接到面板")
+		fmt.Println("✅ 已连接到面板")
 	}
 
 	// 启动定时任务
@@ -830,7 +833,7 @@ func (a *Agent) Run() {
 		select {
 		case <-heartbeatTicker.C:
 			if err := a.sendHeartbeat(); err != nil {
-				fmt.Printf("告心跳失败: %v\n", err)
+				fmt.Printf("⚠️ 心跳失败: %v\n", err)
 			}
 
 		case <-trafficTicker.C:
@@ -841,20 +844,20 @@ func (a *Agent) Run() {
 		case <-configTicker.C:
 			config, err := a.getConfig()
 			if err != nil {
-				fmt.Printf("告获取配置失败: %v\n", err)
+				fmt.Printf("⚠️ 获取配置失败: %v\n", err)
 				continue
 			}
 
 			updated, err := a.updateConfig(config)
 			if err != nil {
-				fmt.Printf("告更新配置失败: %v\n", err)
+				fmt.Printf("⚠️ 更新配置失败: %v\n", err)
 				continue
 			}
 
 			if updated {
 				fmt.Println("配置已更新，重启 sing-box...")
 				if err := a.startSingbox(); err != nil {
-					fmt.Printf("告重启失败: %v\n", err)
+					fmt.Printf("⚠️ 重启失败: %v\n", err)
 				}
 			}
 
@@ -865,13 +868,13 @@ func (a *Agent) Run() {
 			// 返回一个永远不会触发的 channel
 			return make(<-chan time.Time)
 		}():
-			// 定期检查更告
+			// 定期检查更新
 			if err := a.checkForUpdates(); err != nil {
-				fmt.Printf("告检查更新失告 %v\n", err)
+				fmt.Printf("⚠️ 检查更新失败: %v\n", err)
 			}
 
 		case sig := <-sigChan:
-			fmt.Printf("\n收到信号 %v，正在退告..\n", sig)
+			fmt.Printf("\n收到信号 %v，正在退出...\n", sig)
 			heartbeatTicker.Stop()
 			configTicker.Stop()
 			trafficTicker.Stop()
