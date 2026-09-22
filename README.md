@@ -264,6 +264,20 @@ sudo firewall-cmd --permanent --add-service=https
 sudo firewall-cmd --reload
 ```
 
+## 相关项目
+
+同一套自建生态里的其他东西，按需取用：
+
+| 项目 | 说明 |
+|---|---|
+| [nyat-bot](https://github.com/ZYHUO/nyat-bot) | 🐱 Telegram 群聊 agent，不是指令机器人——会读气氛、只在有话说的时候开口 |
+| [CLIProxy-Quota-Tray](https://github.com/ZYHUO/CLIProxy-Quota-Tray) | 🖥️ Windows / Linux 托盘，实时盯 CLIProxyAPI 各 OAuth 账号的配额窗口 |
+| [worker-falling-grass-c407](https://github.com/ZYHUO/worker-falling-grass-c407) | ⚡ Cloudflare Worker 单文件部署：VLESS 订阅 → Clash 配置 |
+| [tg-newsbot](https://github.com/ZYHUO/tg-newsbot) | 📰 Telegram 频道新闻推送：RSS 轮询 → 去重 → LLM 中文摘要 |
+| [nyatdb](https://github.com/ZYHUO/nyatdb) | 🗄️ Rust 写的嵌入式页面引擎（nyat-bot 在用） |
+
+---
+
 ## 贡献
 
 欢迎提交 Issue 和 Pull Request！
