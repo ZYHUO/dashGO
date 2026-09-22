@@ -56,7 +56,7 @@ curl -sSL https://raw.githubusercontent.com/ZYHUO/dashGO/refs/heads/main/install
 ## 文档
 
 - [构建指南](BUILD.md) - 如何从源码构建
-- [故障排除](TROUBLESHOOTING.md) - 常见问题解决
+- [故障排除](#faq) - 常见问题解决（部署打不开、端口、架构不匹配等）
 - [安全指南](SECURITY.md) - 安全配置和最佳实践
 - [更新日志](CHANGELOG.md) - 版本更新记录
 
@@ -238,15 +238,23 @@ dashGO/
 
 ## FAQ
 
-### 1. 主播主播你的dashgo为什么不能用洗地恩
+### 1. 部署后无法访问面板
 
-**原因**：主播也不知道 下个版本修（
+按顺序排查：
+
+1. **服务是否起来了**：`cd /opt/dashgo && docker compose ps`，确认 `dashgo` 和 `nginx` 都是 Up
+2. **看日志**：`docker compose logs -f dashgo`，启动阶段的报错一般就在这里
+3. **端口**：确认 80/443 已放行（见下方防火墙配置）
+4. **架构不匹配**：SQLite **不支持 linux arm64**，arm64 机器请选 MySQL
+5. **反向代理**：套了 Nginx/Caddy 的话，确认 `/api` 和 WebSocket 已正确转发
+
+以上都试过还不行，带上下面的信息开个 Issue：部署方式（预编译/源码）、数据库类型、CPU 架构、`docker compose logs --tail=30 dashgo` 的输出。
 
 ### 2. 未登录用户访问根目录报错
 
 已修复：未登录用户访问 `/` 会自动重定向到 `/login`
 
-### 4. 防火墙/安全组配置
+### 3. 防火墙/安全组配置
 
 确保开放以下端口：
 - **80**：HTTP 访问
