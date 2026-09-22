@@ -2,11 +2,9 @@
 
 一个现代化的代理面板管理系统，基于 Go + Vue 3 构建。
 
-~~[測試站点](https://misaka.cfd/) 
-帐密
-admin@example.com
-admin123456~~
-demo boom
+> **演示站点**：[misaka.cfd](https://misaka.cfd/) — 出于安全考虑，演示凭据不再公开。
+> 想试用的话，自建最快：下面一条命令两分钟就起来了。
+
 ## 特性
 
 - 🚀 **高性能**：Go 后端，Vue 3 前端
