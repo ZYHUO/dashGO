@@ -1,0 +1,60 @@
+title: "Q&A"
+labels: ["q&a"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        问问题不用先开 Issue —— Issue 留给明确的 bug。
+        如果贴日志或配置，**记得先删掉密码、密钥和真实域名**。
+  - type: dropdown
+    id: stage
+    attributes:
+      label: 卡在哪一步
+      options:
+        - 还没装，想先确认能不能用
+        - 安装过程
+        - 装完了打不开 / 连不上
+        - 使用中（面板某个功能不对）
+        - 升级 / 迁移
+    validations:
+      required: true
+  - type: dropdown
+    id: deploy
+    attributes:
+      label: 部署方式
+      options:
+        - install.sh 预编译
+        - 源码构建
+        - Docker Compose 手动
+    validations:
+      required: true
+  - type: dropdown
+    id: db
+    attributes:
+      label: 数据库
+      options:
+        - SQLite
+        - MySQL
+    validations:
+      required: false
+  - type: input
+    id: arch
+    attributes:
+      label: CPU 架构 / 系统
+      placeholder: "linux/amd64 · Ubuntu 24.04"
+    validations:
+      required: false
+  - type: textarea
+    id: want
+    attributes:
+      label: 你想达成什么
+      description: 说目标，不只是报现象
+    validations:
+      required: true
+  - type: textarea
+    id: tried
+    attributes:
+      label: 已经试过什么
+      description: 包括上面 FAQ 里的排查步骤
+    validations:
+      required: true
