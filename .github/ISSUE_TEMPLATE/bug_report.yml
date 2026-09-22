@@ -1,0 +1,56 @@
+name: Bug report
+description: Something isn't behaving the way it should
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please don't paste credentials, tokens, or your real site URL.
+  - type: input
+    id: version
+    attributes:
+      label: dashGO version / commit
+      description: Release tag or commit SHA
+      placeholder: v0.0.0 / 1a2b3c4
+    validations:
+      required: true
+  - type: dropdown
+    id: deploy
+    attributes:
+      label: Deployment method
+      options:
+        - install.sh
+        - Docker Compose
+        - Manual build
+    validations:
+      required: true
+  - type: dropdown
+    id: db
+    attributes:
+      label: Database
+      options:
+        - SQLite
+        - MySQL
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to ...
+        2. Click ...
+        3. See error
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs or screenshots
+      render: shell
